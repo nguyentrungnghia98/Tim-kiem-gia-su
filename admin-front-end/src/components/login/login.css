@@ -1,0 +1,151 @@
+/*login and register Form*/
+.login-register-form{
+    width:412px;
+    margin:15vh auto;
+    background-color:#d3dfdf;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.login-register-form form {
+    width: 100%;
+    max-width: 410px;
+    padding: 15px;
+    margin: auto;
+}
+.login-register-form .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+.login-register-form .form-control:focus { z-index: 2; }
+
+/*input form sign-in*/
+.login-register-form .form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.login-register-form .form-signin input[type="password"] {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+
+.login-register-form .division {
+    float: none;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: 100%;
+    margin-top: 15px;
+}
+.login-register-form .division .line {
+    border-top: 1.2px solid rgb(182, 182, 182);
+    position: absolute;
+    top: 15px;
+    width: 42%;
+}
+.login-register-form .division .left {
+    left: 0;
+}
+.login-register-form .division .right {
+    right: 0;
+}
+.login-register-form .division span {
+    color: #424242;
+    font-size: 17px;
+}
+
+.login-register-form .box .social {
+    float: none;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.login-register-form .social .circle{
+    background-color: #EEEEEE;
+    color: #FFFFFF;
+    display: inline-block;
+    margin: 0 17px;
+    padding: 15px;
+    height:50px;
+    width:50px;
+    border-radius: 100%;
+}
+.login-register-form .social .circle .fa{
+    font-size: 17px;
+}
+.login-register-form .social .facebook{
+    background-color: #455CA8;
+    color: #FFFFFF;
+}
+.login-register-form .social .google{
+    background-color: #F74933;
+}
+
+.login-register-form .facebook:hover{
+    background-color: #6E83CD;
+}
+.login-register-form .google:hover{
+    background-color: #FF7566;
+}
+
+.login-register-form a{
+    display: block;
+    padding-top:10px;
+    color:lightseagreen;
+}
+
+.login-register-form button[type="submit"]{ margin-top:10px; }
+
+.login-register-form .form-reset { display: none; }
+
+.login-register-form .form-signup input { margin-bottom: 2px;}
+
+.form-signup .forgot {
+    float: none;
+    text-align: center;
+}
+
+.form-signup .forgot span {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.form-signup .forgot a {
+    display: inline-block !important;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.text-right{
+    text-align: right;
+}
+
+.text-red{
+    color: red;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+/* Mobile */
+
+@media screen and (max-width:500px){
+    .login-register-form{
+        width:300px;
+    }  
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    text-align: center;
+  }
