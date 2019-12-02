@@ -3,58 +3,110 @@ var router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const multer = require('../../config/multer-disk-storage');
-const jwt = require('../../FunctionHelpers/jwt');
+const jwt = require('../../utils/jwt');
+const topt= require('../../utils/totp');
 const User = require('../../models/user');
 
 // Xử lí đăng ký tài khoản
 // POST /user/register
-router.post('/register', notLogged, (req, res) => {
+router.post('/register', (req, res) => {
     passport.authenticate('local.register', {session: false}, (err, user, info) => {
         if (err){
-            return res.status(500).json({messages: [err.message]});
+            return res.status(500).json({message: err.message});
         }
         else if (!user){
-            return res.status(500).json({ ...info });
+            return res.status(400).json({ message: info.message });
         }
 
         req.login(user, {session: false}, (err) => {
             if (err){
-                res.status(500).json({messages: [err.message]});
+                res.status(500).json({message: err.message});
             }
 
-            let token = jwt.generateJWT(user, process.env.SECRET_KEY, process.env.EXPIRE_IN);
-            res.cookie('Authorization', `Bearer ${token}`, {httpOnly: true});
-            return res.status(200).json({messages: ['register successfully']});
+            // Tạo TOPT
+            const activeCode = topt.generateTOTP(process.env.OTP_SECRET);
+            topt.sendOTPViaMail(user.email, process.env.OTP_EXPIRE_IN, activeCode, 'Kích hoạt tài khoản')
+                .then(() => {
+                    setTimeout(() => {
+                        User.deleteOne({_id: user.id, status: 'pendingActive'});
+                    }, (+process.env.OTP_EXPIRE_IN) * 60 * 1000);
+
+                    return res.status(200).json({
+                        results: {
+                            object: {
+                                message: 'Đăng ký thành công',
+                                userId: user.id
+                            }
+                        }
+                    });
+                }).catch(() => {
+                    return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
+                });
+
+            
         });
     })(req, res)
 });
 
+// Xử lí kích hoạt tài khoản
+// POST /user/active
+router.post('/active', (req, res) => {
+    User.findOneById(req.body.userId)
+        .then((user) => {
+            // Kiểm tra tài khoản đã kích hoạt chưa
+            if (user.status !== 'pendingActive') {
+                return res.status(400).json({message: 'Tài khoản đã được kích hoạt'});
+            }
+
+            // Kiểm tra mã OTP
+            const result = topt.verify(req.body.activeCode, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
+
+            // Nếu mã OTP không chính xác
+            if (!result) {
+                return res.status(400).json({message: 'Mã OTP không chính xác'});
+            }
+
+            User.updateOne({_id: req.body.userId}, {status: 'active'})
+                .then(() => {
+                    return res.status(200).json({message: 'Kích hoạt tài khoản thành công'});
+                }).catch(() => {
+                    return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
+                });
+        });
+
+});
+
 // Xử lí đăng nhập
 // POST /user/login
-router.post('/login', notLogged, (req, res) => {
+router.post('/login', (req, res) => {
     passport.authenticate('local.login', {session: false}, (err, user, info) => {
         if (err){
-            return res.status(500).json({messages: [err.message]});
+            return res.status(500).json({message: err.message});
         }
         else if (!user){
-            return res.status(401).json({ ...info });
+            return res.status(400).json({message: info.message});
         }
 
         req.login(user, {session: false}, (err) => {
             if (err){
-                res.status(500).json({messages: [err.message]});
+                res.status(500).json({message: err.message});
             }
 
             let token = jwt.generateJWT(user, process.env.SECRET_KEY, process.env.EXPIRE_IN);
-            res.cookie('Authorization', `Bearer ${token}`, {httpOnly: true});
-            return res.status(200).json({messages: ['login successfully']});
+            return res.status(200).json({
+                results: {
+                    object: {
+                        token
+                    }
+                }
+            });
         });
     })(req, res)
 });
 
 // Xử lí đăng xuất
 // GET /user/logout
-router.get('/logout', isLogged, (req, res) => {
+router.get('/logout', (req, res) => {
     res.cookie('Authorization', '', {httpOnly: true});
     res.coo
     return res.status(200).json({messages: ['logout successfully']});
