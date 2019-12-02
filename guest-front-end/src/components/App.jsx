@@ -3,12 +3,13 @@ import { Router, Switch, Route} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import history from '../history';
 
-import NavBar from './NavBar';
+import Footer from './shared/Footer';
+import NavBar from './shared/NavBar';
 import Home from './Home';
 import Profile from './Profile';
 
-import '../css/App.css';
-import '../css/Login.css';
+import '../css/App.scss';
+import '../css/Login.scss';
 
 // eslint-disable-next-line import/imports-first
 import 'babel-polyfill';
@@ -18,13 +19,14 @@ const Root = (props) => {
     return (
         <>
             <ToastContainer/>
-            <NavBar isAuthenticated={isAuthenticated}
+            
+            <Router history={history}>
+                <NavBar isAuthenticated={isAuthenticated}
                     account={account}
                     username={username}
                     email={email}
                     logout={logout}
                     avatar={avatar}/>
-            <Router history={history}>
                 <Switch>
                     <Route exact path="/">
                         <Home/>
@@ -33,6 +35,7 @@ const Root = (props) => {
                         <Profile/>
                     </Route>
                 </Switch>
+                <Footer/>
             </Router>
         </>
     );
