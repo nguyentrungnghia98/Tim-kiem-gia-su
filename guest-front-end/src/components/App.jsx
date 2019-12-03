@@ -3,28 +3,41 @@ import { Router, Switch, Route} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import history from '../history';
 
-import NavBar from './NavBar';
-import Home from './Home';
+import Footer from './shared/Footer';
+import NavBar from './shared/NavBar';
+import Home from './Home/Home';
 import Profile from './Profile';
-
-import '../css/App.css';
-import '../css/Login.css';
-
+import Alert from '../components/shared/Alert/Alert'
+import '../css/App.scss';
+import 'react-toastify/dist/ReactToastify.css';
 // eslint-disable-next-line import/imports-first
 import 'babel-polyfill';
+import Authentication from '../modals/Authentication/Authentication';
 
 const Root = (props) => {
     const { isAuthenticated, account, username, email, logout, avatar} = props;
     return (
         <>
-            <ToastContainer/>
-            <NavBar isAuthenticated={isAuthenticated}
+            <ToastContainer
+              position="bottom-right"
+              autoClose={3000}
+              hideProgressBar
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnVisibilityChange
+              draggable
+              pauseOnHover
+            
+            />
+            
+            <Router history={history}>
+                <NavBar isAuthenticated={isAuthenticated}
                     account={account}
                     username={username}
                     email={email}
                     logout={logout}
                     avatar={avatar}/>
-            <Router history={history}>
                 <Switch>
                     <Route exact path="/">
                         <Home/>
@@ -33,6 +46,10 @@ const Root = (props) => {
                         <Profile/>
                     </Route>
                 </Switch>
+                <Footer/>
+
+                <Authentication/>
+                <Alert />
             </Router>
         </>
     );

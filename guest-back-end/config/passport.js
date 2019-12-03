@@ -2,7 +2,7 @@ const passport = require('passport');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
-
+const topt= require('../utils/totp');
 passport.serializeUser((user, done) => {
     console.log('serializeUser');
     done(null, user.id);
@@ -25,7 +25,7 @@ passport.use('local.register', new LocalStrategy({
     req.checkBody('email', 'Email không hợp lệ').notEmpty().isEmail();
     req.checkBody('password', 'Mật khẩu không hợp lệ.').notEmpty().isLength({min: 4, max: 20});
     req.checkBody('username', 'Họ tên không hợp lệ').notEmpty().isLength({min: 1, max: 50});
-    req.checkBody('role', 'Quyền không hợp lệ').notEmpty().isIn(['1', '2']);
+    req.checkBody('role', 'Quyền không hợp lệ').notEmpty().isIn(['1', '0']);
     const errors = req.validationErrors();
 
     if (errors.length > 0){
