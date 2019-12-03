@@ -14,14 +14,14 @@ import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
  import Login from "./containers/LoginContainer";
-import CreateNewAccount from "./views/CreateNewAccount";
+import CreateNewAccount from "./containers/CreateUserContainer";
 
 export default [
   {
     path: "/",
     exact: true,
     layout: DefaultLayout,
-    component: () => <Redirect to="/blog-overview" />
+    component: () => <Redirect to="/create-account" />
   },
   {
     path: "/login",

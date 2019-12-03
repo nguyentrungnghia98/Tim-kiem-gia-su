@@ -36,7 +36,7 @@ router.post('/register',function (req, res) {
         }
 
         return res.json({
-          message: 'Đăng kí tài khoản thành công !',
+          message: 'Tạo tài khoản mới thành công !',
           user : info
         })
       })

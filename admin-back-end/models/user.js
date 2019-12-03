@@ -33,7 +33,9 @@ module.exports = {
             email : entity.email,
             password: passHash,
             fullName: entity.fullName,
-            role: entity.role
+            role: entity.role,
+            status: 'active',
+            avatar: 'https://p7.hiclipart.com/preview/358/473/173/computer-icons-user-profile-person.jpg'
         });
         
         return user.save();    

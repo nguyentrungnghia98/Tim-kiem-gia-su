@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import {
   ListGroup,
   ListGroupItem,
@@ -12,28 +12,50 @@ import {
   Container,
   InputGroup,
   InputGroupText,
-  InputGroupAddon
+  InputGroupAddon,
+  Alert
 } from "shards-react";
 
 import PageTitle from "../components/common/PageTitle";
 
-const CreateNewAccount = () => (
-    <Container fluid className="main-content-container px-4">
+const CreateNewAccount = (props) => {
+
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [rePassword, setRePassword] = useState('');
+    const [role, setRole] = useState('');
+
+    const {isFetching, message, fetchRegister} = props;
+
+    let messageErr = message;
+    if (password !== rePassword && rePassword)
+    {
+        messageErr = 'Mật khẩu không trùng khớp !';
+    }
+
+    return(
+    <Container fluid className="main-content-container px-4 mb-3">
         <Row noGutters className="page-header py-4">
         <PageTitle title="Tạo tài khoản quản trị mới" subtitle="Cài đặt" md="12" className="ml-sm-auto mr-sm-auto" />
         </Row>
+        {messageErr ? <Container fluid className="px-0 mb-3">
+                <Alert className="mb-0">
+                <i className="fa fa-info mx-2"></i>{messageErr}
+                </Alert>
+            </Container> : null}
         <div className="create-account">
             <Col lg="6">
                 <ListGroup flush>
                     <ListGroupItem className="p-3">
-                        <Form>             
+                        <Form onSubmit={(e) => {e.preventDefault(); fetchRegister(email,password,fullName, role);}}>             
                             <FormGroup>
                                 <label htmlFor="feEmailAddress">Email</label>
                                 <InputGroup seamless className="mb-3">
                                     <FormInput
                                     id="feEmailAddress"
                                     type="email"
-                                    placeholder="Email"
+                                    placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required
                                     />
                                     <InputGroupAddon type="append">
                                         <InputGroupText>
@@ -49,7 +71,7 @@ const CreateNewAccount = () => (
                                     <FormInput
                                     id="fePassword"
                                     type="password"
-                                    placeholder="Mật khẩu"
+                                    placeholder="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)} required
                                     />
                                     <InputGroupAddon type="append">
                                         <InputGroupText>
@@ -65,7 +87,7 @@ const CreateNewAccount = () => (
                                     <FormInput
                                     id="rePassword"
                                     type="password"
-                                    placeholder="Nhập lại mật khẩu"
+                                    placeholder="Nhập lại mật khẩu" value={rePassword} onChange={(e) => setRePassword(e.target.value)} required
                                     />
                                     <InputGroupAddon type="append">
                                         <InputGroupText>
@@ -78,7 +100,7 @@ const CreateNewAccount = () => (
                             <FormGroup>
                                 <label htmlFor="feInputFullName">Họ và tên</label>
                                 <InputGroup seamless className="mb-3">
-                                    <FormInput id="feInputFullName" placeholder="Nguyễn Văn A" />
+                                    <FormInput id="feInputFullName" placeholder="Nguyễn Văn A" value={fullName} onChange={(e) => setFullName(e.target.value)}/>
                                     <InputGroupAddon type="append">
                                         <InputGroupText>
                                             <i className="material-icons">create</i>
@@ -89,20 +111,20 @@ const CreateNewAccount = () => (
   
                             <FormGroup>                        
                                 <label htmlFor="feInputState">Vai trò</label>
-                                <FormSelect id="feInputState">
+                                <FormSelect id="feInputState" onChange={(e) => setRole(e.target.value)}>
                                     <option>Chọn...</option>
                                     <option>Admin</option>
                                     <option>Quản trị viên</option>
                                 </FormSelect>
                             </FormGroup>
                                
-                         <center><Button type="submit">Tạo tài khoản mới</Button></center>
+                         <center><Button type="submit" disabled={isFetching || password !== rePassword}>Tạo tài khoản mới</Button></center>
                     </Form>
                  </ListGroupItem>
             </ListGroup>
         </Col>
       </div>
   </Container>
-);
+)};
 
 export default CreateNewAccount;

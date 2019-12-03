@@ -1,4 +1,4 @@
-import {LOGIN_REQUEST, LOGIN_FAILURE, LOGIN_SUCCESS, LOG_OUT} from '../constants/actionTypes'
+import {USER_REQUEST, USER_FAILURE, USER_SUCCESS, LOG_OUT} from '../constants/actionTypes'
 
 const initalState = {
     isFetching: false,
@@ -6,22 +6,22 @@ const initalState = {
     isLoggedIn: false
 }
 
-const loginReducer = (state = initalState, action) => {
+const userReducer = (state = initalState, action) => {
     switch (action.type) {
-        case LOGIN_REQUEST:
+        case USER_REQUEST:
             return {
                 ...state,
                 isFetching: true,
                 message: action.message
             }
-        case LOGIN_FAILURE:
+        case USER_FAILURE:
             return {
                 ...state,
                 isFetching: false,
                 message: action.message
             }
 
-         case LOGIN_SUCCESS:
+         case USER_SUCCESS:
             return {
                 ...state,
                 isFetching: false,
@@ -40,4 +40,4 @@ const loginReducer = (state = initalState, action) => {
     }
 }
 
-export default loginReducer;
+export default userReducer;
