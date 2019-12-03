@@ -5,7 +5,7 @@ import history from '../history';
 
 import Footer from './shared/Footer';
 import NavBar from './shared/NavBar';
-import Home from './Home';
+import Home from './Home/Home';
 import Profile from './Profile';
 
 import '../css/App.scss';
