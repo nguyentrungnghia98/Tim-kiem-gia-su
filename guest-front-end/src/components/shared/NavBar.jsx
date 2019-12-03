@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import confirmLogin from "../../utils/confirmLogin";
 import { Link } from "react-router-dom";
+import { connect } from 'react-redux';
+import {openAuthenticationModal} from "../../modals/Authentication/AuthenticationAction";
 class NavBar extends Component {
 
   items = {
@@ -23,7 +24,7 @@ class NavBar extends Component {
   };
 
   renderElement = () => {
-    const { isAuthencated } = this.props;
+    const { isAuthencated, openAuthenticationModal } = this.props;
 
     if (isAuthencated) {
       return (
@@ -70,7 +71,7 @@ class NavBar extends Component {
               <div
                 href="/"
                 className='nav-link'
-                onClick={() => confirmLogin(item.data)}
+                onClick={() => openAuthenticationModal(item.data)}
               >
                 {item.text}
               </div>
@@ -109,4 +110,9 @@ class NavBar extends Component {
   }
 }
 
-export default NavBar;
+export default connect(
+  null,
+  {
+    openAuthenticationModal
+  }
+)(NavBar);

@@ -12,15 +12,18 @@
   border: 0px;
   padding: 0px;
 }
-
+.MuiDialog-paper {
+  width: 430px;
+  padding: 0!important;
+}
 .card-login {
   height: 100%;
   margin-top: auto;
   margin-bottom: auto;
-  width: 430px;
+  overflow: hidden;
   border-radius: 8px;
   border: none;
-  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.58);
+ // box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.58);
 }
 .popup-content-login {
   display: block;
@@ -45,41 +48,6 @@ form {
     margin-bottom: 12px;
     .input-wrap {
       width: 100%;
-
-      label {
-        display: block;
-        position: relative;
-      }
-
-      input {
-        padding: 12px 10px;
-        font-size: 16px;
-        line-height: 24px;
-        width: 100%;
-        height: 50px;
-        -webkit-transition: padding 0.1s;
-        transition: padding 0.1s;
-        border: 1px solid #c5c6c9;
-        border-radius: 4px;
-        color: #404145;
-      }
-      .f-label {
-        display: inline-block;
-        position: absolute;
-        overflow: hidden;
-        bottom: 0;
-        left: 0;
-        height: 0;
-        width: 100%;
-        text-transform: none;
-        padding-left: 8px;
-        color: #fff;
-        background: #1dbf73;
-        -webkit-transition: height 0.1s, border 0.1s;
-        transition: height 0.1s, border 0.1s;
-        box-sizing: border-box;
-        border-radius: 0 0 3px 3px;
-      }
     }
   }
   label {
@@ -96,6 +64,9 @@ form {
       text-align: center;
       text-shadow: none;
       width: 100%;
+      &:disabled{
+        background-color: #50ca91;
+      }
     }
     .form-row {
       position: relative;
@@ -227,3 +198,4 @@ form {
     color:white;
   }
 }
+

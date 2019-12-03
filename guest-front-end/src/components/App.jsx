@@ -7,18 +7,29 @@ import Footer from './shared/Footer';
 import NavBar from './shared/NavBar';
 import Home from './Home/Home';
 import Profile from './Profile';
-
+import Alert from '../components/shared/Alert/Alert'
 import '../css/App.scss';
-import '../css/Login.scss';
-
+import 'react-toastify/dist/ReactToastify.css';
 // eslint-disable-next-line import/imports-first
 import 'babel-polyfill';
+import Authentication from '../modals/Authentication/Authentication';
 
 const Root = (props) => {
     const { isAuthenticated, account, username, email, logout, avatar} = props;
     return (
         <>
-            <ToastContainer/>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={3000}
+              hideProgressBar
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnVisibilityChange
+              draggable
+              pauseOnHover
+            
+            />
             
             <Router history={history}>
                 <NavBar isAuthenticated={isAuthenticated}
@@ -36,6 +47,9 @@ const Root = (props) => {
                     </Route>
                 </Switch>
                 <Footer/>
+
+                <Authentication/>
+                <Alert />
             </Router>
         </>
     );
