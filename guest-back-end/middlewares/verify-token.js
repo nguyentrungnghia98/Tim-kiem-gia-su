@@ -1,4 +1,4 @@
-const jwt = require('../FunctionHelpers/jwt');
+const jwt = require('../utils/jwt');
 
 module.exports = (req, res, next) => {
     try {

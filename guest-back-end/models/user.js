@@ -5,27 +5,34 @@ const userSchema = Schema({
     username: {
         type: String,
         minlength: 1,
-        maxlength: 50
+        maxlength: 70
     },
     fbId: {type: String},
-    account: {
-        type: String,
-        require: true,
-        minlength: 4,
-        maxlength: 15
-    },
     email: {
         type: String,
         require: true,
-        maxlength: 60,
-        password: {
-            type: String,
-            require: true
-        }
+        maxlength: 60
     },
-    password: {type: String},
-    avatar: {type: String},
-    role: {type: String}
+    password: { 
+        type: String,
+        require: true
+    },
+    avatar: { 
+        type: String,
+        default: 'img/user.png'
+    },
+    role: { 
+        type: Number,
+        default: 1
+    },
+    status: { 
+        type: String,
+        default: 'pendingActive'
+    },
+    salaryPerHour: {type: Number},
+    major: [{
+        id: Schema.Types.ObjectId
+    }]
 });
 
 const User = mongoose.model('User', userSchema);
@@ -33,26 +40,32 @@ const User = mongoose.model('User', userSchema);
 module.exports= {
     registerAccount: (entity, passwordHash) => {
         let user = new User({
-            account: entity.account,
             email: entity.email,
             password: passwordHash,
             username: entity.username,
-            avatar: 'images/user.jpg',
-            role: 'user'
+            role: entity.role,
         });
 
         return user.save();
     },
 
-    findOneByAccount: (account) => {
-        return User.findOne({account}).exec();
+    findOneByEmail: (email) => {
+        return User.findOne({email}).exec();
+    },
+
+    findOneAccountActiveById: (email) => {
+        return User.findOne({email, status: 'active' }).exec();
     },
 
     findOneById: (id) => {
         return User.findById(id).exec();
     },
 
-    update: (conditionObject, properies) => {
-        return User.update(conditionObject, {$set: properies}).exec();
+    updateOne: (conditionObject, properies) => {
+        return User.updateOne(conditionObject, {$set: properies}).exec();
+    },
+
+    deleteOne: (conditionObject) => {
+        return User.deleteOne(conditionObject).exec();
     }
 }

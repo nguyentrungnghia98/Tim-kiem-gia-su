@@ -17,33 +17,31 @@ passport.deserializeUser((id, done) => {
 
 // Xử lí đăng ký
 passport.use('local.register', new LocalStrategy({
-    usernameField: 'account',
+    usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true
-}, (req, account, password, done) => {
+}, (req, email, password, done) => {
     // Kiểm tra các field có hợp lệ hay không
-    req.checkBody('email', 'Invalid email').notEmpty().isEmail();
-    req.checkBody('password', 'Invalid password').notEmpty().isLength({min: 4, max: 20});
-    req.checkBody('account', 'Invalid account').notEmpty().isLength({min: 4, max: 15});
-    req.checkBody('username', 'Invalid username').notEmpty().isLength({min: 1, max: 50});
+    req.checkBody('email', 'Email không hợp lệ').notEmpty().isEmail();
+    req.checkBody('password', 'Mật khẩu không hợp lệ.').notEmpty().isLength({min: 4, max: 20});
+    req.checkBody('username', 'Họ tên không hợp lệ').notEmpty().isLength({min: 1, max: 50});
     let errors = req.validationErrors();
 
     if (errors.length > 0){
-        let messages = [];
+        let message = '';
 
         errors.forEach(error => {
-            messages.push(error.msg);
+            message = `${error.msg}\n${message}`;
         });
-
-        return done(null, false, {messages: messages});
+        return done(null, false, {message});
     }
 
     // Kiểm tra tài khoản đã tồn tại hay chưa
-    User.findOneByAccount(account)
+    User.findOneByEmail(email)
         .then(user => {
             // Nếu tồn tại
             if (user){
-                return done(null, false, {messages: ['account is exists']});
+                return done(null, false, {message: 'Email đã được sử dụng.'});
             }
 
             bcrypt.hash(password, 5, (err, hash) => {
@@ -61,12 +59,12 @@ passport.use('local.register', new LocalStrategy({
 
 // Xử l1 đăng nhập
 passport.use('local.login', new LocalStrategy({
-    usernameField: 'account',
+    usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true
-}, (req, account, password, done) => {
+}, (req, email, password, done) => {
     // Kiểm tra các field có hợp lệ
-    req.checkBody('account', 'Invalid account').notEmpty().isLength({min: 4, max: 15});
+    req.checkBody('email', 'Invalid email').notEmpty().isEmail();
     req.checkBody('password', 'Invalid password').notEmpty().isLength({min: 4, max: 20});
     let errors = req.validationErrors();
 
@@ -77,13 +75,13 @@ passport.use('local.login', new LocalStrategy({
             messages.push(error.msg);
         });
 
-        return done(null, false, {messages: messages});
+        return done(null, false, {message: 'Email hoặc mật khẩu không hợp lệ.'});
     }
 
-    User.findOneByAccount(account)
+    User.findOneAccountActiveById(email)
         .then(user => {
             if (!user){
-                return done(null, false, {messages: ['account is not exists']});
+                return done(null, false, {message: 'Email không tồn tại.'});
             }
 
             bcrypt.compare(password, user.password, (err, result) => {
@@ -92,7 +90,7 @@ passport.use('local.login', new LocalStrategy({
                 }
 
                 if (!result){
-                    return done(null, false, {messages: ['incorrect password']});
+                    return done(null, false, {message: 'Email hoặc mật khẩu không đúng.'});
                 }
 
                 return done(null, user);
