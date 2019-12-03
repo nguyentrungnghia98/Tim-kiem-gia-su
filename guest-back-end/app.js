@@ -15,6 +15,7 @@ const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/user/user');
+const secureRouter = require('./routes/secure/secure');
 
 var app = express();
 dotenv.config();
@@ -50,11 +51,12 @@ const corsOptions = {
 }
 
 // intercept pre-flight check for all routes
-app.options('*', cors(corsOptions))
+app.options('*', cors())
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(getPayloadToken);
+app.use('/secure', secureRouter);
 app.use('/user', usersRouter);
 app.use('/', indexRouter);
 
@@ -71,7 +73,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.json({messages: err.message});
+  res.json({message: err.message});
 });
 
 module.exports = app;

@@ -23,58 +23,38 @@ router.post('/register', (req, res) => {
                 res.status(500).json({message: err.message});
             }
 
-            // Tạo TOPT
-            const activeCode = topt.generateTOTP(process.env.OTP_SECRET);
-            topt.sendOTPViaMail(user.email, process.env.OTP_EXPIRE_IN, activeCode, 'Kích hoạt tài khoản')
-                .then(() => {
-                    setTimeout(() => {
-                        User.deleteOne({_id: user.id, status: 'pendingActive'});
-                    }, (+process.env.OTP_EXPIRE_IN) * 60 * 1000);
-
-                    return res.status(200).json({
-                        results: {
-                            object: {
-                                message: 'Đăng ký thành công',
-                                userId: user.id
-                            }
-                        }
-                    });
-                }).catch(() => {
-                    return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
-                });
-
-            
+            return res.status(200).json({message: 'Đăng ký thành công'});
         });
     })(req, res)
 });
 
 // Xử lí kích hoạt tài khoản
 // POST /user/active
-router.post('/active', (req, res) => {
-    User.findOneById(req.body.userId)
-        .then((user) => {
-            // Kiểm tra tài khoản đã kích hoạt chưa
-            if (user.status !== 'pendingActive') {
-                return res.status(400).json({message: 'Tài khoản đã được kích hoạt'});
-            }
+// router.post('/active', (req, res) => {
+//     User.findOneById(req.body.userId)
+//         .then((user) => {
+//             // Kiểm tra tài khoản đã kích hoạt chưa
+//             if (user.status !== 'pendingActive') {
+//                 return res.status(400).json({message: 'Tài khoản đã được kích hoạt'});
+//             }
 
-            // Kiểm tra mã OTP
-            const result = topt.verify(req.body.activeCode, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
+//             // Kiểm tra mã OTP
+//             const result = topt.verify(req.body.activeCode, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
 
-            // Nếu mã OTP không chính xác
-            if (!result) {
-                return res.status(400).json({message: 'Mã OTP không chính xác'});
-            }
+//             // Nếu mã OTP không chính xác
+//             if (!result) {
+//                 return res.status(400).json({message: 'Mã OTP không chính xác'});
+//             }
 
-            User.updateOne({_id: req.body.userId}, {status: 'active'})
-                .then(() => {
-                    return res.status(200).json({message: 'Kích hoạt tài khoản thành công'});
-                }).catch(() => {
-                    return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
-                });
-        });
+//             User.updateOne({_id: req.body.userId}, {status: 'active'})
+//                 .then(() => {
+//                     return res.status(200).json({message: 'Kích hoạt tài khoản thành công'});
+//                 }).catch(() => {
+//                     return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
+//                 });
+//         });
 
-});
+// });
 
 // Xử lí đăng nhập
 // POST /user/login

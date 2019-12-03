@@ -25,7 +25,8 @@ passport.use('local.register', new LocalStrategy({
     req.checkBody('email', 'Email không hợp lệ').notEmpty().isEmail();
     req.checkBody('password', 'Mật khẩu không hợp lệ.').notEmpty().isLength({min: 4, max: 20});
     req.checkBody('username', 'Họ tên không hợp lệ').notEmpty().isLength({min: 1, max: 50});
-    let errors = req.validationErrors();
+    req.checkBody('role', 'Quyền không hợp lệ').notEmpty().isIn(['1', '2']);
+    const errors = req.validationErrors();
 
     if (errors.length > 0){
         let message = '';
@@ -42,6 +43,14 @@ passport.use('local.register', new LocalStrategy({
             // Nếu tồn tại
             if (user){
                 return done(null, false, {message: 'Email đã được sử dụng.'});
+            }
+
+            // Kiểm tra mã OTP
+            const result = topt.verify(req.body.activeCode, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
+            
+            // Nếu mã OTP không chính xác
+            if (!result) {
+                return done(null, false, {message: 'Mã OTP không chính xác'});
             }
 
             bcrypt.hash(password, 5, (err, hash) => {
