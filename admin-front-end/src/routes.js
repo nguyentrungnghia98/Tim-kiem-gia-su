@@ -13,7 +13,7 @@ import Errors from "./views/Errors";
 import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
-import Login from "./views/Login";
+ import Login from "./containers/LoginContainer";
 import CreateNewAccount from "./views/CreateNewAccount";
 
 export default [

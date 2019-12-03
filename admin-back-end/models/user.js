@@ -12,13 +12,14 @@ var userSchema = Schema({
         required: true
     },
     fullName: String,
-    facebookID: String
-    // gender: String,
-    // phone: String,
-    // create_date: {
-    //     type: Date,
-    //     default: Date.now
-    // },
+    status: {
+        type: String
+    },
+    avatar: String,
+    role: {
+        type: String,
+        required: true
+    }
 
 });
 
@@ -32,6 +33,7 @@ module.exports = {
             email : entity.email,
             password: passHash,
             fullName: entity.fullName,
+            role: entity.role
         });
         
         return user.save();    

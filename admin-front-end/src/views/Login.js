@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useState} from "react";
+import { Redirect } from "react-router-dom";
 import {
   ListGroup,
   ListGroupItem,
@@ -13,28 +14,46 @@ import {
   CardHeader,
   InputGroup,
   InputGroupAddon,
-  InputGroupText
+  InputGroupText,
+  Alert
 } from "shards-react";
 
-const FormLogin = () => (
+const FormLogin = (props) => {
 
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const {isLoggedIn, fetchLogin, isFetching, message} = props;
+    const token = localStorage.getItem('token');
+    if(isLoggedIn || token !== null)
+    return(
+      <Redirect push to="/" />
+    );
+
+    return( <div>
+        
     <Container fluid className="login">
         <Col lg="4">
             <Card small className="mb-4">
                 <CardHeader className="border-bottom">
                     <center><h3 className="m-0">Đăng nhập</h3></center>
                 </CardHeader>
-
+                {message ? <Container fluid className="px-0">
+                <Alert className="mb-0">
+                <i className="fa fa-info mx-2"></i>{message}
+                </Alert>
+            </Container> : null}
+                
                 <ListGroup flush>
                     <ListGroupItem className="p-3">
-                        <Form>          
+                        <Form onSubmit={(e) => {e.preventDefault();fetchLogin(email,password)}}>          
                             <FormGroup>
                                 <label htmlFor="feEmailAddress">Email</label>
                                 <InputGroup seamless className="mb-3">
                                     <FormInput
                                     id="feEmailAddress"
                                     type="email"
-                                    placeholder="Email"
+                                    placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required
                                     />
                                     <InputGroupAddon type="append">
                                         <InputGroupText>
@@ -51,7 +70,7 @@ const FormLogin = () => (
                                     <FormInput
                                     id="fePassword"
                                     type="password"
-                                    placeholder="Mật khẩu"
+                                    placeholder="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)} required
                                     />
                                     <InputGroupAddon type="append">
                                         <InputGroupText>
@@ -67,14 +86,16 @@ const FormLogin = () => (
                                 </FormCheckbox>
                             </FormGroup>
 
-                            <center><Button type="submit">Đăng nhập</Button></center>
+                            <center><Button type="submit" disabled={isFetching}>Đăng nhập</Button></center>
                         </Form>
                     </ListGroupItem>
                 </ListGroup>
             </Card>
         </Col>
     </Container>
+    </div>
+    )
   
-);
+};
 
 export default FormLogin;
