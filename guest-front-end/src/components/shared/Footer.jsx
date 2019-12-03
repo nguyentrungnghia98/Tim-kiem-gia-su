@@ -15,27 +15,25 @@ const Footer = () => {
         </div>
       </div>
       <div className='footer-info'>
-        <div className='footer-info-title'>CAREER RESOURCES</div>
-        <div className='footer-info-content'>How to Write a Resume</div>
+        <div className='footer-info-title'>Liên hệ</div>
+        <div className='footer-info-content'>Địa chỉ : 840/43 Hương Lộ 2 , Phường
+Bình Trị Đông A , Quận Bình Tân</div>
         <div className='footer-info-content'>
-          Is It Time for a Career Change?
+        Hotline: 0903696269
         </div>
-        <div className='footer-info-content'>How to Write a Cover Letter</div>
-        <div className='footer-info-content'>That Lands You an Interview</div>
-        <div className='footer-info-content'>Blog</div>
+        <div className='footer-info-content'>Email : Uberfortutor.vn@gmail.com</div>
       </div>
       <div className='footer-info'>
-        <div className='footer-info-title'>OUR COMPANY</div>
-        <div className='footer-info-content'>About Us</div>
-        <div className='footer-info-content'>Pricing</div>
-        <div className='footer-info-content'>Product Updates</div>
+        <div className='footer-info-title'>Đến với ứng dụng</div>
+        <div className='footer-info-content'>Tìm kiếm gia sư</div>
+        <div className='footer-info-content'>Trở thành gia sư</div>
+        <div className='footer-info-content'>Ứng tuyển</div>
       </div>
       <div className='footer-info'>
-        <div className='footer-info-title'>SUPPORT</div>
-        <div className='footer-info-content'>FAQ</div>
-        <div className='footer-info-content'>Contact Us</div>
-        <div className='footer-info-content'>Terms of Service</div>
-        <div className='footer-info-content'>Privacy</div>
+        <div className='footer-info-title'>Giới thiệu</div>
+        <div className='footer-info-content'>– Ứng dụng giáo dục nền tảng công nghệ 4.0</div>
+        <div className='footer-info-content'>– Mang tới sự trải nghiệm mới, giúp việc
+học trở nên dễ dàng hơn.</div>
       </div>
     </div>
   );

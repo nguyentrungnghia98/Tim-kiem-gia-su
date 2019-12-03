@@ -7,34 +7,34 @@ class TemplatesCategories extends Component {
     renderCategories = () => {
         const categories = [
           {
-            text: "Graphics & Design",
-            image: "https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/graphics-design.d32a2f8.svg"
+            text: "Toán học",
+            image: "/images/category.png"
           },{
-            text: "Digital Marketing",
-            image: "https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/online-marketing.74e221b.svg"
+            text: "Vật lý",
+            image: "/images/category.png"
           },{
-            text: "Writing & Translation",
-            image: "https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/writing-translation.32ebe2e.svg"
+            text: "Hóa học",
+            image: "/images/category.png"
           },{
-            text: "Video & Animation",
-            image: "https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/video-animation.f0d9d71.svg"
+            text: "Tiếng Anh",
+            image: "/images/category.png"
           },{
-            text: "Music & Audio",
-            image: "https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/music-audio.320af20.svg"
+            text: "Tin học",
+            image: "/images/category.png"
           },{
-            text: "Programming & Tech",
-            image: "https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/programming.9362366.svg"
+            text: "Lập trình",
+            image: "/images/category.png"
           },{
-            text: "Business",
-            image: "https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/business.bbdf319.svg"
+            text: "Lịch sử",
+            image: "/images/category.png"
           },{
-            text: "Lifestyle",
-            image: "https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/lifestyle.745b575.svg"
+            text: "Địa lý",
+            image: "/images/category.png"
           },
         ]
 
         return (
-            <div className="d-flex flex-wrap justify-content-between">
+            <div className="d-flex flex-wrap justify-content-start">
                 {
                     categories.map((item) => {
                             return (
@@ -52,12 +52,11 @@ class TemplatesCategories extends Component {
 
     render() { 
         return (  
-            <div className="default-template mt-3">
-            <div className="header--underline">
-                    <span>Templates Categories</span>
-                    </div>
-                <div className="default-template--header flex-end">
-                  
+            <div className="home--card mt-3">
+                <div className="home--card__header">
+                  <div className="home--card__title">
+                   Môn học
+                  </div>
                   <Link  to="/category" className="btn see-more">
                        See More &gt;
                   </Link>

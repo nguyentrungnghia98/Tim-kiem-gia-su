@@ -34,7 +34,7 @@ body{
 /* Footer */
 
 .footer-logo {
-  width: 30%;
+  width: 20%;
   text-align: left;
 }
 
@@ -61,18 +61,40 @@ body{
 }
 
 .footer-info-title {
-  font-size: 19px;
-  font-weight: 600;
+  font-weight: bold;
+  font-size: 18px;
+  color: rgba(238,238,238,1);
   margin-bottom: 8px;
 }
 
 .footer-info {
   text-align: left;
+  max-width: 250px;
 }
 
 .footer-info-content {
-  font-size: 14px;
+  font-weight: bold;
+    font-size: 14px;
+    color: rgba(230,230,230,1);
   line-height: 25px;
-  color: white;
   cursor: pointer;
+}
+.navbar-nav{
+  align-items: center;
+}
+.nav-item{
+  position: relative;
+  .avatar{
+    width: 50px;
+    height: 50px;
+    margin-left: 10px;
+    img{
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
+  .dropdown-menu{
+    left: -97px;
+  }
 }
