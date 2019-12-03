@@ -27,7 +27,7 @@ const userSchema = Schema({
     },
     status: { 
         type: String,
-        default: 'pendingActive'
+        default: 'active'
     },
     salaryPerHour: {type: Number},
     major: [{
