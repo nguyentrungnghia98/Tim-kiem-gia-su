@@ -72,8 +72,8 @@ module.exports= {
         const user = new User({
             username: entity.username,
             email: entity.email,
-            status: 'notActive',
-            role: entity.role,
+            status: 'active',
+            role: -1,
         });
 
         return user.save();

@@ -137,19 +137,11 @@ router.post('/loginSocial', (req, res) => {
     })(req, res)
 });
 
-// Xử lí đăng xuất
-// GET /user/logout
-router.get('/logout', (req, res) => {
-    res.cookie('Authorization', '', {httpOnly: true});
-    return res.status(200).json({messages: ['logout successfully']});
-});
-
 // Xử lí thay đổi thông tin cá nhân
-// POST /user/update-profile
-router.post('/update-profile', isLogged, (req, res) => {
+// POST /user/updatProfile
+router.post('/updateProfile', passIfHaveValidToken, (req, res) => {
 
     // Kiểm tra các field có hợp lệ hay không
-    req.checkBody('email', 'Invalid email').notEmpty().isEmail();
     req.checkBody('username', 'Invalid username').notEmpty().isLength({min:1, max: 50});
 
     let errors = req.validationErrors();
@@ -179,7 +171,7 @@ router.post('/update-profile', isLogged, (req, res) => {
 
 // Xử lí update avatar
 // POST /user/update-avatar
-router.post('/update-avatar', isLogged, multer.single('avatar'),(req, res) => {
+router.post('/update-avatar', passIfHaveValidToken, multer.single('avatar'),(req, res) => {
     var propertiesUpdate = {
         avatar: `images/${req.user.id}${req.file.originalname}`
     }
@@ -199,7 +191,7 @@ router.post('/update-avatar', isLogged, multer.single('avatar'),(req, res) => {
 
 // Xử lí thay đổi mật khẩu
 // POST /user/change-password
-router.post('/change-password', isLogged, (req, res) => {
+router.post('/change-password', passIfHaveValidToken, (req, res) => {
     User.findOneById({_id: req.user.id})
         .then(user => {
             bcrypt.compare(req.body.oldPassword, user.password, (err, result) => {
@@ -230,22 +222,51 @@ router.post('/change-password', isLogged, (req, res) => {
         });
 });
 
+// Xử lí update role
+// POST /user/updateRole
+router.post('/updateRole', passIfHaveValidToken, (req, res) => {
+    const role = req.body.role;
+    
+
+    User.updateOne({_id: req.userInfo.id}, {role})
+        .then(() => {
+            const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+            res.status(200).json({token});
+        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+});
+
+router.post('/update', passIfHaveValidToken, (req, res) => {
+    const { username, role, salaryPerHour, major} = req.body;
+
+    if (role) {
+        req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
+        const errors = req.validationErrors();
+
+        if (errors.length > 0) {
+            return res.status(400).json({message: 'Role không hợp lệ'});
+        }
+    }
+
+    User.updateOne({_id: req.userInfo.id}, { username, role, salaryPerHour, major})
+        .then(() => {
+            const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+            res.status(200).json({
+                results: {
+                    object: {
+                        token, username, role, salaryPerHour, major
+                    }
+                }
+            });
+        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+});
+
 module.exports = router;
 
-// Chỉ cho phép sang funtion tiếp theo khi user chưa đăng nhập
-function notLogged(req, res, next){
-    if (req.isLogged){
-        return res.status(400).json({messages: ['you have logged in']});
+function passIfHaveValidToken(req, res, next){
+    // Nếu chưa đăng nhập
+    if (!req.isValidToken){
+      return res.status(401).json({message: 'Token không hợp lệ'});
     }
-
+  
     next();
-}
-
-// Chỉ cho phép sang function tiếp theo khi user đã đăng nhập
-function isLogged(req, res, next){
-    if (!req.isLogged){
-        return res.status(401).json({messages: ['you must loggin before send this request']});
-    }
-
-    next();
-}
+  }

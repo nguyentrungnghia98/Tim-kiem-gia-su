@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
 
-/* GET home page. */
+// Xử lí lấy thông tin user
+// GET /me
 router.get('/me', passIfHaveValidToken, function(req, res) {
     User.findOneById(req.userInfo.id)
       .then(user => {
