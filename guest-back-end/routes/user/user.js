@@ -222,19 +222,8 @@ router.post('/change-password', passIfHaveValidToken, (req, res) => {
         });
 });
 
-// Xử lí update role
-// POST /user/updateRole
-router.post('/updateRole', passIfHaveValidToken, (req, res) => {
-    const role = req.body.role;
-    
-
-    User.updateOne({_id: req.userInfo.id}, {role})
-        .then(() => {
-            const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
-            res.status(200).json({token});
-        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
-});
-
+// Xử lí update các thông tin chung
+// POST /user/update
 router.post('/update', passIfHaveValidToken, (req, res) => {
     const { username, role, salaryPerHour, major} = req.body;
 

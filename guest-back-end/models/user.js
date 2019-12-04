@@ -9,12 +9,11 @@ const userSchema = Schema({
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         maxlength: 60
     },
     password: { 
-        type: String,
-        require: true
+        type: String
     },
     avatar: { 
         type: String,
