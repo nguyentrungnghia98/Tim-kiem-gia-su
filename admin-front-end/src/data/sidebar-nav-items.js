@@ -1,6 +1,12 @@
 export default function() {
   return [
     {
+      title: "Tạo tài khoản quản trị",
+      to: "/create-account",
+      htmlBefore: '<i class="material-icons">person_add</i>',
+      htmlAfter: ""
+    },
+    {
       title: "Blog Dashboard",
       to: "/blog-overview",
       htmlBefore: '<i class="material-icons">edit</i>',
