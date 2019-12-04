@@ -234,8 +234,10 @@ router.post('/updateRole', passIfHaveValidToken, (req, res) => {
     }
 
     User.updateOne({_id: req.userInfo.id}, {role})
-        .then(() => res.status(200).json({message: 'Cập nhật role thành công'}))
-        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+        .then(() => {
+            const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+            res.status(200).json({token});
+        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
 });
 
 module.exports = router;
