@@ -28,7 +28,7 @@ const Root = (props) => {
         setLoading(true);
         const userToken = localStorage.getItem('userToken');
         const response = await User.get('/me', {
-          headers: { Authorization: userToken }
+          headers: { authorization : userToken }
         });
         console.log('res', response);
         fetchUser(response.data.results.object);

@@ -14,7 +14,7 @@ export const signIn = (response) => async (dispatch) => {
     type: SIGN_IN,
     user: response
   });
-  localStorage.setItem('userToken', `JWT ${response.token}`);
+  localStorage.setItem('userToken', `${response.token}`);
   // history.push('/profile');
 };
 
