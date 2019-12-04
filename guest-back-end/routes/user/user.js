@@ -226,17 +226,37 @@ router.post('/change-password', passIfHaveValidToken, (req, res) => {
 // POST /user/updateRole
 router.post('/updateRole', passIfHaveValidToken, (req, res) => {
     const role = req.body.role;
-    req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
-    const errors = req.validationErrors();
-
-    if (errors.length > 0) {
-        return res.status(400).json({message: 'Role không hợp lệ'});
-    }
+    
 
     User.updateOne({_id: req.userInfo.id}, {role})
         .then(() => {
             const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
             res.status(200).json({token});
+        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+});
+
+router.post('/update', passIfHaveValidToken, (req, res) => {
+    const { username, role, salaryPerHour, major} = req.body;
+
+    if (role) {
+        req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
+        const errors = req.validationErrors();
+
+        if (errors.length > 0) {
+            return res.status(400).json({message: 'Role không hợp lệ'});
+        }
+    }
+
+    User.updateOne({_id: req.userInfo.id}, { username, role, salaryPerHour, major})
+        .then(() => {
+            const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+            res.status(200).json({
+                results: {
+                    object: {
+                        token, username, role, salaryPerHour, major
+                    }
+                }
+            });
         }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
 });
 
