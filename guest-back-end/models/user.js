@@ -7,7 +7,6 @@ const userSchema = Schema({
         minlength: 1,
         maxlength: 70
     },
-    fbId: {type: String},
     email: {
         type: String,
         require: true,

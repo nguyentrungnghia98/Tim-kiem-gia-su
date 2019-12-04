@@ -3,23 +3,19 @@ const jwt = require('../utils/jwt');
 module.exports = (req, res, next) => {
     try {
         // Lấy token từ cookie
-        let token = req.cookies['Authorization'];
+        let token = req.headers.authorization;
+        
         if (!token) {
             return next();
         }
 
         // Xác thực token
-        const decode = jwt.verify(token.split(' ')[1], process.env.SECRET_KEY);
-        req.user = decode;
-
-        // gia hạn token
-        token = jwt.generateJWT(decode, process.env.SECRET_KEY, process.env.EXPIRE_IN);
-        res.cookie('Authorization', `Bearer ${token}`, {httpOnly: true});
-
+        const decode = jwt.verify(token, process.env.SECRET_KEY);
+        req.userInfo = decode;
         // Đánh dấu tài user đã đăng nhập
-        req.isLogged = true;
+        req.isValidToken = true;
     } catch(err) {
-        req.isLogged = false;
+        req.isValidToken = false;
     } 
 
     next();
