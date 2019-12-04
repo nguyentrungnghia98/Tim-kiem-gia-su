@@ -32,7 +32,8 @@ router.post('/register', (req, res) => {
                         username: user.username,
                         email: user.email,
                         role: user.role,
-                        avatar: user.avatar
+                        avatar: user.avatar,
+                        status: user.status
                     }
                 }
             });
@@ -93,7 +94,42 @@ router.post('/login', (req, res) => {
                         username: user.username,
                         email: user.email,
                         role: user.role,
-                        avatar: user.avatar
+                        avatar: user.avatar,
+                        status: user.status
+                    }
+                }
+            });
+        });
+    })(req, res)
+});
+
+// Xử lí đăng nhập với bên thứ 3
+// POST /user/loginSocial
+router.post('/loginSocial', (req, res) => {
+    passport.authenticate('social.login', {session: false}, (err, user, info) => {
+        if (err){
+            return res.status(500).json({message: err.message});
+        }
+        else if (!user){
+            return res.status(400).json({message: info.message});
+        }
+
+        req.login(user, {session: false}, (err) => {
+            if (err){
+                res.status(500).json({message: err.message});
+            }
+
+            let token = jwt.generateJWT(user, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+            return res.status(200).json({
+                results: {
+                    object: {
+                        token,
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        avatar: user.avatar,
+                        status: user.status
                     }
                 }
             });

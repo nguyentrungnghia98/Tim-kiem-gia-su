@@ -7,7 +7,6 @@ const userSchema = Schema({
         minlength: 1,
         maxlength: 70
     },
-    fbId: {type: String},
     email: {
         type: String,
         require: true,
@@ -39,7 +38,7 @@ const User = mongoose.model('User', userSchema);
 
 module.exports= {
     registerAccount: (entity, passwordHash) => {
-        let user = new User({
+        const user = new User({
             email: entity.email,
             password: passwordHash,
             username: entity.username,
@@ -53,7 +52,7 @@ module.exports= {
         return User.findOne({email}).exec();
     },
 
-    findOneAccountActiveById: (email) => {
+    findOneAccountActiveByEmail: (email) => {
         return User.findOne({email, status: 'active' }).exec();
     },
 
@@ -67,5 +66,16 @@ module.exports= {
 
     deleteOne: (conditionObject) => {
         return User.deleteOne(conditionObject).exec();
+    },
+
+    registerSocialAccount: (entity) => {
+        const user = new User({
+            username: entity.username,
+            email: entity.email,
+            status: 'notActive',
+            role: entity.role,
+        });
+
+        return user.save();
     }
 }

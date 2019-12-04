@@ -3,6 +3,8 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
 const topt= require('../utils/totp');
+const jwt = require('../utils/jwt');
+
 passport.serializeUser((user, done) => {
     console.log('serializeUser');
     done(null, user.id);
@@ -87,7 +89,7 @@ passport.use('local.login', new LocalStrategy({
         return done(null, false, {message: 'Email hoặc mật khẩu không hợp lệ.'});
     }
 
-    User.findOneAccountActiveById(email)
+    User.findOneAccountActiveByEmail(email)
         .then(user => {
             if (!user){
                 return done(null, false, {message: 'Email không tồn tại.'});
@@ -106,4 +108,29 @@ passport.use('local.login', new LocalStrategy({
             });
         })
         .catch(err => done(err));
+}));
+
+passport.use('social.login', new LocalStrategy({
+    usernameField: 'token',
+    passwordField: 'token',
+    passReqToCallback: true
+}, (req, noNeed1, noNeed2, done) => {
+    const jwtToken = req.body.token;
+    let userInfo;
+    try {
+        userInfo = jwt.verify(jwtToken, process.env.SECRET_KEY);
+    } catch(err) {
+        return done(null, false, {message: 'Token không hợp lệ'});
+    }
+
+    User.findOneByEmail(userInfo.email)
+        .then((user) => {
+            if (!user) {
+                User.registerSocialAccount(userInfo)
+                    .then((rs) => done(null, rs))
+                    .catch((err) => done(err));
+            } else {
+                return done(null, user);
+            }
+        }).catch((err) => done(err));
 }));
