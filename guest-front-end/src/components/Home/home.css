@@ -17,7 +17,7 @@
 
 .home-header {
   display: block;
-  height: 95vh;
+  height: 90vh;
   width: 100%;
 
   position: relative;
@@ -125,7 +125,7 @@
   background: white;
   border-radius: 8px;
   padding: 42px 58px;
-  margin-top: -70px;
+  margin-top: -50px;
 }
 
 .home--card__header{

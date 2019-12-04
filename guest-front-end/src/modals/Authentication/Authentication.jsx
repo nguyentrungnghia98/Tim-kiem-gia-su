@@ -5,7 +5,7 @@ import GoogleLogin from "react-google-login";
 import User from '../../apis/user';
 import { toast } from "react-toastify";
 import { connect } from 'react-redux';
-import { fetchUser } from '../../actions/user';
+import { signIn } from '../../actions/user';
 import { closeAuthenticationModal } from './AuthenticationAction';
 import './Authentication.scss';
 import CssTextField from './CssTextField';
@@ -18,7 +18,8 @@ const Authentication = props => {
   const {
     toggle,
     modeModal,
-    closeAuthenticationModal
+    closeAuthenticationModal,
+    signIn
   } = props;
   console.log('mode', modeModal)
   const [loading, setLoading] = useState(false);
@@ -156,7 +157,8 @@ const Authentication = props => {
       console.log('data', data, response)
       setLoading(false);
 
-      callback(response);
+
+      callback(response.data.results.object);
 
       toast.success(message, {
         position: "bottom-right",
@@ -197,6 +199,7 @@ const Authentication = props => {
         callback = (user) => {
           closeAuthenticationModal()
           //fetchUser()
+          signIn(user);
         };
         break;
       case 'verify_email':
@@ -519,13 +522,13 @@ const Authentication = props => {
 const mapStateToProps = (state) => {
   return {
     toggle: state.authenticationModal.toggle,
-    modeModal: state.authenticationModal.modeModal,
-    user: state.auth.user
+    modeModal: state.authenticationModal.modeModal
   };
 };
 
 export default connect(
   mapStateToProps, {
-    closeAuthenticationModal
+    closeAuthenticationModal,
+    signIn
   }
 )(Authentication);

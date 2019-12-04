@@ -15,7 +15,7 @@ export const signIn = (response) => async (dispatch) => {
     user: response
   });
   localStorage.setItem('userToken', `JWT ${response.token}`);
-  history.push('/profile');
+  // history.push('/profile');
 };
 
 export const logOut = () => async (dispatch) => {
@@ -23,5 +23,5 @@ export const logOut = () => async (dispatch) => {
   dispatch({
     type: SIGN_OUT
   });
-  history.push('/login');
+  //history.push('/login');
 };
