@@ -13,13 +13,14 @@ import 'react-toastify/dist/ReactToastify.css';
 // eslint-disable-next-line import/imports-first
 import 'babel-polyfill';
 import Authentication from '../modals/Authentication/Authentication';
+import SetRoleModal from '../modals/SetRole/SetRole';
 import { fetchUser } from '../actions/user';
 import User from '../apis/user';
-
+import {openSetRoleModal} from '../modals/SetRole/SetRoleAction';
 
 
 const Root = (props) => {
-  const { isSignedIn, fetchUser } = props;
+  const { isSignedIn, fetchUser, openSetRoleModal } = props;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,8 +32,15 @@ const Root = (props) => {
           headers: { authorization : userToken }
         });
         console.log('res', response);
-        fetchUser(response.data.results.object);
+        const user = response.data.results.object;
+        fetchUser(user);
         setLoading(false);
+
+        if(user.role === -1) {
+          setTimeout(()=> {
+            openSetRoleModal();
+          }, 2000)
+        }
       } catch (err) {
         console.log('err', err);
         setLoading(false);
@@ -81,6 +89,7 @@ const Root = (props) => {
               <Footer />
 
               <Authentication />
+              <SetRoleModal />
               <Alert />
             </Router>
           </>
@@ -98,6 +107,7 @@ const mapStateToProps = (state) => {
 export default connect(
   mapStateToProps,
   {
-    fetchUser
+    fetchUser,
+    openSetRoleModal
   }
 )(Root);

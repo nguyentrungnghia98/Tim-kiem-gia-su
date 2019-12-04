@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
-import {openAuthenticationModal} from "../../modals/Authentication/AuthenticationAction";
-import {logOut} from "../../actions/user";
+import { openAuthenticationModal } from "../../modals/Authentication/AuthenticationAction";
+import { openSetRoleModal } from "../../modals/SetRole/SetRoleAction";
+import { logOut } from "../../actions/user";
 import History from "../../history";
 
 class NavBar extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       path: window.location.pathname,
@@ -14,23 +15,23 @@ class NavBar extends Component {
     }
 
     History.listen(location => {
-      this.setState({path: location.pathname});
-      if(location.pathname === '/'){
-        this.setState({visible: false});
+      this.setState({ path: location.pathname });
+      if (location.pathname === '/') {
+        this.setState({ visible: false });
       }
     });
   }
 
-  componentDidMount(){
-    const {path} = this.state;
+  componentDidMount() {
+    const { path } = this.state;
     const handleScroll = () => {
-      if(path !== '/')
-        return this.setState({visible: true});
-  
+      if (path !== '/')
+        return this.setState({ visible: true });
+
       const currentScrollPos = window.pageYOffset;
       const _visible = currentScrollPos > document.querySelector('#header').offsetHeight;
-  
-      this.setState({visible: _visible});
+
+      this.setState({ visible: _visible });
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -38,9 +39,9 @@ class NavBar extends Component {
 
   items = {
     NotLogin: [
-      { text: "Trở thành gia sử", isHightLight: true, data:'signup' },
-      { text: "Đăng nhập", data:'login'  },
-      { text: "Đăng kí", data:'signup' }
+      { text: "Trở thành gia sử", isHightLight: true, data: 'signup' },
+      { text: "Đăng nhập", data: 'login' },
+      { text: "Đăng kí", data: 'signup' }
     ],
     LoginAsStudent: [
       { text: "Hợp đồng học", isHightLight: true, link: "/contact" },
@@ -65,12 +66,44 @@ class NavBar extends Component {
   }
 
   renderElement = () => {
-    const { isSignedIn,user, openAuthenticationModal } = this.props;
+    const { isSignedIn, user, openAuthenticationModal,openSetRoleModal } = this.props;
 
     if (isSignedIn) {
+      let role;
+      switch (user.role) {
+        case 0:
+          role = 'LoginAsStudent'; break;
+        case 1: role = 'LoginAsTeacher'; break;
+        default: role = 'SelectRole';
+      }
+      if (role === 'SelectRole') {
+        return (
+          <ul className='navbar-nav ml-auto'>
+            <li className='nav-item'>
+              <div
+                href="/"
+                className={`nav-link hightlight`}
+                onClick={() => openSetRoleModal()}
+              >
+                Chọn vai trò để tiếp tục
+              </div>
+            </li>
+            <li className='nav-item'>
+              <div
+                href="/"
+                className={`nav-link hightlight`}
+                onClick={this.onLogout}
+              >
+                Đăng xuất
+              </div>
+            </li>
+          </ul>
+        )
+      }
+
       return (
         <ul className='navbar-nav ml-auto'>
-          {this.items["LoginAsTeacher"].map((item, index) => {
+          {this.items[role].map((item, index) => {
             return (
               <li className='nav-item' key={item.text + index}>
                 <Link className='nav-link' to={item.link}>
@@ -87,21 +120,21 @@ class NavBar extends Component {
             </div>
             <div className='dropdown-menu'>
               <div className="user-info">
-                <img src={user.avatar} onError={this.imgError} alt="avatar"/>
+                <img src={user.avatar} onError={this.imgError} alt="avatar" />
                 <p>{user.username}</p>
               </div>
               <button
                 className='dropdown-item'
                 type='button'
               >
-              <i class="fas fa-cog"/>
+                <i className="fas fa-cog" />
                 Cài đặt
               </button>
               <button onClick={this.onLogout}
                 className='dropdown-item'
                 type='button'
               >
-              <i class="fas fa-sign-out-alt"></i>
+                <i className="fas fa-sign-out-alt"></i>
                 Đăng xuất
               </button>
             </div>
@@ -131,9 +164,9 @@ class NavBar extends Component {
   };
 
   render() {
-    const {visible} = this.state;
+    const { visible } = this.state;
     return (
-      <nav className={`navbar navbar-expand-lg bg-white ${  visible?'visible navbar-light': 'non-visible navbar-dark'}`} id="header">
+      <nav className={`navbar navbar-expand-lg bg-white ${visible ? 'visible navbar-light' : 'non-visible navbar-dark'}`} id="header">
         <Link to='/'>
           <div className='header--logo'>
             <img src="/images/logo-gia-su.png" alt="logo" />
@@ -170,6 +203,7 @@ export default connect(
   mapStateToProps,
   {
     openAuthenticationModal,
-    logOut
+    logOut,
+    openSetRoleModal
   }
 )(NavBar);

@@ -13,12 +13,16 @@ import {
   Dialog,
   DialogContent
 } from '@material-ui/core';
+import jwt from '../../utils/jwt';
+import config from '../../config/config';
+import {openSetRoleModal} from '../SetRole/SetRoleAction';
 
 const Authentication = props => {
   const {
     toggle,
     modeModal,
     closeAuthenticationModal,
+    openSetRoleModal,
     signIn
   } = props;
   console.log('mode', modeModal)
@@ -78,28 +82,35 @@ const Authentication = props => {
   function responseFacebook(response) {
     console.log(response);
     const data = {
-      email: response.email
+      email: response.email,
+      username: response.name
     };
     handleLoginSocial(data);
   }
 
   function responseGoogle(response) {
-    console.log(response);
+    
     const data = {
-      email: response.profileObj.email
+      email: response.profileObj.email,
+      username: response.profileObj.name
     };
+    console.log(response);
     handleLoginSocial(data);
   }
 
   function handleLoginSocial(_data) {
-    const token = jwt.generateJWT(_data, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+    console.log('data jwt', _data)
+    const token = jwt.generateJWT(_data, config.SECRET_KEY, config.EXPIRE_IN);
     const url = `/user/loginSocial`;
     const data = { token };
     const message = "Đăng nhập thành công"
 
     const callback = (user) => {
       signIn(user);
-      closeAuthenticationModal()
+      closeAuthenticationModal();
+      if(user.role === -1){
+        openSetRoleModal();
+      }
     };
     callApiPost(url, data, message, callback);
   }
@@ -545,6 +556,7 @@ const mapStateToProps = (state) => {
 export default connect(
   mapStateToProps, {
     closeAuthenticationModal,
-    signIn
+    signIn,
+    openSetRoleModal
   }
 )(Authentication);
