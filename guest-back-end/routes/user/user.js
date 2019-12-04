@@ -139,7 +139,7 @@ router.post('/loginSocial', (req, res) => {
 
 // Xử lí thay đổi thông tin cá nhân
 // POST /user/updatProfile
-router.post('/updateProfile', isLogged, (req, res) => {
+router.post('/updateProfile', passIfHaveValidToken, (req, res) => {
 
     // Kiểm tra các field có hợp lệ hay không
     req.checkBody('username', 'Invalid username').notEmpty().isLength({min:1, max: 50});
@@ -171,7 +171,7 @@ router.post('/updateProfile', isLogged, (req, res) => {
 
 // Xử lí update avatar
 // POST /user/update-avatar
-router.post('/update-avatar', isLogged, multer.single('avatar'),(req, res) => {
+router.post('/update-avatar', passIfHaveValidToken, multer.single('avatar'),(req, res) => {
     var propertiesUpdate = {
         avatar: `images/${req.user.id}${req.file.originalname}`
     }
@@ -191,7 +191,7 @@ router.post('/update-avatar', isLogged, multer.single('avatar'),(req, res) => {
 
 // Xử lí thay đổi mật khẩu
 // POST /user/change-password
-router.post('/change-password', isLogged, (req, res) => {
+router.post('/change-password', passIfHaveValidToken, (req, res) => {
     User.findOneById({_id: req.user.id})
         .then(user => {
             bcrypt.compare(req.body.oldPassword, user.password, (err, result) => {
