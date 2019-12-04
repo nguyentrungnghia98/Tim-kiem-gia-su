@@ -5,7 +5,7 @@ import GoogleLogin from "react-google-login";
 import User from '../../apis/user';
 import { toast } from "react-toastify";
 import { connect } from 'react-redux';
-import { fetchUser } from '../../actions/user';
+import { signIn } from '../../actions/user';
 import { closeAuthenticationModal } from './AuthenticationAction';
 import './Authentication.scss';
 import CssTextField from './CssTextField';
@@ -13,12 +13,17 @@ import {
   Dialog,
   DialogContent
 } from '@material-ui/core';
+import jwt from '../../utils/jwt';
+import config from '../../config/config';
+import {openSetRoleModal} from '../SetRole/SetRoleAction';
 
 const Authentication = props => {
   const {
     toggle,
     modeModal,
-    closeAuthenticationModal
+    closeAuthenticationModal,
+    openSetRoleModal,
+    signIn
   } = props;
   console.log('mode', modeModal)
   const [loading, setLoading] = useState(false);
@@ -30,7 +35,8 @@ const Authentication = props => {
   const [verifyCode, setVerifyCode] = useState('');
   const [role, setRole] = useState('student');
   const [mode, setMode] = useState(modeModal);
-  const [error, setError] = useState({ email: '', password: '', emailRegister: '', passwordRegister:'', verifyCode:'', name: ''});
+  const [error, setError] = useState({ email: '', password: '', emailRegister: '', passwordRegister: '', verifyCode: '', name: '' });
+
   useEffect(() => {
     setMode(props.modeModal)
     setLoading(false);
@@ -77,44 +83,58 @@ const Authentication = props => {
     console.log(response);
     const data = {
       email: response.email,
-      name: response.name,
-      facebookId: response.id,
-      provider: "facebook"
+      username: response.name
     };
-    //handleLoginSocial(data);
+    handleLoginSocial(data);
   }
 
   function responseGoogle(response) {
-    console.log(response);
+    
     const data = {
       email: response.profileObj.email,
-      name: response.profileObj.name,
-      provider: "google",
-      googleId: response.googleId
+      username: response.profileObj.name
     };
-    //handleLoginSocial(data);
+    console.log(response);
+    handleLoginSocial(data);
   }
 
-  function validFormInput(){
+  function handleLoginSocial(_data) {
+    console.log('data jwt', _data)
+    const token = jwt.generateJWT(_data, config.SECRET_KEY, config.EXPIRE_IN);
+    const url = `/user/loginSocial`;
+    const data = { token };
+    const message = "Đăng nhập thành công"
+
+    const callback = (user) => {
+      signIn(user);
+      closeAuthenticationModal();
+      if(user.role === -1){
+        openSetRoleModal();
+      }
+    };
+    callApiPost(url, data, message, callback);
+  }
+
+  function validFormInput() {
     let check = true;
     // eslint-disable-next-line
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if(mode === 'login'){
+    if (mode === 'login') {
       if (re.test(String(email).toLowerCase())) {
         if (error.email !== '') setError({ ...error, email: '' });
       } else {
         setError({ ...error, email: 'Vui lòng nhập đúng định dạng email!' });
         check = false;
       }
-      if(password.length < 4 || password.length > 20){
+      if (password.length < 4 || password.length > 20) {
         setError({ ...error, password: 'Vui lòng nhập tên có độ dài từ 4 đến 20 kí tự!' });
         check = false;
-      }else{
+      } else {
         setError({ ...error, password: '' });
       }
     }
-    
-    if(mode === "signup"){
+
+    if (mode === "signup") {
       if (re.test(String(emailRegister).toLowerCase())) {
         if (error.emailRegister !== '') setError({ ...error, emailRegister: '' });
       } else {
@@ -123,27 +143,21 @@ const Authentication = props => {
       }
     }
 
-    if(mode === 'finish_signup'){
-      if(name.length < 4 || name.length > 20){
+    if (mode === 'finish_signup') {
+      if (name.length < 4 || name.length > 20) {
         setError({ ...error, name: 'Vui lòng nhập tên có độ dài từ 1 đến 50 kí tự!' });
         check = false;
-      }else{
+      } else {
         setError({ ...error, name: '' });
       }
-  
-      if(passwordRegister.length < 1 || passwordRegister.length > 50){
+
+      if (passwordRegister.length < 1 || passwordRegister.length > 50) {
         setError({ ...error, passwordRegister: 'Vui lòng nhập tên có độ dài từ 4 đến 20 kí tự!' });
         check = false;
-      }else{
+      } else {
         setError({ ...error, passwordRegister: '' });
       }
-  
-      if(!isNaN(verifyCode)){
-        setError({ ...error, verifyCode: 'Mã code không hợp lệ!' });
-        check = false;
-      }else{
-        setError({ ...error, verifyCode: '' });
-      }
+
     }
 
     return check;
@@ -156,7 +170,12 @@ const Authentication = props => {
       console.log('data', data, response)
       setLoading(false);
 
-      callback(response);
+      if (response.data.results) {
+        callback(response.data.results.object);
+      } else {
+        callback();
+      }
+
 
       toast.success(message, {
         position: "bottom-right",
@@ -195,8 +214,8 @@ const Authentication = props => {
         data = { email, password };
         message = "Đăng nhập thành công"
         callback = (user) => {
+          signIn(user);
           closeAuthenticationModal()
-          //fetchUser()
         };
         break;
       case 'verify_email':
@@ -209,9 +228,9 @@ const Authentication = props => {
         url = `/user/register`;
         data = { activeCode: verifyCode, username: name, email: emailRegister, password: passwordRegister, role: role === 'student' ? 0 : 1 };
         message = "Đăng kí thành công"
-        callback = () => {
-
-          //fetchUser()
+        callback = (user) => {
+          signIn(user);
+          closeAuthenticationModal()
         };
         break;
       default:
@@ -243,8 +262,8 @@ const Authentication = props => {
               />
 
             </div>
-            </div>
-            <div className='form-row cf'>
+          </div>
+          <div className='form-row cf'>
             <div className='input-wrap'>
 
               <CssTextField
@@ -310,6 +329,17 @@ const Authentication = props => {
             </button>
           </div>
         </form>
+        <footer>
+          <div className='message'>
+            Nhập email khác
+             <div
+              onClick={() => setMode("signup")}
+              className='js-open-popup-join ml-2'
+            >
+              Quay lại
+                          </div>
+          </div>
+        </footer>
       </div>
     )
   }
@@ -318,32 +348,32 @@ const Authentication = props => {
     return (
       <>
 
-          <div className='social-signing'>
-            <FacebookLogin
-              appId='742881169550243'
-              cssClass='btn btn__facebook'
-              textButton='Đăng nhập với Facebook'
-              fields='name,email,picture'
-              callback={responseFacebook}
-            />
+        <div className='social-signing'>
+          <FacebookLogin
+            appId='742881169550243'
+            cssClass='btn btn__facebook'
+            textButton='Đăng nhập với Facebook'
+            fields='name,email,picture'
+            callback={responseFacebook}
+          />
 
-            <GoogleLogin
-              clientId='872347619550-vrgvvaalebncmo39f5o7mv3kehihl4fo.apps.googleusercontent.com'
-              render={renderProps => (
-                <button
-                  className='btn btn__google'
-                  onClick={renderProps.onClick}
-                >
-                  Đăng nhập với Google
+          <GoogleLogin
+            clientId='872347619550-vrgvvaalebncmo39f5o7mv3kehihl4fo.apps.googleusercontent.com'
+            render={renderProps => (
+              <button
+                className='btn btn__google'
+                onClick={renderProps.onClick}
+              >
+                Đăng nhập với Google
                           </button>
-              )}
-              onSuccess={responseGoogle}
-              onFailure={responseGoogle}
-            />
-            <div className='divider'>
-              <span>or</span>
-            </div>
+            )}
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+          />
+          <div className='divider'>
+            <span>or</span>
           </div>
+        </div>
 
 
         <div className='popup-form'>
@@ -519,13 +549,14 @@ const Authentication = props => {
 const mapStateToProps = (state) => {
   return {
     toggle: state.authenticationModal.toggle,
-    modeModal: state.authenticationModal.modeModal,
-    user: state.auth.user
+    modeModal: state.authenticationModal.modeModal
   };
 };
 
 export default connect(
   mapStateToProps, {
-    closeAuthenticationModal
+    closeAuthenticationModal,
+    signIn,
+    openSetRoleModal
   }
 )(Authentication);

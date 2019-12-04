@@ -119,6 +119,7 @@ passport.use('social.login', new LocalStrategy({
     let userInfo;
     try {
         userInfo = jwt.verify(jwtToken, process.env.SECRET_KEY);
+        console.log('userInfo', userInfo)
     } catch(err) {
         return done(null, false, {message: 'Token không hợp lệ'});
     }
