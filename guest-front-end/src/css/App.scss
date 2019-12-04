@@ -1,0 +1,161 @@
+html, body {
+    height: 100%;
+}
+body{
+  
+}
+
+/* Header */
+.header--logo {
+  width: 144px;
+  img{
+    width: 100%;
+    height: auto;
+  }
+}
+.hightlight {
+  position: relative;
+  font-weight: bold;
+  font-size: 19px!important;
+  line-height: 22px;
+}
+.navbar{
+  box-shadow: 1px 3px 5px #80808069;
+  padding: 10px 40px;
+  .nav-item {
+    margin-left: 10px;
+  }
+  .nav-link{
+    font-size: 18px;
+    color: #212a32;
+  }
+}
+
+/* Footer */
+
+.footer-logo {
+  width: 20%;
+  text-align: left;
+}
+
+.footer {
+  justify-content: space-around;
+  display: flex;
+  background-color: #4e4e4e;
+  padding: 30px 20px;
+}
+
+.logo {
+  font-size: 40px;
+  font-weight: 700;
+  color: #23238b;
+  margin-left: 22px;
+}
+
+.footer-icon {
+  color: white;
+}
+
+.footer-icon > i {
+  padding:  10px;
+}
+
+.footer-info-title {
+  font-weight: bold;
+  font-size: 18px;
+  color: rgba(238,238,238,1);
+  margin-bottom: 8px;
+}
+
+.footer-info {
+  text-align: left;
+  max-width: 250px;
+}
+
+.footer-info-content {
+  font-weight: bold;
+    font-size: 14px;
+    color: rgba(230,230,230,1);
+  line-height: 25px;
+  cursor: pointer;
+}
+.navbar-nav{
+  align-items: center;
+}
+.nav-item{
+  position: relative;
+  .avatar{
+    width: 50px;
+    height: 50px;
+    margin-left: 10px;
+    img{
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
+  .dropdown-menu{
+    left: -183px;
+    width: 250px;
+    padding: 8px 14px;
+    .user-info{
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      img{
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+      p{
+        margin-bottom: 0;
+        font-size: 15px;
+        font-weight: 500;
+        margin-left: 8px;
+        color:black!important;  
+      }
+    }
+    .dropdown-item{
+      padding: 4px 15px;
+      margin-bottom: 8px;
+      i{
+        margin-right: 12px;
+      }
+    }
+  }
+}
+.spinner-border{
+  width: 22px;
+  height: 22px;
+} 
+
+#header{
+  position: fixed;
+  width: 100%;
+  z-index: 99999;
+}
+.visible{
+  box-shadow: 0px 0px 5px #80808069;
+  background: white;
+  a,div{
+    color: #212a32!important;
+  }
+}
+.non-visible{
+  box-shadow: none!important;
+  background: transparent!important;
+  .navbar-nav{
+    a,div{
+      color: white!important;
+    }
+    div::before,.sepreate{
+      background: white!important;
+    }
+  }
+  .navbar-toggler{
+    color: white!important;
+  }
+  .seach-box{
+    display: none;
+  }
+}
