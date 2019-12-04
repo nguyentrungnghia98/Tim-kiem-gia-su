@@ -4,5 +4,6 @@ import axios from 'axios';
 export default axios.create({
   // eslint-disable-next-line spaced-comment
   //baseURL: Config.server
-  baseURL: 'http://localhost:3001'
+  //baseURL: 'http://localhost:3001'
+  baseURL: 'https://backend-giasu.herokuapp.com/'
 });
