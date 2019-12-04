@@ -1,3 +1,3 @@
 module.exports = {
-    mongoURI: 'mongodb+srv://admin:nghianghianghia@carodb-snqrc.gcp.mongodb.net/CaroDB?retryWrites=true&w=majority'
+    mongoURI: 'mongodb+srv://dnnghia:admin@giasudb-m6idv.mongodb.net/adminDB?retryWrites=true&w=majority'
 }

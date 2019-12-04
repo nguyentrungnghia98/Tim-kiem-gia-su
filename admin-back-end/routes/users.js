@@ -31,11 +31,12 @@ router.post('/register',function (req, res) {
         const info = {
           id: result.id,
           email: result.email,
-          fullName: result.fullName 
+          fullName: result.fullName,
+          role: result.role
         }
 
         return res.json({
-          message: 'Đăng kí tài khoản thành công !',
+          message: 'Tạo tài khoản mới thành công !',
           user : info
         })
       })
@@ -72,7 +73,10 @@ router.post('/login', function (req, res, next) {
         const info = {
             id: user.id,
             email: user.email,
-            fullName: user.fullName 
+            fullName: user.fullName,
+            role: user.role,
+            status: user.status,
+            avatar: user.avatar         
         }
 
         const token = jwt.sign(info, 'dang-ngoc-nghia', /*{expiresIn: '5s'}*/);

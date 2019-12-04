@@ -4593,6 +4593,18 @@ html .ql-toolbar {
   top: 0.9375rem;
   left: 0.9375rem; }
 
+.login{
+  height: calc(100vh - 3.75rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.create-account{
+  display: flex;
+  justify-content: center;
+}
+
 .error {
   height: calc(100vh - 3.75rem);
   display: flex; }

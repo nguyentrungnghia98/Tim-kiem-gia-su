@@ -52,7 +52,7 @@ class TemplatesCategories extends Component {
 
     render() { 
         return (  
-            <div className="home--card mt-3">
+            <div className="home--card">
                 <div className="home--card__header">
                   <div className="home--card__title">
                    Môn học

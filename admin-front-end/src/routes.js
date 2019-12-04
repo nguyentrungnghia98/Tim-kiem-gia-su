@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 
 // Layout Types
 import { DefaultLayout } from "./layouts";
+import EmptyLayout from "./layouts/Empty";
 
 // Route Views
 import BlogOverview from "./views/BlogOverview";
@@ -12,13 +13,25 @@ import Errors from "./views/Errors";
 import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
+ import Login from "./containers/LoginContainer";
+import CreateNewAccount from "./containers/CreateUserContainer";
 
 export default [
   {
     path: "/",
     exact: true,
     layout: DefaultLayout,
-    component: () => <Redirect to="/blog-overview" />
+    component: () => <Redirect to="/create-account" />
+  },
+  {
+    path: "/login",
+    layout: EmptyLayout,
+    component: Login
+  },
+  {
+    path: "/create-account",
+    layout: DefaultLayout,
+    component:CreateNewAccount 
   },
   {
     path: "/blog-overview",
