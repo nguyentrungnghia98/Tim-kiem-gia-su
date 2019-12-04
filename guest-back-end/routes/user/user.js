@@ -23,7 +23,19 @@ router.post('/register', (req, res) => {
                 res.status(500).json({message: err.message});
             }
 
-            return res.status(200).json({message: 'Đăng ký thành công'});
+            let token = jwt.generateJWT(user, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+            return res.status(200).json({
+                results: {
+                    object: {
+                        token,
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        avatar: user.avatar
+                    }
+                }
+            });
         });
     })(req, res)
 });
@@ -76,7 +88,12 @@ router.post('/login', (req, res) => {
             return res.status(200).json({
                 results: {
                     object: {
-                        token
+                        token,
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        avatar: user.avatar
                     }
                 }
             });
@@ -88,7 +105,6 @@ router.post('/login', (req, res) => {
 // GET /user/logout
 router.get('/logout', (req, res) => {
     res.cookie('Authorization', '', {httpOnly: true});
-    res.coo
     return res.status(200).json({messages: ['logout successfully']});
 });
 

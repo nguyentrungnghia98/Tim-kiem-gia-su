@@ -23,4 +23,16 @@ router.post('/sendOTPViaMail', (req, res) => {
         })
 });
 
+// Xử lí validate OTP code
+// POST /secure/verifyOTP
+router.post('/verifyOTP', (req, res) => {
+    const result = topt.verify(req.body.code, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
+
+    if (!result) {
+        return res.status(400).json({message: 'Mã OTP không chính xác'});
+    }
+
+    res.status(200).json({message: 'Xác thực thành công'});
+});
+
 module.exports = router;
