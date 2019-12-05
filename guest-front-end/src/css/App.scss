@@ -134,6 +134,45 @@ body{
   width: 100%;
   z-index: 99999;
 }
+
+
+.seach-box {
+  display: flex;
+  background: white;
+  width: 360px;
+  height: 46px;
+  border-radius: 8px;
+  align-items: center;
+  margin-left: 40px;
+  border: 1px solid #e0e0e0;
+}
+
+.ic_search_24px {
+  width: 20.582px;
+  height: 20.475px;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+  margin-left: 26px;
+}
+
+.search-input {
+  overflow: visible;
+  width: 360px;
+  white-space: nowrap;
+  font-family: Segoe UI;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 17px;
+  color: rgba(112, 112, 112, 1);
+  margin-left: 24px;
+  margin-bottom: 6px;
+}
+
+.search-input input{
+  width: 100%;
+  outline: none;
+  border: none;
+}
+
 .visible{
   box-shadow: 0px 0px 5px #80808069;
   background: white;
@@ -173,4 +212,34 @@ body{
 
 .Toastify__toast-container{
   z-index: 999999999!important;
+}
+
+.btn-primary{
+  background-color: #00c6f3;
+    border-color: #00c6f3;
+}
+
+.pagination{
+  margin-top: 40px;
+  li{
+    a{
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  }
+  .active{
+    a{
+      border: 1px solid #cecece;
+    border-radius: 4px;
+    background: whitesmoke;
+    font-weight: bold;
+    font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 992px){
+  .seach-box{
+    margin: auto;
+  }
 }

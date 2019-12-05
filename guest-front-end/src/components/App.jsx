@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Router, Switch, Route } from 'react-router-dom';
+import { Router, Switch, Route, Redirect } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { connect } from 'react-redux';
 import history from '../history';
@@ -18,21 +18,22 @@ import { fetchUser } from '../actions/user';
 import User from '../apis/user';
 import {openSetRoleModal} from '../modals/SetRole/SetRoleAction';
 import NoMatch from './NoMatch/NoMatch';
+import Teachers from './Teachers/Teachers';
 
 const Root = (props) => {
   const { isSignedIn, fetchUser, openSetRoleModal } = props;
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     console.log(User, User.module)
     const fetchDataUser = async () => {
       try {
-        setLoading(true);
+        //setLoading(true);
         
         const user = await User.getInfo();
         fetchUser(user);
 
-        setLoading(false);
+        //setLoading(false);
 
         if(user.role === -1) {
           setTimeout(()=> {
@@ -41,7 +42,7 @@ const Root = (props) => {
         }
       } catch (err) {
         console.log('err', err);
-        setLoading(false);
+        //setLoading(false);
       }
     };
     fetchDataUser();
@@ -79,6 +80,13 @@ const Root = (props) => {
               <Switch>
                 <Route exact path="/">
                   <Home />
+                </Route>
+                <Route exact path="/cat" render={() => <Redirect to="/cat/all" />}></Route>
+                <Route exact path="/cat/:category">
+                  <Teachers />
+                </Route>
+                <Route exact path="/seach/">
+                  <Setting />
                 </Route>
                 <Route exact path="/setting">
                   <Setting />
