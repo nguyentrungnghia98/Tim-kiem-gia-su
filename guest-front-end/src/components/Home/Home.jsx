@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 
 import "./home.scss";
-import DefaultTemplates from "./DefaultTemplates";
-import TemplatesCategories from "./TemplatesCategories";
-import MyTemplates from "./MyTemplates";
+import IntroApp from "./IntroApp";
+import PopularTeachers from "./PopularTeachers";
+import ListSkill from "./ListSkill";
 
 class Home extends Component {
   test = () => {};
@@ -39,9 +39,9 @@ class Home extends Component {
             </div>
           </div>
           <div className="home--body">
-            {/* <DefaultTemplates /> */}
-            <TemplatesCategories/>
-            {/* <MyTemplates/> */}
+            <IntroApp />
+            <ListSkill/>
+            <PopularTeachers/>
           </div>
           
         </div>

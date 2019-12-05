@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Link} from "react-router-dom";
 
-class TemplatesCategories extends Component {
+class ListSkill extends Component {
     test = {  }
 
     renderCategories = () => {
@@ -38,11 +38,11 @@ class TemplatesCategories extends Component {
                 {
                     categories.map((item) => {
                             return (
-                                <Link className=" category-item mb-3" 
-                                to={`/category/${item.text}/all`}  key={item.text}>
-                                  <img src={item.image} alt={item.text}/>
-                                  <div>{item.text}</div>
-                                </Link>
+                              <Link className=" category-item mb-3" 
+                              to={`/category/${item.text}/all`}  key={item.text}>
+                                <img src={item.image} alt={item.text}/>
+                                <div>{item.text}</div>
+                              </Link>
                             );
                     })
                 }
@@ -58,7 +58,7 @@ class TemplatesCategories extends Component {
                    Môn học
                   </div>
                   <Link  to="/category" className="btn see-more">
-                       See More &gt;
+                      Xem thêm &gt;
                   </Link>
                 </div>
                 { this.renderCategories() } 
@@ -67,4 +67,4 @@ class TemplatesCategories extends Component {
     }
 }
  
-export default TemplatesCategories;
+export default ListSkill;
