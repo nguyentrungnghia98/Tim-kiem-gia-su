@@ -15,26 +15,31 @@ class NavBar extends Component {
     }
 
     History.listen(location => {
+      console.log(location.pathname)
       this.setState({ path: location.pathname });
       if (location.pathname === '/') {
         this.setState({ visible: false });
+      }else{
+        this.setState({ visible: true });
       }
     });
   }
 
-  componentDidMount() {
+  handleScroll = () => {
     const { path } = this.state;
-    const handleScroll = () => {
-      if (path !== '/')
-        return this.setState({ visible: true });
+    if (path !== '/')
+      return this.setState({ visible: true });
 
-      const currentScrollPos = window.pageYOffset;
-      const _visible = currentScrollPos > document.querySelector('#header').offsetHeight;
+    const currentScrollPos = window.pageYOffset;
+    const _visible = currentScrollPos > document.querySelector('#header').offsetHeight;
 
-      this.setState({ visible: _visible });
-    };
+    this.setState({ visible: _visible });
+  };
 
-    window.addEventListener("scroll", handleScroll);
+  componentDidMount() {
+    
+    console.log('')
+    window.addEventListener("scroll", this.handleScroll);
   }
 
   items = {
@@ -123,6 +128,7 @@ class NavBar extends Component {
                 <img src={user.avatar} onError={this.imgError} alt="avatar" />
                 <p>{user.username}</p>
               </div>
+              <Link to="/setting">
               <button
                 className='dropdown-item'
                 type='button'
@@ -130,6 +136,8 @@ class NavBar extends Component {
                 <i className="fas fa-cog" />
                 Cài đặt
               </button>
+              </Link>
+              
               <button onClick={this.onLogout}
                 className='dropdown-item'
                 type='button'

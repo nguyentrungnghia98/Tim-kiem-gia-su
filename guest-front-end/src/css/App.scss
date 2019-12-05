@@ -159,3 +159,18 @@ body{
     display: none;
   }
 }
+
+.MuiDialog-root{
+  z-index: 9999999!important;
+}
+
+.page-wrapper {
+  padding-top: 120px;
+  padding-bottom: 60px;
+  min-height: 90vh;
+  background: #f3f3f3;
+}
+
+.Toastify__toast-container{
+  z-index: 999999999!important;
+}
