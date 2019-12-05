@@ -6,7 +6,7 @@ import history from '../history';
 import Footer from './shared/Footer';
 import NavBar from './shared/NavBar';
 import Home from './Home/Home';
-import Profile from './Profile';
+import Setting from './Setting/Setting';
 import Alert from '../components/shared/Alert/Alert'
 import '../css/App.scss';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,23 +17,21 @@ import SetRoleModal from '../modals/SetRole/SetRole';
 import { fetchUser } from '../actions/user';
 import User from '../apis/user';
 import {openSetRoleModal} from '../modals/SetRole/SetRoleAction';
-
+import NoMatch from './NoMatch/NoMatch';
 
 const Root = (props) => {
   const { isSignedIn, fetchUser, openSetRoleModal } = props;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log(User, User.module)
     const fetchDataUser = async () => {
       try {
         setLoading(true);
-        const userToken = localStorage.getItem('userToken');
-        const response = await User.get('/me', {
-          headers: { authorization : userToken }
-        });
-        console.log('res', response);
-        const user = response.data.results.object;
+        
+        const user = await User.getInfo();
         fetchUser(user);
+
         setLoading(false);
 
         if(user.role === -1) {
@@ -82,9 +80,10 @@ const Root = (props) => {
                 <Route exact path="/">
                   <Home />
                 </Route>
-                <Route exact path="/user/profile">
-                  <Profile />
+                <Route exact path="/setting">
+                  <Setting />
                 </Route>
+                <Route component={NoMatch} />
               </Switch>
               <Footer />
 

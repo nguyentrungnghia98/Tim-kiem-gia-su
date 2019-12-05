@@ -14,7 +14,7 @@ import {
   DialogContent
 } from '@material-ui/core';
 import jwt from '../../utils/jwt';
-import config from '../../config/config';
+import config from '../../config';
 import {openSetRoleModal} from '../SetRole/SetRoleAction';
 
 const Authentication = props => {
@@ -25,7 +25,6 @@ const Authentication = props => {
     openSetRoleModal,
     signIn
   } = props;
-  console.log('mode', modeModal)
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -37,20 +36,31 @@ const Authentication = props => {
   const [mode, setMode] = useState(modeModal);
   const [error, setError] = useState({ email: '', password: '', emailRegister: '', passwordRegister: '', verifyCode: '', name: '' });
 
-  useEffect(() => {
-    setMode(props.modeModal)
-    setLoading(false);
-  }, [props.modeModal])
+  // useEffect(() => {
+  //   setMode(props.modeModal)
+  //   setLoading(false);
+  //   console.log('change mode', mode)
+  // }, [props.modeModal])
 
   useEffect(() => {
+    setMode(props.modeModal)
     setLoading(false);
   }, [props.toggle])
 
   function handleClose() {
     console.log('close')
+    clearFillFormInfo();
     closeAuthenticationModal();
   }
 
+  function clearFillFormInfo(){
+    setPasswordRegister('');
+    setVerifyCode('');
+    setName('');
+    setEmail('');
+    setPassword('');
+    setEmailRegister('');
+  }
 
   function handleChange(event) {
     const { value, name } = event.target;
@@ -85,6 +95,7 @@ const Authentication = props => {
       email: response.email,
       username: response.name
     };
+    if(!data.email) return
     handleLoginSocial(data);
   }
 
@@ -95,6 +106,7 @@ const Authentication = props => {
       username: response.profileObj.name
     };
     console.log(response);
+    if(!data.email) return
     handleLoginSocial(data);
   }
 
@@ -144,14 +156,14 @@ const Authentication = props => {
     }
 
     if (mode === 'finish_signup') {
-      if (name.length < 4 || name.length > 20) {
+      if (name.length < 1 || name.length > 50) {
         setError({ ...error, name: 'Vui lòng nhập tên có độ dài từ 1 đến 50 kí tự!' });
         check = false;
       } else {
         setError({ ...error, name: '' });
       }
 
-      if (passwordRegister.length < 1 || passwordRegister.length > 50) {
+      if (passwordRegister.length < 4 || passwordRegister.length > 20) {
         setError({ ...error, passwordRegister: 'Vui lòng nhập tên có độ dài từ 4 đến 20 kí tự!' });
         check = false;
       } else {
@@ -166,7 +178,7 @@ const Authentication = props => {
   async function callApiPost(url, data, message, callback) {
     try {
       setLoading(true);
-      const response = await User.post(url, data);
+      const response = await User.axios.post(url, data);
       console.log('data', data, response)
       setLoading(false);
 
@@ -333,7 +345,7 @@ const Authentication = props => {
           <div className='message'>
             Nhập email khác
              <div
-              onClick={() => setMode("signup")}
+              onClick={() => {setMode("signup"); clearFillFormInfo()}}
               className='js-open-popup-join ml-2'
             >
               Quay lại

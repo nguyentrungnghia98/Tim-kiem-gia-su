@@ -1,8 +1,21 @@
-import axios from 'axios';
-//import Config from '../config';
+import {Api} from './api';
 
-export default axios.create({
-  // eslint-disable-next-line spaced-comment
-  //baseURL: Config.server
-  baseURL: 'http://localhost:3001'
-});
+class User extends Api{
+  constructor(){
+    super();
+    this.module = 'user';
+  }
+
+  async getInfo(){
+    const setting = {
+      method: 'GET',
+      url: '/me',
+      headers: this.tokenHeader,
+    }
+    const response = await this.exec(setting);
+
+    return response.data.results.object;
+  }
+}
+const user = new User();
+export default user;

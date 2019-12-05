@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import "./home.css";
+import "./home.scss";
 import DefaultTemplates from "./DefaultTemplates";
 import TemplatesCategories from "./TemplatesCategories";
 import MyTemplates from "./MyTemplates";
