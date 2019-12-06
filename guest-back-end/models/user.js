@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 
 const userSchema = Schema({
@@ -9,12 +10,11 @@ const userSchema = Schema({
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         maxlength: 60
     },
     password: { 
-        type: String,
-        require: true
+        type: String
     },
     avatar: { 
         type: String,
@@ -30,10 +30,14 @@ const userSchema = Schema({
     },
     salaryPerHour: {type: Number},
     major: [{
-        id: Schema.Types.ObjectId
-    }]
+        type: Schema.Types.ObjectId,
+        ref: 'TagSkill'
+    }],
+    introduction: { type: String },
+    address: { type: String }
 });
 
+userSchema.plugin(mongoosePaginate);
 const User = mongoose.model('User', userSchema);
 
 module.exports= {
@@ -49,15 +53,15 @@ module.exports= {
     },
 
     findOneByEmail: (email) => {
-        return User.findOne({email}).exec();
+        return User.findOne({email}).populate('major', 'content').exec();
     },
 
     findOneAccountActiveByEmail: (email) => {
-        return User.findOne({email, status: 'active' }).exec();
+        return User.findOne({email, status: 'active' }).populate('major', 'content').populate().exec();
     },
 
     findOneById: (id) => {
-        return User.findById(id).exec();
+        return User.findById(id).populate('major', 'content').exec();
     },
 
     updateOne: (conditionObject, properies) => {
@@ -77,5 +81,9 @@ module.exports= {
         });
 
         return user.save();
-    }
+    },
+
+    findTeacherWithPagination: () => {
+
+    },
 }

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, './public/images/');
+        cb(null, './public/img/');
     },
     filename: function(req, file, cb) {
         cb(null, req.user.id + file.originalname);
@@ -22,7 +22,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ 
     storage: storage,
     limits: {
-        fileSize: 1024 * 1024 * 5 // 5 MB
+        fileSize: 1024 * 1024 * 10 // 10 MB
     },
     fileFilter: fileFilter
 });
