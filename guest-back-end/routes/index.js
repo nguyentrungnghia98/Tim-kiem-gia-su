@@ -17,7 +17,10 @@ router.get('/me', passIfHaveValidToken, function(req, res) {
               role: user.role,
               major: user.major,
               salaryPerHour: user.salaryPerHour,
-              status: user.status
+              status: user.status,
+              address: user.address,
+              introduction: user.introduction,
+              job: user.job,
             }
           }
         });

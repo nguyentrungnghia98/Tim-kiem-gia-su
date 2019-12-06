@@ -199,7 +199,7 @@ router.post('/changePassword', passIfHaveValidToken, (req, res) => {
                         return res.status(400).json({messages: [err.message]});
                     }
 
-                    User.update({_id: user.id}, {password: hash})
+                    User.updateOne({_id: user.id}, {password: hash})
                         .then(() => {
                             return res.status(200).json({message: 'Đổi mật khẩu thành công'});
                         })

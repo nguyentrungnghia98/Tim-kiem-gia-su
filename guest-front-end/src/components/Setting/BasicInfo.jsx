@@ -4,13 +4,17 @@ import {
 } from '@material-ui/core';
 import CssTextField from './CssTextField';
 import Imgur from '../../apis/imgur';
+import User from '../../apis/user';
+import { fetchUser } from '../../actions/user';
+import {connect} from 'react-redux';
+import toast from '../../utils/toast';
 
 const BasicInfo = (props) => {
-  const { user, fetchUser, openAlertError, onSubmit } = props;
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [address, setAddress] = useState('');
-  const [imgUrl, setImgUrl] = useState('');
+  const { user, fetchUser, openAlertError } = props;
+  const [name, setName] = useState(user.username);
+  const [introduction, setIntroduction] = useState(user.introduction);
+  const [address, setAddress] = useState(user.address);
+  const [imgUrl, setImgUrl] = useState(user.avatar);
   const [loadSaveDone, setLoadSaveDone] = useState(true);
   const [loadImageDone, setLoadImageDone] = useState(true);
   const fileInput = useRef(null);
@@ -49,16 +53,29 @@ const BasicInfo = (props) => {
     getUrlImage(formData);
   }
 
-  function handleInfoSubmit(e) {
+  async function handleInfoSubmit(e) {
     e.preventDefault();
-    const data = {
-      name,
-      avatar: imgUrl,
-      address,
-      description
-    };
-    console.log('info', data);
-    //onSubmit(data);
+    try {
+      setLoadSaveDone(false);
+      const data = {
+        username:name,
+        avatar: imgUrl,
+        address,
+        introduction
+      };
+      const response = await User.updateInfo(data);
+      fetchUser(response);
+      console.log('data', data, response)
+
+      setLoadSaveDone(true);
+      toast.success('Cập nhật thành công');
+    } catch (error) {
+      console.log({ error });
+      setLoadSaveDone(true);
+      let message = 'Some thing wrong!';
+      if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
+      toast.error(message);
+    }
   }
 
   return (
@@ -117,15 +134,15 @@ const BasicInfo = (props) => {
         placeholder="Ví dụ tôi là giáo viên A có kinh nghiệm dạy tại trường ..."
         variant="outlined"
         margin="normal"
-        value={description}
-        onChange={e => setDescription(e.target.value)}
+        value={introduction}
+        onChange={e => setIntroduction(e.target.value)}
       />
       <div className="actions">
         <button className="btn btn-primary">
           {loadSaveDone ? (
             'Cập nhật'
           ) : (
-              <CircularProgress size={26} />
+              <CircularProgress size={20} />
             )}
         </button>
       </div>
@@ -133,4 +150,9 @@ const BasicInfo = (props) => {
   )
 }
 
-export default BasicInfo;
+const mapStateToProps = (state) => {
+  return {
+    user: state.auth.user
+  };
+};
+export default connect(mapStateToProps, {fetchUser})(BasicInfo);

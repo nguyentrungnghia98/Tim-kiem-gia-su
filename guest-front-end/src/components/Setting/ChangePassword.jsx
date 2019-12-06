@@ -4,23 +4,41 @@ import {
   CircularProgress
 } from '@material-ui/core';
 import CssTextField from './CssTextField';
+import User from '../../apis/user';
+import { logOut, fetchUser } from '../../actions/user';
+import {connect} from 'react-redux';
+import toast from '../../utils/toast';
 
 const ChangePassword = (props) => {
-  const { fetchUser, openAlertError, onSubmit } = props;
+  const { fetchUser,logOut, user } = props;
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loadSaveDone, setLoadSaveDone] = useState(true);
   const [disableButton, setDisableButton] = useState(true);
 
-  function handlePasswordSubmit(e) {
+  async function handlePasswordSubmit(e) {
     e.preventDefault();
-    const data = {
-      password,
-      newPassword
-    };
-    console.log('password', data);
-    onSubmit(data);
+    try {
+      setLoadSaveDone(false);
+      const data = {
+        oldPassword: password,
+        newPassword
+      };
+      const response = await User.changePassword(data);
+      //fetchUser(response);
+      //logOut();
+      console.log('data', data, response)
+
+      setLoadSaveDone(true);
+      toast.success('Cập nhật thành công');
+    } catch (error) {
+      console.log({ error });
+      setLoadSaveDone(true);
+      let message = 'Some thing wrong!';
+      if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
+      toast.error(message);
+    }
   }
 
   return (
@@ -81,9 +99,9 @@ const ChangePassword = (props) => {
       <div className="actions">
         <button className="btn btn-primary" disabled={disableButton}>
           {loadSaveDone ? (
-            'Save changes'
+            'Cập nhật'
           ) : (
-              <CircularProgress size={26} />
+              <CircularProgress size={20} />
             )}
         </button>
       </div>
@@ -91,4 +109,9 @@ const ChangePassword = (props) => {
   )
 }
 
-export default ChangePassword;
+const mapStateToProps = (state) => {
+  return {
+    user: state.auth.user
+  };
+};
+export default connect(mapStateToProps, {fetchUser,logOut})(ChangePassword) ;

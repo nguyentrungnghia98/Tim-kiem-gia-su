@@ -33,6 +33,7 @@ const userSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'TagSkill'
     }],
+    job: { type: String },
     introduction: { type: String },
     address: { type: String }
 });
