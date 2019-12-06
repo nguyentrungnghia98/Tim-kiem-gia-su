@@ -214,7 +214,7 @@ router.post('/changePassword', passIfHaveValidToken, (req, res) => {
 });
 
 // Xử lí update các thông tin chung với data gửi lên dạng json
-// POST /user/update
+// POST /user/updateWithFormData
 router.post('/updateWithFormData', passIfHaveValidToken, multer.single('avatar'), (req, res) => {
     const { username, role, salaryPerHour, major, introduction, address} = req.body;
     let avatar;
@@ -249,8 +249,8 @@ router.post('/updateWithFormData', passIfHaveValidToken, multer.single('avatar')
 
 // Xử lí update các thông tin chung với data gửi lên dạng json
 // POST /user/update
-router.post('/updateWithJsonData', passIfHaveValidToken, (req, res) => {
-    const { username, role, salaryPerHour, major, introduction, address} = req.body;
+router.post('/update', passIfHaveValidToken, (req, res) => {
+    const { username, role, salaryPerHour, major, introduction, address, avatar} = req.body;
 
     if (role) {
         req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
@@ -268,7 +268,7 @@ router.post('/updateWithJsonData', passIfHaveValidToken, (req, res) => {
             res.status(200).json({
                 results: {
                     object: {
-                        token, username, role, salaryPerHour, major, introduction, address
+                        token, username, role, salaryPerHour, major, introduction, address, avatar
                     }
                 }
             });
