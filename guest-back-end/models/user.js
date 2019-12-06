@@ -29,9 +29,13 @@ const userSchema = Schema({
     },
     salaryPerHour: {type: Number},
     major: [{
-        id: Schema.Types.ObjectId
-    }]
+        type: Schema.Types.ObjectId,
+        ref: 'TagSkill'
+    }],
+    introduction: { type: String },
+    address: { type: String }
 });
+
 
 const User = mongoose.model('User', userSchema);
 
@@ -48,15 +52,15 @@ module.exports= {
     },
 
     findOneByEmail: (email) => {
-        return User.findOne({email}).exec();
+        return User.findOne({email}).populate('major', 'content').exec();
     },
 
     findOneAccountActiveByEmail: (email) => {
-        return User.findOne({email, status: 'active' }).exec();
+        return User.findOne({email, status: 'active' }).populate('major', 'content').populate().exec();
     },
 
     findOneById: (id) => {
-        return User.findById(id).exec();
+        return User.findById(id).populate('major', 'content').exec();
     },
 
     updateOne: (conditionObject, properies) => {

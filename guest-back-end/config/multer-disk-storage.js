@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, './public/images/');
+        cb(null, './public/img/');
     },
     filename: function(req, file, cb) {
         cb(null, req.user.id + file.originalname);
