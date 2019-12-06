@@ -215,44 +215,45 @@ router.post('/changePassword', passIfHaveValidToken, (req, res) => {
 
 // Xử lí update các thông tin chung với data gửi lên dạng json
 // POST /user/updateWithFormData
-router.post('/updateWithFormData', passIfHaveValidToken, multer.single('avatar'), (req, res) => {
-    const { username, role, salaryPerHour, major, introduction, address} = req.body;
-    let avatar;
+// router.post('/updateWithFormData', passIfHaveValidToken, multer.single('avatar'), (req, res) => {
+//     const { username, role, salaryPerHour, major, introduction, address} = req.body;
+//     let avatar;
 
-    if (req.file){
-        avatar = `img/${req.userInfo.id}${req.file.originalname}`;
-    }
+//     if (req.file){
+//         avatar = `img/${req.userInfo.id}${req.file.originalname}`;
+//     }
      
 
-    if (role) {
-        req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
-        const errors = req.validationErrors();
+//     if (role) {
+//         req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
+//         const errors = req.validationErrors();
 
-        if (errors.length > 0) {
-            return res.status(400).json({message: 'Role không hợp lệ'});
-        }
-    }
+//         if (errors.length > 0) {
+//             return res.status(400).json({message: 'Role không hợp lệ'});
+//         }
+//     }
 
-    // Update info user với các thông tin gửi lên
-    User.updateOne({_id: req.userInfo.id}, { username, role, salaryPerHour, major, introduction, address, avatar})
-        .then(() => {
-            const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
-            res.status(200).json({
-                results: {
-                    object: {
-                        token, username, role, salaryPerHour, major, introduction, address, avatar
-                    }
-                }
-            });
-        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
-});
+//     // Update info user với các thông tin gửi lên
+//     User.updateOne({_id: req.userInfo.id}, { username, role, salaryPerHour, major, introduction, address, avatar})
+//         .then(() => {
+//             const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+//             res.status(200).json({
+//                 results: {
+//                     object: {
+//                         token, username, role, salaryPerHour, major, introduction, address, avatar
+//                     }
+//                 }
+//             });
+//         }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+// });
 
 // Xử lí update các thông tin chung với data gửi lên dạng json
 // POST /user/update
 router.post('/update', passIfHaveValidToken, (req, res) => {
-    const { username, role, salaryPerHour, major, introduction, address, avatar} = req.body;
+    const entity = {...req.body};
+    const { role } = req.body;
 
-    if (role) {
+    if (req.body.role) {
         req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
         const errors = req.validationErrors();
 
@@ -262,17 +263,18 @@ router.post('/update', passIfHaveValidToken, (req, res) => {
     }
 
     // Update info user với các thông tin gửi lên
-    User.updateOne({_id: req.userInfo.id}, { username, role, salaryPerHour, major, introduction, address, avatar})
+    User.updateOne({_id: req.userInfo.id}, entity)
         .then(() => {
             const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
             res.status(200).json({
                 results: {
                     object: {
-                        token, username, role, salaryPerHour, major, introduction, address, avatar
+                        token, 
+                        ...entity
                     }
                 }
             });
-        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+        }).catch((err) => {res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}); console.log(err)});
 });
 
 module.exports = router;

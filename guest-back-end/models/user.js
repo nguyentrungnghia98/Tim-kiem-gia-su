@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 
 const userSchema = Schema({
@@ -36,7 +37,7 @@ const userSchema = Schema({
     address: { type: String }
 });
 
-
+userSchema.plugin(mongoosePaginate);
 const User = mongoose.model('User', userSchema);
 
 module.exports= {
@@ -80,5 +81,9 @@ module.exports= {
         });
 
         return user.save();
-    }
+    },
+
+    findTeacherWithPagination: () => {
+
+    },
 }
