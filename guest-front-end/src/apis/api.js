@@ -35,6 +35,18 @@ export class Api{
 
     return response.data.results.object;
   }
+
+  async  update(id = '', data){
+    const setting = {
+      method: 'POST',
+      url: this.getUrl(id),
+      headers: this.tokenHeader,
+      data
+    }
+    const response = await this.exec(setting);
+
+    return response.data.results.object;
+  }
 }
 const api  = new Api();
 export default api;

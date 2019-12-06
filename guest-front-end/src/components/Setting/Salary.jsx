@@ -4,12 +4,44 @@ import {
   CircularProgress
 } from '@material-ui/core';
 import CssTextField from './CssTextField';
+import User from '../../apis/user';
+import { fetchUser } from '../../actions/user';
+import {connect} from 'react-redux';
+import toast from '../../utils/toast';
 
-const Salary = () => {
+function converCurrency(money) {
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'VND',
+  });
+  return formatter.format(money).slice(1);
+}
+
+const Salary = (props) => {
+  const {user, fetchUser} = props;
   const [loadSaveDone, setLoadSaveDone] = useState(true);
-  const [salary, setSalary] = useState(0) ;
-  function handleSubmit() {
+  const [salary, setSalary] = useState(user.salaryPerHour) ;
+  
+  async function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      setLoadSaveDone(false);
+      const data = {
+        salaryPerHour: salary
+      };
+      const response = await User.updateInfo(data);
+      fetchUser(response);
+      console.log('data', data, response)
 
+      setLoadSaveDone(true);
+      toast.success('Cập nhật thành công');
+    } catch (error) {
+      console.log({ error });
+      setLoadSaveDone(true);
+      let message = 'Some thing wrong!';
+      if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
+      toast.error(message);
+    }
   }
 
   return (
@@ -23,7 +55,7 @@ const Salary = () => {
         <div className="salary-price">
             <CssTextField
             variant="outlined"
-            placeholder="Ví dụ: Freelance"
+            placeholder=""
             value={salary}
             onChange={e => setSalary(e.target.value)}
           />
@@ -37,7 +69,7 @@ const Salary = () => {
           <span>Hệ thống sẽ chiết khấu 20% thu nhập của bạn</span>
         </div>
         <div className="salary-price">
-          <div> {Math.round(salary*0.2,3)} </div>
+          <div>  {converCurrency(Math.round(salary*0.2,3))} </div>
           <span>/hr</span>
         </div>
       </div>
@@ -48,7 +80,7 @@ const Salary = () => {
           <span>Số tiền sau khi trừ phí</span>
         </div>
         <div className="salary-price">
-        <div> {Math.round(salary*0.8,3)} </div>
+        <div> {converCurrency(Math.round(salary*0.8,3))} </div>
           <span>/hr</span>
         </div>
       </div>
@@ -57,7 +89,7 @@ const Salary = () => {
               {loadSaveDone ? (
                 'Cập nhật'
               ) : (
-                  <CircularProgress size={26} />
+                  <CircularProgress size={20} />
                 )}
             </button>
     </div>
@@ -65,4 +97,9 @@ const Salary = () => {
   )
 }
 
-export default Salary;
+const mapStateToProps = (state) => {
+  return {
+    user: state.auth.user
+  };
+};
+export default connect(mapStateToProps, {fetchUser})(Salary);

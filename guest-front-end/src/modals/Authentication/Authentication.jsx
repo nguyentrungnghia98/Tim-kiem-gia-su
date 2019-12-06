@@ -10,8 +10,7 @@ import { closeAuthenticationModal } from './AuthenticationAction';
 import './Authentication.scss';
 import CssTextField from './CssTextField';
 import {
-  Dialog,
-  DialogContent
+  Dialog
 } from '@material-ui/core';
 import jwt from '../../utils/jwt';
 import config from '../../config';
@@ -45,7 +44,7 @@ const Authentication = props => {
   useEffect(() => {
     setMode(props.modeModal)
     setLoading(false);
-  }, [props.toggle])
+  }, [props.toggle, props.modeModal])
 
   function handleClose() {
     console.log('close')
@@ -82,6 +81,7 @@ const Authentication = props => {
         break;
       case 'verifyCode':
         setVerifyCode(value);
+        break;
       default:
         return
     }
@@ -187,29 +187,13 @@ const Authentication = props => {
       } else {
         callback();
       }
-
-
-      toast.success(message, {
-        position: "bottom-right",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.success(message);
     } catch (error) {
       console.log({ error });
       setLoading(false);
       let message = 'Some thing wrong!';
       if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
-      toast.error(message, {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      });
+      toast.error(message);
     }
   }
 

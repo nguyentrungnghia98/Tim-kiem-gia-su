@@ -16,6 +16,30 @@ class User extends Api{
 
     return response.data.results.object;
   }
+
+  async  updateInfo(data){
+    const setting = {
+      method: 'POST',
+      url: this.getUrl('update'),
+      headers: this.tokenHeader,
+      data
+    }
+    const response = await this.exec(setting);
+
+    return response.data.results.object;
+  }
+
+  async  changePassword(data){
+    const setting = {
+      method: 'POST',
+      url: this.getUrl('changePassword'),
+      headers: this.tokenHeader,
+      data
+    }
+    const response = await this.exec(setting);
+
+    return response.data;
+  }
 }
 const user = new User();
 export default user;
