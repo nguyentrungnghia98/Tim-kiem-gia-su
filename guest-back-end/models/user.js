@@ -68,7 +68,7 @@ module.exports= {
     },
 
     findOneById: (id) => {
-        return User.findById(id).populate('major', 'content').exec();
+        return User.findById(id).select('-password -__v').populate('major', '-__v').exec();
     },
 
     updateOne: (conditionObject, properies) => {
