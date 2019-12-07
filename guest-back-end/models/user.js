@@ -34,7 +34,8 @@ const userSchema = Schema({
         ref: 'TagSkill'
     }],
     introduction: { type: String },
-    address: { type: String }
+    address: { type: String },
+    job: {type: String}
 });
 
 userSchema.plugin(mongoosePaginate);
@@ -83,7 +84,7 @@ module.exports= {
         return user.save();
     },
 
-    findTeacherWithPagination: () => {
-
+    getListTeacherWithPagination: (page, limit) => {
+        return User.paginate({}, { page, limit});
     },
 }

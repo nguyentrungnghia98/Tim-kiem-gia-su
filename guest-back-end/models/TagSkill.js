@@ -25,5 +25,9 @@ module.exports = {
         });
 
         return tagSkill.save();
+    },
+
+    getListTagSkill: () => {
+        return TagSkill.find().select('id avatar content').exec();
     }
 }

@@ -16,6 +16,7 @@ const cors = require('cors');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/user/user');
 const secureRouter = require('./routes/secure/secure');
+const tagSkillRouter = require('./routes/TagSkill/TagSkill');
 
 var app = express();
 dotenv.config();
@@ -56,6 +57,7 @@ app.options('*', cors())
 app.use(cors());
 
 app.use(getPayloadToken);
+app.use('/tagSkill', tagSkillRouter);
 app.use('/secure', secureRouter);
 app.use('/user', usersRouter);
 app.use('/', indexRouter);
