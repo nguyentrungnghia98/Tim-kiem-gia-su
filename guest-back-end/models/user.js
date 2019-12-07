@@ -37,8 +37,13 @@ const userSchema = Schema({
     introduction: { type: String },
     address: { type: String },
     job: {type: String}
-});
+}, { collation: {
+    locale: 'vi',
+    strength: 2,
+    caseLevel: false
+}});
 
+userSchema.index({address: 'text'});
 userSchema.plugin(mongoosePaginate);
 const User = mongoose.model('User', userSchema);
 
@@ -85,7 +90,47 @@ module.exports= {
         return user.save();
     },
 
-    getListTeacherWithPagination: (page, limit) => {
-        return User.paginate({}, { page, limit});
+    getListTeacherWithPagination: (page, limit, arrTagSkill, place, fee, sort) => {
+        const query = {};
+        query.role = 1;
+
+        if (arrTagSkill && arrTagSkill.length > 0) {
+            query.major = { $in: arrTagSkill };
+        }
+
+        if (place) {
+            query['$text'] = {$search: place};
+        }
+
+        if (fee) {
+            switch (fee.type) {
+                case 'LESS': 
+                    query.salaryPerHour = {$lt: fee.value };
+                    break;
+                case 'GREATER': 
+                    query.salaryPerHour = {$gt: fee.value };
+                    break;
+                case 'FROM_TO': 
+                    query.salaryPerHour = {$lte: fee.value2, $gte: fee.value1 };
+                    break;
+            }
+        }
+
+        const option = { 
+            page, limit,
+            select: '-password -__v',
+            populate: {
+                path: 'major',
+                select: '-__v'
+            }
+        };
+
+        if (sort) {
+            const temp = {};
+            temp[sort.field] = sort.type;
+            option.sort = temp;
+        }
+
+        return User.paginate(query, option);
     },
 }

@@ -166,9 +166,8 @@ router.post('/update', passIfHaveValidToken, (req, res) => {
 // kèm phân trang
 // POST /user/getListTeacher
 router.post("/getListTeacher", (req, res) => {
-    const { page, limit } = req.body;
-    console.log(req.body);
-    User.getListTeacherWithPagination(page, limit)
+    const { page, limit, arrTagSkill, place, fee, sort } = req.body;
+    User.getListTeacherWithPagination(page, limit, arrTagSkill, place, fee, sort)
         .then((rs) => res.status(200).json(rs))
         .catch((err) => res.status(400).json({message: err.message}));
 });
