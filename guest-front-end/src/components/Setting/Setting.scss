@@ -176,7 +176,11 @@
     padding: 8px 20px;
     margin-top: 20px;
   }
-
+  .actions{
+    .btn-primary{
+      width: 110px;
+    }
+  }
   
 }
 .react-tags {
@@ -357,6 +361,7 @@
       }
     }
   }
+  
 }
 .no-border{
   border-bottom: none;

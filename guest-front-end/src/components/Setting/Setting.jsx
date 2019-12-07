@@ -6,7 +6,6 @@ import {
   Tabs,
   Tab,
 } from '@material-ui/core';
-import User from "../../apis/user";
 import './Setting.scss'
 import BasicInfo from './BasicInfo';
 import Job from './Job';

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Router, Switch, Route, Redirect } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { connect } from 'react-redux';
@@ -16,33 +16,34 @@ import Authentication from '../modals/Authentication/Authentication';
 import SetRoleModal from '../modals/SetRole/SetRole';
 import { fetchUser } from '../actions/user';
 import User from '../apis/user';
-import {openSetRoleModal} from '../modals/SetRole/SetRoleAction';
+import { openSetRoleModal } from '../modals/SetRole/SetRoleAction';
 import NoMatch from './NoMatch/NoMatch';
 import Teachers from './Teachers/Teachers';
+import ProtectedRoute from './ProtectedRoute';
+import {openAuthenticationModal} from '../modals/Authentication/AuthenticationAction';
 
 const Root = (props) => {
-  const { isSignedIn, fetchUser, openSetRoleModal } = props;
-  const [loading, setLoading] = useState(false);
-
+  const { isSignedIn, fetchUser, openSetRoleModal, openAuthenticationModal } = props;
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     console.log(User, User.module)
     const fetchDataUser = async () => {
       try {
-        //setLoading(true);
-        
+        setLoading(true);
+
         const user = await User.getInfo();
         fetchUser(user);
 
-        //setLoading(false);
+        setLoading(false);
 
-        if(user.role === -1) {
-          setTimeout(()=> {
+        if (user.role === -1) {
+          setTimeout(() => {
             openSetRoleModal();
           }, 2000)
         }
       } catch (err) {
         console.log('err', err);
-        //setLoading(false);
+        setLoading(false);
       }
     };
     fetchDataUser();
@@ -51,56 +52,51 @@ const Root = (props) => {
 
   return (
     <>
-      {loading ? (
-        <div className="splash">
-          <div className="sk-folding-cube">
-            <div className="sk-cube1 sk-cube"></div>
-            <div className="sk-cube2 sk-cube"></div>
-            <div className="sk-cube4 sk-cube"></div>
-            <div className="sk-cube3 sk-cube"></div>
-          </div>
-        </div>
-      ) : (
-          <>
-            <ToastContainer
-              position="bottom-right"
-              autoClose={3000}
-              hideProgressBar
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnVisibilityChange
-              draggable
-              pauseOnHover
 
-            />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnVisibilityChange
+        draggable
+        pauseOnHover
 
-            <Router history={history}>
-              <NavBar />
-              <Switch>
-                <Route exact path="/">
-                  <Home />
-                </Route>
-                <Route exact path="/cat" render={() => <Redirect to="/cat/all" />}></Route>
-                <Route exact path="/cat/:category">
-                  <Teachers />
-                </Route>
-                <Route exact path="/seach/">
-                  <Setting />
-                </Route>
-                <Route exact path="/setting">
-                  <Setting />
-                </Route>
-                <Route component={NoMatch} />
-              </Switch>
-              <Footer />
+      />
 
-              <Authentication />
-              <SetRoleModal />
-              <Alert />
-            </Router>
-          </>
-        )}
+      <Router history={history}>
+        <NavBar />
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route exact path="/cat" render={() => <Redirect to="/cat/all" />}></Route>
+          <Route exact path="/cat/:category">
+            <Teachers />
+          </Route>
+          <Route exact path="/seach/">
+            <Setting />
+          </Route>
+
+          <ProtectedRoute
+            path="/setting"
+            isAuthenticated={isSignedIn}
+            triggerLogin={openAuthenticationModal}
+            isLoading={loading}
+            exact
+            component={Setting}
+          ></ProtectedRoute>
+
+          <Route component={NoMatch} />
+        </Switch>
+        <Footer />
+
+        <Authentication />
+        <SetRoleModal />
+        <Alert />
+      </Router>
     </>
 
   );
@@ -115,6 +111,7 @@ export default connect(
   mapStateToProps,
   {
     fetchUser,
-    openSetRoleModal
+    openSetRoleModal,
+    openAuthenticationModal
   }
 )(Root);
