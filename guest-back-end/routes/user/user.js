@@ -175,7 +175,7 @@ router.post("/getListTeacher", (req, res) => {
                 }
             }
         }))
-        .catch((err) => res.status(400).json({message: err.message}));
+        .catch((err) => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
 });
 
 module.exports = router;
