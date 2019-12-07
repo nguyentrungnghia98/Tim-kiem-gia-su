@@ -15,8 +15,7 @@ router.get('/getListTagSkill', (req, res) => {
                 ]
             }
         }))
-        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}))
-
+        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
 });
 
 module.exports = router;
