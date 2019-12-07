@@ -168,7 +168,13 @@ router.post('/update', passIfHaveValidToken, (req, res) => {
 router.post("/getListTeacher", (req, res) => {
     const { page, limit, arrTagSkill, place, fee, sort } = req.body;
     User.getListTeacherWithPagination(page, limit, arrTagSkill, place, fee, sort)
-        .then((rs) => res.status(200).json(rs))
+        .then((rs) => res.status(200).json({
+            results: {
+                object: {
+                    ...rs
+                }
+            }
+        }))
         .catch((err) => res.status(400).json({message: err.message}));
 });
 
