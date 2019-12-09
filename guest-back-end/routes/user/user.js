@@ -1,4 +1,4 @@
-var express = require('express');
+﻿var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
@@ -176,6 +176,21 @@ router.post("/getListTeacher", (req, res) => {
             }
         }))
         .catch((err) => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+});
+
+// Xử lí req lấy info của 1 user theo id
+// GET /user/:id
+router.get('/:id', (req, res) => {
+    User.findOneById(req.params.id)
+        .then((user) => res.status(200).json({
+            results: {
+                object: {
+                    ...user['_doc']
+                }
+            }
+        }))
+        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+    
 });
 
 module.exports = router;
