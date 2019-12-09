@@ -5,32 +5,12 @@ import './TeacherInfo.scss';
 import SelectOption from '../shared/SelectOption/SelectOption';
 import StarRatings from 'react-star-ratings';
 import { converCurrency, formatDate } from '../../utils/pipe';
+import ReactPaginate from 'react-paginate';
+import {withRouter} from 'react-router-dom';
 
-const teacher = {
-  avatar: 'https://www.upwork.com/profile-portraits/c17Ppw4ug0lV5mmvPQzWkIZ07oThUemdFLT0iTR4TOBGBCeFIIjcn36raL9f-xaJ2i',
-  username: 'Trần Dần',
-  email: 'a@gmail.com',
-  introduction: `- Vốn là dân công nghệ Sinh học rẽ ngang sang môn Hóa, thày đã từng bước chinh phục các em 
-  học sinh bằng sự tận tâm, miệt mài chia sẻ các kiến thức,sự nghiêm túc trong mọi công việc cũng 
-  như sự khẳng định vị thế về chuyên môn trong cộng đồng.
-  
-  - Là người rất nghiêm khắc trong giảng dạy vì thế những bài giảng, bài tập của thày luôn rất cầu 
-  kỳ, chỉn chu đến từng chi tiết nhỏ giúp cho các em học sinh vừa nắm được bản chất của kiến thức 
-   vừa có cơ hội vận dụng vào việc xử lí nhiều dạng bài tập khác nhau.
-  
-  - Luôn đổi mới và đi tiên phong trong cải thiện phương pháp giảng dạy và truyền thụ kiến thức. 
-  Trong mỗi bài giảng thày đều có sự ứng dụng thực tiễn để học sinh dễ dàng tiếp nhận kiến thức, 
-  không còn sợ môn Hóa và củng cố tình yêu với các môn khoa học.`,
-  salaryPerHour: 100000,
-  address: 'Tp.Hồ Chí Minh',
-  job: 'Giáo viên Toán',
-  major: [
-    { name: 'Toán 12' }, { name: 'Tin học' }, { name: 'React' }, { name: 'Toán' }, { name: 'Lập trình web' },
-  ]
-}
 
 const review = {
-  name: "Hóa học 12",
+  name: "Fake review",
   rate: 4.2,
   date: new Date(),
   price: 1210000,
@@ -46,14 +26,117 @@ const arrSortOption = [
 ]
 
 
-const TeacherInfo = () => {
-  const { avatar, username, job, address, salaryPerHour, introduction, major, _id } = teacher;
-  const [selectedSortOption, setSelectedSortOption] = useState(arrSortOption[0])
+const TeacherInfo = (props) => {
+  const [teacher, setTeacher] = useState();
+  const [selectedSortOption, setSelectedSortOption] = useState(arrSortOption[0]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true)
+  const limit = 5;
   const reviews = Array(10).fill(0)
+
+
+  useEffect(() => {
+    async function loadInfoUser() {
+      const { match } = props;
+      console.log(props)
+      const { id } = match.params;
+      try {
+        setLoading(true);
+
+        const response = await User.getItem(id);
+        setTeacher(response)
+        
+        setLoading(false);
+      } catch (error) {
+        console.log('err', error);
+        setLoading(false);
+        setTeacher(null)
+        User.alertError(error);
+      }
+    }
+    loadInfoUser();
+  }, [])
+
   function setSortOption(i) {
     setSelectedSortOption(arrSortOption[i]);
   }
 
+  function handlePageClick(data) {
+    setPage(data.selected + 1);
+    console.log(data)
+    // let selected = data.selected;
+    // let offset = Math.ceil(selected * this.props.perPage);
+
+    // this.setState({ offset: offset }, () => {
+    //   this.loadCommentsFromServer();
+    // });
+  };
+
+  function renderReviews() {
+    return (
+      <>
+        {reviews.slice((page - 1) * limit, page * limit).map((_, index) => {
+          return (
+            <div className="review " key={index}>
+              <div className="row no-gutters">
+                <div className="col-10 review-content">
+                  <h5>{review.name + " " + ((page - 1) * limit + index + 1)}</h5>
+                  <div className="d-flex align-items-center review-info">
+                    <StarRatings
+                      starRatedColor="#ffde23"
+                      rating={review.rate}
+                      numberOfStars={5}
+                      starDimension="16px"
+                      name='rating'
+                      starSpacing="0"
+                    />
+                    <div className="rating mx-3">{review.rate}</div>
+                    <div className="date">{formatDate(review.date)}</div>
+                  </div>
+                  <span className="comment"><i>{review.comment}</i></span>
+                </div>
+                <div className="col-2 price">
+                  {converCurrency(review.price)}đ
+                </div>
+              </div>
+            </div>
+          )
+        })}
+        <ReactPaginate
+          previousLabel={'Trước'}
+          nextLabel={'Tiếp'}
+          breakLabel={'...'}
+          breakClassName={'break-me'}
+          pageCount={Math.ceil(reviews.length / limit)}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          onPageChange={handlePageClick}
+          containerClassName={'pagination'}
+          subContainerClassName={'pages pagination'}
+          activeClassName={'active'}
+        />
+      </>
+    )
+  }
+
+  if(loading){
+    return (
+      <div className="page-wrapper teacher-info-container d-flex justify-content-center">
+        <div className="spinner-wrapper mt-5" >
+                    <div className="spinner-border" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+        </div>
+      </div>
+    )
+  }
+  if(!teacher){
+    return (
+      <div className="page-wrapper teacher-info-container d-flex justify-content-center">
+        <h5 className="mt-5"><i>Không tìm thấy người dùng</i></h5>
+      </div>
+    )
+  }
   return (
     <div className="page-wrapper teacher-info-container">
       <div className="row px no-gutters">
@@ -63,14 +146,14 @@ const TeacherInfo = () => {
               <div className="teacher-info">
                 <div className="d-flex">
                   <div className="info-left">
-                    <img src={avatar ? avatar : "/images/avatar.png"}
+                    <img src={teacher.avatar ? teacher.avatar : "/images/avatar.png"}
                       onError={(image) => {
                         image.target.src = "/images/avatar.png";
                       }} alt="avatar" />
                   </div>
                   <div className="info-right">
-                    <div className="name">{username}</div>
-                    <div className="job"><i className="fas fa-map-marker-alt mr-2"></i> {address}</div>
+                    <div className="name">{teacher.username}</div>
+                    <div className="job"><i className="fas fa-map-marker-alt mr-2"></i> {teacher.address}</div>
                   </div>
                 </div>
                 <div className="review">
@@ -86,21 +169,24 @@ const TeacherInfo = () => {
                   </div>
                 </div>
               </div>
-              <h4 className="teacher--title">{job ? job : 'Không rõ nghề nghiệp'}</h4>
-              <p className="introduction">{introduction}</p>
+              <h4 className="teacher--title">{teacher.job ? teacher.job : 'Không rõ nghề nghiệp'}</h4>
+              <p className="introduction">{teacher.introduction}</p>
               <h4 className="teacher--title">Kĩ năng</h4>
               <div className="skills">
-                {major.map(({ name }, index) => {
-                  return (
-                    <button key={index} type="button" className="btn btn-tag">
-                      {name}
-                    </button>
-                  )
-                })}
+                {teacher.major && (<>
+                  {teacher.major.map(({ content }, index) => {
+                    return (
+                      <button key={index} type="button" className="btn btn-tag">
+                        {content}
+                      </button>
+                    )
+                  })}
+                </>)}
+
               </div>
               <div className="statistic row">
                 <div className="col-3">
-                  <p>{converCurrency(salaryPerHour)}đ</p>
+                  <p>{converCurrency(teacher.salaryPerHour)}đ</p>
                   <span>1 giờ học</span>
                 </div>
                 <div className="col-3">
@@ -119,40 +205,15 @@ const TeacherInfo = () => {
             </div>
           </div>
           <div className="teacher history">
-          <div className="history-container">
-            <div className="history--header">
-              <h5>Lịch sử dạy học và đánh giá</h5>
-              <SelectOption setOption={setSortOption} selectedOption={selectedSortOption} arrOption={arrSortOption} />
-            </div>
-            <div className="history--body">
-              {reviews.map((_, index) => {
-                return (
-                  <div className="review " key={index}>
-                    <div className="row no-gutters">
-                      <div className="col-10 review-content">
-                        <h5>{review.name}</h5>
-                        <div className="d-flex align-items-center review-info">
-                          <StarRatings
-                            starRatedColor="#ffde23"
-                            rating={review.rate}
-                            numberOfStars={5}
-                            starDimension="16px"                            
-                            name='rating'
-                            starSpacing="0"
-                          />
-                          <div className="rating mx-3">{review.rate}</div>
-                          <div className="date">{formatDate(review.date)}</div>
-                        </div>
-                        <span className="comment"><i>{review.comment}</i></span>
-                      </div>
-                      <div className="col-2 price">
-                        {converCurrency(review.price)}đ
-                        </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+            <div className="history-container">
+              <div className="history--header">
+                <h5>Lịch sử dạy học và đánh giá</h5>
+                <SelectOption setOption={setSortOption} selectedOption={selectedSortOption} arrOption={arrSortOption} />
+              </div>
+              <div className="history--body">
+                {renderReviews()}
+
+              </div>
             </div>
           </div>
         </div>
@@ -168,4 +229,4 @@ const TeacherInfo = () => {
   )
 }
 
-export default TeacherInfo;
+export default withRouter(TeacherInfo);

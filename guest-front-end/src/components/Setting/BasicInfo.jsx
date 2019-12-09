@@ -11,10 +11,10 @@ import toast from '../../utils/toast';
 
 const BasicInfo = (props) => {
   const { user, fetchUser, openAlertError } = props;
-  const [name, setName] = useState(user.username);
-  const [introduction, setIntroduction] = useState(user.introduction);
-  const [address, setAddress] = useState(user.address);
-  const [imgUrl, setImgUrl] = useState(user.avatar);
+  const [name, setName] = useState(user.username||'');
+  const [introduction, setIntroduction] = useState(user.introduction||'');
+  const [address, setAddress] = useState(user.address||'');
+  const [imgUrl, setImgUrl] = useState(user.avatar||'');
   const [loadSaveDone, setLoadSaveDone] = useState(true);
   const [loadImageDone, setLoadImageDone] = useState(true);
   const fileInput = useRef(null);

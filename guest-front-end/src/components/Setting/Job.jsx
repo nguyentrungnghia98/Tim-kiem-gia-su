@@ -17,10 +17,10 @@ const defaultJobs = ['Giáo viên','Giáo viên toán', 'Giáo viên hóa học'
 const Job = (props) => {
   const {user, fetchUser} = props;
 
-  const [job, setJob] = useState(user.job);
+  const [job, setJob] = useState(user.job||'');
   const [otherJob, setOtherJob] = useState("");
   const [loadSaveDone, setLoadSaveDone] = useState(true);
-  const [tags, setTags] = useState(user.major.map(convertDataToSuggestion))
+  const [tags, setTags] = useState(user.major.map(convertDataToSuggestion) ||[])
   const [suggestions, setSuggestions] = useState([])
 
   function convertDataToSuggestion(item){

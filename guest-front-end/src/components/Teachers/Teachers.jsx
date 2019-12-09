@@ -7,41 +7,30 @@ import ReactPaginate from 'react-paginate';
 import { User } from '../../apis';
 import history from '../../history';
 
-const teacher = {
-  avatar: 'https://www.upwork.com/profile-portraits/c17Ppw4ug0lV5mmvPQzWkIZ07oThUemdFLT0iTR4TOBGBCeFIIjcn36raL9f-xaJ2i',
-  username: 'Trần Dần',
-  email: 'a@gmail.com',
-  salaryPerHour: 100000,
-  address: 'Tp.Hồ Chí Minh',
-  job: 'Giáo viên Toán',
-  skills: [
-    { name: 'Toán 12' }, { name: 'Tin học' }, { name: 'React' }, { name: 'Toán' }, { name: 'Lập trình web' },
-  ]
-}
-
 const arrSortOption = [
-  { text: 'Tên A-Z', code: 'name__increase' },
-  { text: 'Tên Z-A', code: 'name__decrease' },
-  { text: 'Giá tiền tăng', code: 'price__increase' },
-  { text: 'Giá tiền giảm', code: 'price__decrease' },
-  { text: 'Số học sinh đã dạy tăng', code: 'number__student__increase' },
-  { text: 'Số học sinh đã dạy giảm', code: 'number__student__decrease' },
+  { text: 'Tên A-Z', code: 'username_1' },
+  { text: 'Tên Z-A', code: 'username_-1' },
+  { text: 'Giá tiền tăng', code: 'salaryPerHour_1' },
+  { text: 'Giá tiền giảm', code: 'salaryPerHour_-1' },
+  { text: 'Số học sinh đã dạy tăng', code: 'history_1' },
+  { text: 'Số học sinh đã dạy giảm', code: 'history_-1' },
 ]
 
 const arrPriceOption = [
   { text: 'Phí trên giờ bất kì', code: 'any' },
-  { text: 'Dưới 20.000đ', code: '<20000' },
-  { text: 'Từ 20.000đ đến 50.000đ', code: '20000->50000' },
-  { text: 'Từ 50.000đ đến 70.000đ', code: '50000->70000' },
-  { text: 'Từ 70.000đ đến 100.000đ', code: '70000->100000' },
-  { text: 'Trên 100.000đ', code: '>100000' },
+  { text: 'Dưới 20.000đ', code: 'LESS__20000' },
+  { text: 'Từ 20.000đ đến 50.000đ', code: 'FROM_TO__20000__50000' },
+  { text: 'Từ 50.000đ đến 70.000đ', code: 'FROM_TO__50000__70000' },
+  { text: 'Từ 70.000đ đến 100.000đ', code: 'FROM_TO__70000__100000' },
+  { text: 'Trên 100.000đ', code: 'GREATER__100000' },
 ]
 
-const arrAddressOption = [
+let arrAddressOption = [
   { text: 'Bất kì', code: 'any' },
   { text: 'Hà Nội', code: 'Hà Nội' },
   { text: 'Đà Nẵng', code: 'Đà Nẵng' },
   { text: 'Hồ Chí Mình', code: 'Hồ Chí Mình' },
+  { text: 'Khác', code:'', type: 'input'}
 ]
 class Teachers extends Component {
   constructor(props) {
@@ -50,27 +39,59 @@ class Teachers extends Component {
     this.state = {
       data: [],
       offset: 0,
-      limit: 12,
+      limit: 8,
       teachers: [],
       total: 0,
-      loading: true,
-      selectedSortOption: arrSortOption[0],
-      selectedPriceOption: arrPriceOption[0],
-      selectedAddressOption: arrAddressOption[0]
+      loading: true      
     };
+    this.page = 1;
+    this.selectedSortOption = arrSortOption[0]
+    this.selectedPriceOption = arrPriceOption[0]
+    this.selectedAddressOption = arrAddressOption[0]
+  }
+
+  getFilterAndSort = () => {
+    const data = {};
+    let [property, type] = this.selectedSortOption.code.split("_")
+    data.sort = {
+      field : property,
+      type : Number.parseInt(type)
+    }
+
+    if(this.selectedPriceOption.code !== 'any'){
+      const [type, ...values] = this.selectedPriceOption.code.split("__");
+      const fee = {
+        type
+      }
+      if(values.length === 1) fee.value = values[0];
+      else {
+        fee.value1 = values[0];
+        fee.value2 = values[1];
+      }
+      data.fee = fee;
+    }
+
+    if(this.selectedAddressOption.code !== 'any'){
+      data.place = this.selectedAddressOption.code;
+    }
+    return data;
   }
 
   reload = async () => {
     const { match } = this.props;
     const { category, id } = match.params;
     const {limit} = this.state;
+    let arrTagSkill = [id];
+    if(category=== 'all') arrTagSkill = null;
+
     try {
       this.setState({loading: true});
 
       const {docs, total} = await User.getListTeacher({
-        page: 1,
+        page: this.page,
         limit,
-        arrTagSkill: [id]
+        arrTagSkill,
+        ...this.getFilterAndSort()
       });
       this.setState({teachers:docs, total});
 
@@ -95,14 +116,24 @@ class Teachers extends Component {
   }
 
   setSortOption = (i) => {
-    this.setState({ selectedSortOption: arrSortOption[i] })
+    this.selectedSortOption = arrSortOption[i];
+    this.reload();
   }
   setPriceOption = (i) => {
-    this.setState({ selectedPriceOption: arrPriceOption[i] })
+    this.selectedPriceOption = arrPriceOption[i];
+    this.reload();
   }
   setAddressOption = (i) => {
-    this.setState({ selectedAddressOption: arrAddressOption[i] })
+    this.selectedAddressOption = arrAddressOption[i];
+    this.reload();
   }
+  onArrSortOptionChange = (value) => {
+    const data = { text: 'Khác', code:value, type: 'input'}
+    arrAddressOption[arrAddressOption.length - 1] = data;
+    this.selectedAddressOption = data;
+    this.reload();
+  }
+
   renderHeader = () => {
     const text = ['Toán học', 'Vật lý', 'Hóa học', 'Tiếng Anh', 'Tiếng Nhật', 'Lập trình'];
 
@@ -130,18 +161,17 @@ class Teachers extends Component {
   }
 
   renderFilterOption = () => {
-    const { selectedSortOption, selectedPriceOption, selectedAddressOption } = this.state;
     return (
       <>
         <div className="w-100 pl-3 pr-3 mb-2 d-flex align-items-center justify-content-between">
           <div>
             <span>Lọc theo</span>
-            <SelectOption setOption={this.setAddressOption} selectedOption={selectedAddressOption} arrOption={arrAddressOption} />
-            <SelectOption setOption={this.setPriceOption} selectedOption={selectedPriceOption} arrOption={arrPriceOption} />
+            <SelectOption setOption={this.setAddressOption} onInputChange={this.onArrSortOptionChange} selectedOption={this.selectedAddressOption} arrOption={arrAddressOption} />
+            <SelectOption setOption={this.setPriceOption} selectedOption={this.selectedPriceOption} arrOption={arrPriceOption} />
           </div>
           <div>
             <span>Sắp xếp theo</span>
-            <SelectOption setOption={this.setSortOption} selectedOption={selectedSortOption} arrOption={arrSortOption} />
+            <SelectOption setOption={this.setSortOption} selectedOption={this.selectedSortOption}  arrOption={arrSortOption} />
           </div>
         </div>
 
@@ -150,12 +180,8 @@ class Teachers extends Component {
   }
 
   handlePageClick = data => {
-    // let selected = data.selected;
-    // let offset = Math.ceil(selected * this.props.perPage);
-
-    // this.setState({ offset: offset }, () => {
-    //   this.loadCommentsFromServer();
-    // });
+    this.page = data.selected + 1;
+    this.reload();
   };
 
   renderPageNumerNav() {
@@ -183,7 +209,7 @@ class Teachers extends Component {
     const { total, loading, teachers } = this.state;
     const { match } = this.props;
     const { category } = match.params;
-    console.log('teachers', teachers)
+    console.log('teachers', teachers,match)
 
 
     return (

@@ -10,6 +10,15 @@ export class Api{
     return toast;
   }
 
+  alertError(error){
+    if(typeof(error) === 'string'){
+      this.alert.error(error);
+    }
+    let message = 'Some thing wrong!';
+    if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
+    this.alert.error(message);
+  }
+
   get tokenHeader() {
     const userToken = localStorage.getItem('userToken');
     return { authorization : userToken }

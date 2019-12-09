@@ -5,6 +5,7 @@
     background: white;
     box-shadow: 0 4px 12px #c7c7c7;
     padding: 24px 26px;
+    min-height: 272px;
     .teacher-info {
       display: flex;
       
@@ -47,6 +48,7 @@
   .skills{
     display: flex;
     flex-wrap: wrap;
+    min-height: 40px;
   }
   .btn-primary{
     margin-top: 12px;

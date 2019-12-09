@@ -20,7 +20,7 @@ function converCurrency(money) {
 const Salary = (props) => {
   const {user, fetchUser} = props;
   const [loadSaveDone, setLoadSaveDone] = useState(true);
-  const [salary, setSalary] = useState(user.salaryPerHour) ;
+  const [salary, setSalary] = useState(user.salaryPerHour||'') ;
   
   async function handleSubmit(e) {
     e.preventDefault();

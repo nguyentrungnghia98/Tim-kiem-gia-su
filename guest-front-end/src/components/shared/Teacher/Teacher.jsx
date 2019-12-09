@@ -42,6 +42,8 @@ const Teacher = (props) => {
         </div>
         <div className="divide"></div>
         <div className="skills">
+        {major &&(
+          <>
           {major.map(({content},index) => {
             return (
               <button key={index} type="button" className="btn btn-tag">
@@ -49,6 +51,9 @@ const Teacher = (props) => {
               </button>
             )
           })}
+          </>
+        )}
+          
         </div>
         <div className="btn btn-primary" onClick={()=>onClickBtn(_id)}>
           Thông tin chi tiết
