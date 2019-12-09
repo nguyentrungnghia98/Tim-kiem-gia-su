@@ -15,10 +15,11 @@ import 'babel-polyfill';
 import Authentication from '../modals/Authentication/Authentication';
 import SetRoleModal from '../modals/SetRole/SetRole';
 import { fetchUser } from '../actions/user';
-import User from '../apis/user';
+import {User} from '../apis';
 import { openSetRoleModal } from '../modals/SetRole/SetRoleAction';
 import NoMatch from './NoMatch/NoMatch';
 import Teachers from './Teachers/Teachers';
+import TeacherInfo from './TeacherInfo/TeacherInfo';
 import ProtectedRoute from './ProtectedRoute';
 import {openAuthenticationModal} from '../modals/Authentication/AuthenticationAction';
 
@@ -73,8 +74,11 @@ const Root = (props) => {
             <Home />
           </Route>
           <Route exact path="/cat" render={() => <Redirect to="/cat/all" />}></Route>
-          <Route exact path="/cat/:category">
+          <Route exact path="/cat/:category/:id">
             <Teachers />
+          </Route>
+          <Route exact path="/teacher/:id">
+            <TeacherInfo />
           </Route>
           <Route exact path="/seach/">
             <Setting />

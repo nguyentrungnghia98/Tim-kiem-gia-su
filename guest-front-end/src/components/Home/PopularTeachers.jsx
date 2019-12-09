@@ -38,8 +38,8 @@ const teacher = {
   salaryPerHour: 100000,
   address: 'Tp.Hồ Chí Minh',
   job: 'Giáo viên Toán',
-  skills: [
-    {name: 'Toán 12'},{name: 'Tin học'},{name: 'React'},{name: 'Toán'},{name: 'Lập trình web'},
+  major: [
+    {content: 'Toán 12'},{content: 'Tin học'},{content: 'React'},{content: 'Toán'},{content: 'Lập trình web'},
   ]
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import User from '../../apis/user';
+import {User} from '../../apis';
 import { connect } from 'react-redux';
 import { fetchUser } from '../../actions/user';
 import { closeModal } from './SetRoleAction';

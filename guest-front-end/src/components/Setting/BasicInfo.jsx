@@ -4,7 +4,7 @@ import {
 } from '@material-ui/core';
 import CssTextField from './CssTextField';
 import Imgur from '../../apis/imgur';
-import User from '../../apis/user';
+import {User} from '../../apis';
 import { fetchUser } from '../../actions/user';
 import {connect} from 'react-redux';
 import toast from '../../utils/toast';

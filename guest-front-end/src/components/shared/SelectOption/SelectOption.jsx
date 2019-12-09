@@ -1,12 +1,12 @@
 import React from "react";
-
+import './SelectOption.scss';
 
 
 const SelectOption = props => {
   const { selectedOption, arrOption, setOption } = props;
 
   return (
-    <div className='btn-group'>
+    <div className='btn-group select-option'>
       <div className="sort-options" >
         <button className="dropdown btn btn-toggle-custom selected-option" data-toggle='dropdown'>
           {selectedOption.text}
