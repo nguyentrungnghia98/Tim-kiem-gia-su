@@ -111,12 +111,12 @@ const CreateNewAccount = (props) => {
   
                             <FormGroup>                        
                                 <label htmlFor="feInputState">Vai trò</label>
-                                <FormSelect id="feInputState" onChange={(e) => setRole(e.target.value)}>
-                                    <option>Chọn...</option>
+                                <FormSelect required id="feInputState" onChange={(e) => setRole(e.target.value)}>
+                                    <option hidden>Chọn...</option>
                                     <option>Admin</option>
                                     <option>Quản trị viên</option>
                                 </FormSelect>
-                            </FormGroup>
+                            </FormGroup>    
                                
                          <center><Button type="submit" disabled={isFetching || password !== rePassword}>Tạo tài khoản mới</Button></center>
                     </Form>

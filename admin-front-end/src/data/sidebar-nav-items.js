@@ -7,6 +7,21 @@ export default function() {
       htmlAfter: ""
     },
     {
+      title: "Quản lý tag kĩ năng",
+      htmlBefore: '<i class="material-icons">local_offer</i>',
+      to: "/tag-skill",
+    },
+    {
+      title: "Quản lý người dạy",
+      htmlBefore: '<i class="material-icons">people_alt</i>',
+      to: "/manager-user",
+    },
+    {
+      title: "Quản lý người học",
+      htmlBefore: '<i class="material-icons">school</i>',
+      to: "/manager-student",
+    },
+    {
       title: "Blog Dashboard",
       to: "/blog-overview",
       htmlBefore: '<i class="material-icons">edit</i>',
@@ -36,11 +51,6 @@ export default function() {
       title: "User Profile",
       htmlBefore: '<i class="material-icons">person</i>',
       to: "/user-profile-lite",
-    },
-    {
-      title: "Errors",
-      htmlBefore: '<i class="material-icons">error</i>',
-      to: "/errors",
     }
   ];
 }

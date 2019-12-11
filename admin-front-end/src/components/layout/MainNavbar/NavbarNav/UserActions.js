@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import {connect} from 'react-redux';
 import { Link } from "react-router-dom";
 import {
   Dropdown,
@@ -7,42 +8,48 @@ import {
   DropdownItem,
   Collapse,
   NavItem,
-  NavLink
+  NavLink,
 } from "shards-react";
 
-export default class UserActions extends React.Component {
-  constructor(props) {
-    super(props);
+import {logOut, fetchUser} from '../../../../actions/actionUser';
 
-    this.state = {
-      visible: false
+const UserActions = (props) => {
+
+  const [visible, setVisible] = useState(false);
+  const {logOut, userInfo, fetchUser} = props;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDataUser = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        await fetchUser(token);
+        
+        setLoading(false);
+      } catch (err) {
+        console.log('err', err);
+        setLoading(false);
+      }
     };
+    fetchDataUser();
+  }, []);
 
-    this.toggleUserActions = this.toggleUserActions.bind(this);
-  }
-
-  toggleUserActions() {
-    this.setState({
-      visible: !this.state.visible
-    });
-  }
-
-  render() {
     return (
-      <NavItem tag={Dropdown} caret toggle={this.toggleUserActions}>
+      <NavItem tag={Dropdown} caret toggle = {() => setVisible(!visible)}>
         <DropdownToggle caret tag={NavLink} className="text-nowrap px-3">
           <img
             className="user-avatar rounded-circle mr-2"
-            src={require("./../../../../images/avatars/0.jpg")}
+            src={userInfo.avatar}
             alt="User Avatar"
           />{" "}
-          <span className="d-none d-md-inline-block">Sierra Brooks</span>
+          <span className="d-none d-md-inline-block">{loading ? "" : userInfo.fullName}</span>
         </DropdownToggle>
-        <Collapse tag={DropdownMenu} right small open={this.state.visible}>
+        <Collapse tag={DropdownMenu} right small open={visible}>
           <DropdownItem tag={Link} to="user-profile">
-            <i className="material-icons">&#xE7FD;</i> Profile
+            <i className="material-icons">&#xE7FD;</i> Tài khoản của tôi
           </DropdownItem>
-          <DropdownItem tag={Link} to="edit-user-profile">
+          {/*<DropdownItem tag={Link} to="edit-user-profile">
             <i className="material-icons">&#xE8B8;</i> Edit Profile
           </DropdownItem>
           <DropdownItem tag={Link} to="file-manager-list">
@@ -50,13 +57,20 @@ export default class UserActions extends React.Component {
           </DropdownItem>
           <DropdownItem tag={Link} to="transaction-history">
             <i className="material-icons">&#xE896;</i> Transactions
-          </DropdownItem>
+          </DropdownItem>*/}
           <DropdownItem divider />
-          <DropdownItem tag={Link} to="/" className="text-danger">
-            <i className="material-icons text-danger">&#xE879;</i> Logout
+          <DropdownItem tag={Link} to="/login" className="text-danger" onClick={() => {localStorage.removeItem('token'); logOut()}}>
+            <i className="material-icons text-danger">&#xE879;</i> Đăng xuất
           </DropdownItem>
         </Collapse>
       </NavItem>
     );
-  }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: state.userReducer.isLoggedIn,
+    userInfo: state.authReducer.userInfo
+  };
+};
+export default connect(mapStateToProps, {logOut, fetchUser})(UserActions);

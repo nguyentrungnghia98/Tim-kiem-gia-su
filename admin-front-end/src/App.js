@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route ,Switch} from "react-router-dom";
 import {createStore, applyMiddleware, compose} from 'redux';
 import {Provider} from 'react-redux';
 import thunkMiddleware from 'redux-thunk';
@@ -17,8 +17,10 @@ const store = createStore(reducer, /* preloadedState, */ composeEnhancers(
   ));
 
 export default () => (
+  <>
   <Router basename={process.env.REACT_APP_BASENAME || ""}>
-    <div>
+  <Switch>
+
       {routes.map((route, index) => {
         return (
           <Route
@@ -34,11 +36,13 @@ export default () => (
                 </Provider>
               );
             })}
-          >
-          
+          >        
           </Route>
         );
       })}
-    </div>
+      
+
+    </Switch>
   </Router>
+  </>
 );

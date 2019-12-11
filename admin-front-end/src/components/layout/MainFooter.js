@@ -43,11 +43,7 @@ MainFooter.defaultProps = {
   menuItems: [
     {
       title: "Home",
-      to: "#"
-    },
-    {
-      title: "Services",
-      to: "#"
+      to: "/"
     },
     {
       title: "About",
@@ -55,11 +51,11 @@ MainFooter.defaultProps = {
     },
     {
       title: "Products",
-      to: "#"
+      to: ""
     },
     {
       title: "Blog",
-      to: "#"
+      to: ""
     }
   ]
 };

@@ -1,69 +1,101 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Setup schema
-var userSchema = Schema({
+const userSchema = Schema({
+    username: {
+        type: String,
+        minlength: 1,
+        maxlength: 70
+    },
     email: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 60
     },
-    password: {
-        type: String,
-        required: true
-    },
-    fullName: String,
-    status: {
+    password: { 
         type: String
     },
-    avatar: String,
-    role: {
+    avatar: { 
         type: String,
-        required: true
-    }
-
+        default: 'img/user.png'
+    },
+    role: { 
+        type: Number,
+        default: 0
+    },
+    status: { 
+        type: String,
+        default: 'active'
+    },
+    salaryPerHour: {type: Number},
+    major: [{
+        type: Schema.Types.ObjectId,
+        ref: 'TagSkill'
+    }],
+    job: { type: String },
+    introduction: { type: String },
+    address: { type: String }
 });
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = {
-
-    save: (entity, passHash) => {    
-            
-        var user = new User({
-            email : entity.email,
-            password: passHash,
-            fullName: entity.fullName,
-            role: entity.role,
-            status: 'active',
-            avatar: 'https://p7.hiclipart.com/preview/358/473/173/computer-icons-user-profile-person.jpg'
+module.exports= {
+    
+    findAll: () => {
+        return new Promise((resolve, reject) => {
+            User.find().exec((err, succ) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(succ);
+            })
         });
-        
-        return user.save();    
     },
 
-    findOneEmail: (email) => {
-        return User.findOne({email: email}).exec();
-    },
-
-    findById: (id) => {
-        return User.findById({_id:id}).exec();
-    },
-
-    findOneFacebookID: (facebookID) => {
-        return User.findOne({facebookID: facebookID}).exec();
-    },
-
-    saveAccountFacebook: (entity) => {    
-            
-        var user = new User({
-            email : entity.email,
-            password: entity.password,
-            fullName: entity.fullName,
-            facebookID: entity.facebookID
+    findTeacher: () => {
+        return new Promise((resolve, reject) => {
+            User.find({role:1}, ['status','avatar', 'major', 'email','username', 'address','introduction','job','salaryPerHour'])
+            .populate('major', 'content')
+            .exec((err, succ) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(succ);
+            })
         });
-        
-        return user.save();    
     },
+
+    findStudent: () => {
+        return new Promise((resolve, reject) => {
+            User.find({role:0}, ['status','avatar', 'major', 'email','username'])
+            .populate('major', 'content')
+            .exec((err, succ) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(succ);
+            })
+        });
+    },
+
+    findOneByEmail: (email) => {
+        return User.findOne({email}).populate('major', 'content').exec();
+    },
+
+    findOneAccountActiveByEmail: (email) => {
+        return User.findOne({email, status: 'active' }).populate('major', 'content').populate().exec();
+    },
+
+    findOneById: (id) => {
+        return User.findById(id).populate('major', 'content').exec();
+    },
+
+    updateOne: (conditionObject, properies) => {
+        return User.updateOne(conditionObject, {$set: properies}).exec();
+    },
+
+    deleteOne: (conditionObject) => {
+        return User.deleteOne(conditionObject).exec();
+    },
+
 }
-
-

@@ -27,7 +27,7 @@ const FormLogin = (props) => {
     const token = localStorage.getItem('token');
     if(isLoggedIn || token !== null)
     return(
-      <Redirect push to="/" />
+      <Redirect push to="/create-account" />
     );
 
     return( <div>

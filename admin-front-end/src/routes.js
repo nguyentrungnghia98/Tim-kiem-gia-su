@@ -13,15 +13,19 @@ import Errors from "./views/Errors";
 import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
- import Login from "./containers/LoginContainer";
+import Login from "./containers/LoginContainer";
 import CreateNewAccount from "./containers/CreateUserContainer";
+import UserProfile from "./views/UserProfile";
+import TagSkill from "./views/TagSkill";
+import ManagerUsers from "./views/ManagerUsers";
+import ManagerStudents from "./views/ManagerStudents";
 
 export default [
   {
     path: "/",
     exact: true,
     layout: DefaultLayout,
-    component: () => <Redirect to="/create-account" />
+    component: () => <Redirect to="/login" />
   },
   {
     path: "/login",
@@ -32,6 +36,26 @@ export default [
     path: "/create-account",
     layout: DefaultLayout,
     component:CreateNewAccount 
+  },
+  {
+    path: "/user-profile",
+    layout: DefaultLayout,
+    component: UserProfile
+  },
+  {
+    path: "/tag-skill",
+    layout: DefaultLayout,
+    component: TagSkill
+  },
+  {
+    path: "/manager-user",
+    layout: DefaultLayout,
+    component: ManagerUsers
+  },
+  {
+    path: "/manager-student",
+    layout: DefaultLayout,
+    component: ManagerStudents
   },
   {
     path: "/blog-overview",
@@ -49,11 +73,6 @@ export default [
     component: AddNewPost
   },
   {
-    path: "/errors",
-    layout: DefaultLayout,
-    component: Errors
-  },
-  {
     path: "/components-overview",
     layout: DefaultLayout,
     component: ComponentsOverview
@@ -67,5 +86,10 @@ export default [
     path: "/blog-posts",
     layout: DefaultLayout,
     component: BlogPosts
-  }
+  },
+  {
+
+    layout: DefaultLayout,
+    component: Errors
+  },
 ];
