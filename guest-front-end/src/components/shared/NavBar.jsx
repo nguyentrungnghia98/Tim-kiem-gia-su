@@ -49,15 +49,15 @@ class NavBar extends Component {
       { text: "Đăng kí", data: 'signup' }
     ],
     LoginAsStudent: [
-      { text: "Hợp đồng học", isHightLight: true, link: "/contact" },
-      { text: "Doanh thu", link: "/salary" },
-      { text: "Tin nhắn", link: "/message" }
+      { text: "Đang học", isHightLight: true, link: "/contracts" },
+      { text: "Lịch sử lớp học", link: "/contracts" },
+      { text: "Tin nhắn", link: "/messages" }
     ],
     LoginAsTeacher: [
-      { text: "Yêu cầu dạy học", isHightLight: true, link: "/contact" },
-      { text: "Hợp đồng học", link: "/contact" },
+      { text: "Yêu cầu dạy học", isHightLight: true, link: "/contracts" },
+      { text: "Hợp đồng học", link: "/contracts" },
       { text: "Doanh thu", link: "/salary" },
-      { text: "Tin nhắn", link: "/message" }
+      { text: "Tin nhắn", link: "/messages" }
     ],
   };
 
@@ -207,7 +207,7 @@ class NavBar extends Component {
             <input
               className='custom-input-text'
               type='text'
-              placeholder='Type name template here ...'
+              placeholder='Bạn muốn học gì...'
             />
           </div>
         </div>

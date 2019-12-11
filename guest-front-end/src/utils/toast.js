@@ -20,6 +20,17 @@ class Toast {
       draggable: true,
     });
   }
+
+  warn(message){
+    toast.warn(message, {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  }
 }
 const _toast = new Toast();
 export default _toast;

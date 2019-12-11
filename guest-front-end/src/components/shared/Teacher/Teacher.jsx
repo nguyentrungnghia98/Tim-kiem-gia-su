@@ -1,4 +1,5 @@
 import React from "react";
+import history from '../../../history';
 import './Teacher.scss';
 // const teacher = {
 //   avatar: '',
@@ -55,7 +56,10 @@ const Teacher = (props) => {
         )}
           
         </div>
-        <div className="btn btn-primary" onClick={()=>onClickBtn(_id)}>
+        <div className="btn btn-primary" onClick={()=> {
+          if(onClickBtn) onClickBtn(_id)
+            else history.push(`/teacher/${_id}`)
+        }}>
           Thông tin chi tiết
         </div>
       </div>

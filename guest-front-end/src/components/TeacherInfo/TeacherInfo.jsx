@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { User } from '../../apis';
 import history from '../../history';
 import './TeacherInfo.scss';
@@ -6,8 +7,8 @@ import SelectOption from '../shared/SelectOption/SelectOption';
 import StarRatings from 'react-star-ratings';
 import { converCurrency, formatDate } from '../../utils/pipe';
 import ReactPaginate from 'react-paginate';
-import {withRouter} from 'react-router-dom';
-
+import { withRouter } from 'react-router-dom';
+import { openAuthenticationModal } from '../../modals/Authentication/AuthenticationAction';
 
 const review = {
   name: "Fake review",
@@ -45,7 +46,7 @@ const TeacherInfo = (props) => {
 
         const response = await User.getItem(id);
         setTeacher(response)
-        
+
         setLoading(false);
       } catch (error) {
         console.log('err', error);
@@ -57,6 +58,20 @@ const TeacherInfo = (props) => {
     loadInfoUser();
   }, [])
 
+  function createContract() {
+    if(!props.isSignedIn){
+      User.alert.warn("Vui lòng đăng nhập để tiếp tục.")
+      return props.openAuthenticationModal();
+    }
+    if (teacher._id) history.push(`/create-contract/${teacher._id}`);
+  }
+
+  function sendMessage() {
+    if(!props.isSignedIn){
+      User.alert.warn("Vui lòng đăng nhập để tiếp tục.")
+      return props.openAuthenticationModal();
+    }
+  }
   function setSortOption(i) {
     setSelectedSortOption(arrSortOption[i]);
   }
@@ -119,18 +134,18 @@ const TeacherInfo = (props) => {
     )
   }
 
-  if(loading){
+  if (loading) {
     return (
       <div className="page-wrapper teacher-info-container d-flex justify-content-center">
         <div className="spinner-wrapper mt-5" >
-                    <div className="spinner-border" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
+          <div className="spinner-border" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
         </div>
       </div>
     )
   }
-  if(!teacher){
+  if (!teacher) {
     return (
       <div className="page-wrapper teacher-info-container d-flex justify-content-center">
         <h5 className="mt-5"><i>Không tìm thấy người dùng</i></h5>
@@ -219,9 +234,13 @@ const TeacherInfo = (props) => {
         </div>
         <div className="col-12 col-lg-3">
           <div className="actions">
-            <button className="btn btn-primary">Thuê ngay</button>
-            <button className="btn btn-light"><i className="far fa-heart mr-2" />  Save</button>
-
+            {props.role !== 1 && (
+              <>
+                <button className="btn btn-primary" onClick={createContract}>Thuê ngay</button>
+                <button className="btn btn-light" onClick={sendMessage}><i className="far fa-paper-plane mr-2" />Nhắn tin</button>
+                <button className="btn btn-light"><i className="far fa-heart mr-2" />  Save</button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -229,4 +248,17 @@ const TeacherInfo = (props) => {
   )
 }
 
-export default withRouter(TeacherInfo);
+
+const mapStateToProps = (state) => {
+  return {
+    role: state.auth.user ? state.auth.user.role : -1,
+    isSignedIn: state.auth.isSignedIn
+  };
+};
+
+const tmp = withRouter(TeacherInfo);
+export default connect(
+  mapStateToProps,{
+    openAuthenticationModal
+  }
+)(tmp);

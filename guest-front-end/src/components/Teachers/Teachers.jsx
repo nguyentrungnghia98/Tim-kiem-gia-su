@@ -99,9 +99,7 @@ class Teachers extends Component {
     } catch (error) {
       console.log('err', error);
       this.setState({loading: false, teachers: []});
-      let message = 'Some thing wrong!';
-      if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
-      User.alert.error(message);
+      User.alertError(error)
     }
   }
 

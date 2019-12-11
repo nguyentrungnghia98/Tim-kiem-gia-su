@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Teacher from '../shared/Teacher/Teacher';
+import {User} from '../../apis';
 
 const responsive = {
   desktop: {
@@ -31,23 +32,45 @@ const responsive = {
   }
 };
 
-const teacher = {
-  avatar: 'https://www.upwork.com/profile-portraits/c17Ppw4ug0lV5mmvPQzWkIZ07oThUemdFLT0iTR4TOBGBCeFIIjcn36raL9f-xaJ2i',
-  username: 'Trần Dần',
-  email: 'a@gmail.com',
-  salaryPerHour: 100000,
-  address: 'Tp.Hồ Chí Minh',
-  job: 'Giáo viên Toán',
-  major: [
-    {content: 'Toán 12'},{content: 'Tin học'},{content: 'React'},{content: 'Toán'},{content: 'Lập trình web'},
-  ]
-}
-
 class PopularTeachers extends Component {
 
-  renderListTeachers = () => {
-    const arrTemp = [...Array(8).keys()];
+  constructor(props) {
+    super(props);
 
+    this.state = {
+      teachers: [],
+      total: 0,
+      loading: true      
+    };
+  }
+
+  reload = async () => {
+    try {
+      this.setState({loading: true});
+
+      const {docs, total} = await User.getListTeacher({
+        page:1,
+        limit: 12
+      });
+      this.setState({teachers:docs, total});
+
+      this.setState({loading: false});
+    } catch (error) {
+      console.log('err', error);
+      this.setState({loading: false, teachers: []});
+      User.alertError(error)
+    }
+  }
+
+  componentDidMount(){
+    this.reload();
+  }
+
+  renderListTeachers = () => {
+    const {teachers} = this.state;
+    if(!teachers.length) {
+      return <h5><i>Danh sách rỗng</i></h5>
+    }
     return (
       <Carousel
       additionalTransfrom={0}
@@ -71,9 +94,9 @@ class PopularTeachers extends Component {
       slidesToSlide={1}
       swipeable
       >
-        {arrTemp.map((_,index) => {
+        {teachers.map((item,index) => {
           return (
-            <Teacher key={index} data ={teacher}/>
+            <Teacher key={index} data ={item}/>
           )
         })}
       </Carousel>
@@ -87,7 +110,7 @@ class PopularTeachers extends Component {
           <div className="home--card__title">
             Người dạy nổi bật
               </div>
-          <Link to="/category" className="btn see-more">
+          <Link to="/cat/all" className="btn see-more">
             Xem thêm &gt;
               </Link>
         </div>
