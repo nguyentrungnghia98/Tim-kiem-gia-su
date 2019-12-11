@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin from "react-google-login";
-import User from '../../apis/user';
+import {User} from '../../apis';
 import { toast } from "react-toastify";
 import { connect } from 'react-redux';
 import { signIn } from '../../actions/user';
@@ -43,6 +43,7 @@ const Authentication = props => {
 
   useEffect(() => {
     setMode(props.modeModal)
+    clearFillFormInfo();
     setLoading(false);
   }, [props.toggle, props.modeModal])
 
@@ -218,7 +219,9 @@ const Authentication = props => {
         url = `/secure/sendOTPViaMail`;
         data = { email: emailRegister };
         message = "Gửi email xác nhận thành công"
-        callback = () => setMode('finish_signup');
+        callback = () => {
+          setMode('finish_signup');
+        } 
         break;
       case 'register':
         url = `/user/register`;

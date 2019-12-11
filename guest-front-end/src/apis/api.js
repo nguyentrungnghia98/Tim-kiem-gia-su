@@ -1,9 +1,22 @@
 import axios from "./axios";
+import toast from "../utils/toast";
 export class Api{
   module = '';
 
   get axios(){
     return axios;
+  }
+  get alert(){
+    return toast;
+  }
+
+  alertError(error){
+    if(typeof(error) === 'string'){
+      this.alert.error(error);
+    }
+    let message = 'Some thing wrong!';
+    if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
+    this.alert.error(message);
   }
 
   get tokenHeader() {
@@ -13,6 +26,17 @@ export class Api{
   getUrl(path=""){
     if(!this.module) return '/';
     return `/${this.module}/${path}`
+  }
+
+  async  getList(){
+    const setting = {
+      method: 'GET',
+      url: this.getUrl(),
+      headers: this.tokenHeader,
+    }
+    const response = await this.exec(setting);
+
+    return response.data.results.objects;
   }
 
   async exec(option) {

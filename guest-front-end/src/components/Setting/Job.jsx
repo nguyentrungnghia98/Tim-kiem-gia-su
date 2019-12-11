@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import CssTextField from './CssTextField';
 import ReactTags from 'react-tag-autocomplete'
-import User from '../../apis/user';
+import {User, TagSkill} from '../../apis';
 import { fetchUser } from '../../actions/user';
 import { connect } from 'react-redux';
 import toast from '../../utils/toast';
@@ -17,20 +17,37 @@ const defaultJobs = ['Giáo viên','Giáo viên toán', 'Giáo viên hóa học'
 const Job = (props) => {
   const {user, fetchUser} = props;
 
-  const [job, setJob] = useState(user.job);
+  const [job, setJob] = useState(user.job||'');
   const [otherJob, setOtherJob] = useState("");
   const [loadSaveDone, setLoadSaveDone] = useState(true);
-  const [tags, setTags] = useState([
-    { id: 1, name: "React" },
-    { id: 2, name: "Angular" }
-  ])
-  const [suggestions, setSuggestions] = useState([
-    { id: 3, name: "Toán học" },
-    { id: 4, name: "Văn học" },
-    { id: 5, name: "Hóa học" },
-    { id: 6, name: "Tiếng Anh" }
-  ])
+  const [tags, setTags] = useState(user.major.map(convertDataToSuggestion) ||[])
+  const [suggestions, setSuggestions] = useState([])
 
+  function convertDataToSuggestion(item){
+    return {
+      id: item._id,
+      name: item.content,   
+      ...item
+    }
+  }
+
+  useEffect(()=>{
+    async function reload(){
+      try {
+        const response = await TagSkill.getList();
+        setSuggestions(response.map(convertDataToSuggestion))
+        console.log('data', response)
+  
+      } catch (error) {
+        console.log({ error });
+        let message = 'Some thing wrong!';
+        if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
+        toast.error(message);
+      }
+    }
+    
+    reload();
+  }, [])
   function handleDelete(i) {
     setTags(tags.filter((tag, index) => index !== i));
   }
@@ -49,7 +66,8 @@ const Job = (props) => {
     try {
       setLoadSaveDone(false);
       const data = {
-        job: job !== "0"? job: otherJob
+        job: job !== "0"? job: otherJob,
+        major: tags.map(item => item._id)
       };
       const response = await User.updateInfo(data);
       fetchUser(response);

@@ -1,4 +1,5 @@
 import React from "react";
+import history from '../../../history';
 import './Teacher.scss';
 // const teacher = {
 //   avatar: '',
@@ -19,13 +20,14 @@ function converCurrency(money) {
   return formatter.format(money).slice(1);
 }
 const Teacher = (props) => {
-  const { avatar, username, job, address, salaryPerHour, skills } = props.data;
+  const {onClickBtn,data} = props;
+  const { avatar, username, job, address, salaryPerHour, major, _id } = data;
   return (
     <div className="teacher">
       <div className="teacher-container">
         <div className="teacher-info">
           <div className="info-left">
-            <img src={avatar}
+            <img src={avatar?avatar:"/images/avatar.png"}
               onError={(image) => {
                 image.target.src = "/images/avatar.png";
               }} alt="avatar" />
@@ -41,15 +43,23 @@ const Teacher = (props) => {
         </div>
         <div className="divide"></div>
         <div className="skills">
-          {skills.map(({name},index) => {
+        {major &&(
+          <>
+          {major.map(({content},index) => {
             return (
               <button key={index} type="button" className="btn btn-tag">
-                {name}
+                {content}
               </button>
             )
           })}
+          </>
+        )}
+          
         </div>
-        <div className="btn btn-primary">
+        <div className="btn btn-primary" onClick={()=> {
+          if(onClickBtn) onClickBtn(_id)
+            else history.push(`/teacher/${_id}`)
+        }}>
           Thông tin chi tiết
         </div>
       </div>

@@ -40,6 +40,19 @@ class User extends Api{
 
     return response.data;
   }
+
+  async  getListTeacher(data){
+    const setting = {
+      method: 'POST',
+      url: this.getUrl('getListTeacher'),
+      headers: this.tokenHeader,
+      data
+    }
+    const response = await this.exec(setting);
+
+    return response.data.results.object;
+  }
+  
 }
-const user = new User();
-export default user;
+
+export default User;

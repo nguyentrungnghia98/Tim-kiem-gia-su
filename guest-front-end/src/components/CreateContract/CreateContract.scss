@@ -1,0 +1,77 @@
+
+.custom-card{
+  .custom-card-container{
+    background: white;
+  box-shadow: 0 4px 12px #c7c7c7;
+  }
+  .custom-card--header{
+    height: 90px;
+    align-items: center;
+    background: whitesmoke;
+    border-bottom: 1px solid gray;
+    display: flex;
+    padding: 0 30px;
+    button{
+      background: white;
+      box-shadow: 0 2px 8px #bfbfbf;
+      border: none;
+    }
+    img{
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+    }
+    .teacher-info{
+      margin-left: 16px;
+      span{
+        font-size: 15px;
+      }
+      h5{
+        margin-bottom: 4px;
+      }
+    }
+  }
+  .teacher{
+    height: 100px;
+  }
+  .custom-card--body{
+    padding: 35px 30px;
+    .form-field{
+      display: flex;
+      flex-direction: column;
+      &:not(:first-child){
+        margin-top: 24px;
+      }
+      .text-label{
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 10px;
+        margin-left: 4px;
+        margin-top: 0px;
+      }
+      
+    }
+    
+  }
+  .flex-row-center{
+    display: flex;
+    align-items: center;
+  }
+}
+.contract-container{
+  padding: 0 20% 0 10%;
+}
+.textarea-custom{
+  border-radius: 4px;
+  padding:12px;
+}
+
+.w-60{
+  width: 60%!important;
+}
+.w-40{
+  width: 40%!important;
+}
+.w-30{
+  width: 30%!important;
+}
