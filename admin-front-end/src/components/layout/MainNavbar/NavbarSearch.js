@@ -17,7 +17,7 @@ export default () => (
       </InputGroupAddon>
       <FormInput
         className="navbar-search"
-        placeholder="Search for something..."
+        placeholder="Bạn muốn tìm kiếm gì đó ?"
       />
     </InputGroup>
   </Form>

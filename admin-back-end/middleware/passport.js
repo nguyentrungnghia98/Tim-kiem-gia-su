@@ -9,7 +9,7 @@ const ExtractJWT = passportJWT.ExtractJwt;
 // Lấy thông tin những giá trị auth
 var configAuth = require('../config/auth');
 
-const User = require('../models/user');
+const User = require('../models/user-admin');
 
 // used to serialize the user for the session
 passport.serializeUser(function (user, done) {
@@ -59,7 +59,7 @@ passport.use(new JWTStrategy({
 function (jwtPayload, cb) {
 
     //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
-    console.log(jwtPayload);
+    //console.log(jwtPayload);
     return User.findOneEmail(jwtPayload.email)
         .then(user => {
             return cb(null, user);
