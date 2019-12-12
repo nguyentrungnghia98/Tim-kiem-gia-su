@@ -28,6 +28,12 @@ const userSchema = Schema({
         type: String,
         default: 'active'
     },
+    isOnline: Boolean,
+    lastOnline: Date,
+    contacts: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Contact'
+    }],
     salaryPerHour: {type: Number},
     major: [{
         type: Schema.Types.ObjectId,

@@ -70,6 +70,11 @@ class NavBar extends Component {
     this.props.logOut();
   }
 
+  goToSearch = (e) => {
+    e.preventDefault();
+    History.push('/cat/all');
+  }
+
   renderElement = () => {
     const { isSignedIn, user, openAuthenticationModal,openSetRoleModal } = this.props;
 
@@ -195,7 +200,7 @@ class NavBar extends Component {
         </button>
 
         <div className='collapse navbar-collapse' id='navbarSupportedContent'>
-        <div className='seach-box'>
+        <form className='seach-box' onSubmit={this.goToSearch}>
           <svg className='ic_search_24px' viewBox='3 3 28.582 29.475'>
             <path
               fill='rgba(164,164,164,1)'
@@ -210,7 +215,7 @@ class NavBar extends Component {
               placeholder='Bạn muốn học gì...'
             />
           </div>
-        </div>
+        </form>
           {this.renderElement()}
         </div>
       </nav>
