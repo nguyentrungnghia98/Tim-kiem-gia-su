@@ -24,8 +24,11 @@ import CreateContract from './CreateContract/CreateContract';
 import DetailContract from './DetailContract/DetaiContract';
 import Contracts from './Contracts/Contracts';
 import Messages from './Messages/Messages';
+import AllSkills from './AllSkills/AllSkills';
 import ProtectedRoute from './ProtectedRoute';
 import { openAuthenticationModal } from '../modals/Authentication/AuthenticationAction';
+import ScrollToTop from './ScrollToTop';
+
 
 const Root = (props) => {
   const { isSignedIn, fetchUser, openSetRoleModal, openAuthenticationModal } = props;
@@ -71,8 +74,10 @@ const Root = (props) => {
 
       />
 
-      <Router history={history}>
+      <Router onUpdate={() => window.scrollTo(0, 0)} history={history}>
+      <ScrollToTop>        
         <NavBar />
+        
         <Switch>
           <Route exact path="/">
             <Home />
@@ -83,6 +88,9 @@ const Root = (props) => {
           </Route>
           <Route exact path="/cat/:category/:id">
             <Teachers />
+          </Route>
+          <Route exact path="/all-skills">
+            <AllSkills />
           </Route>
           <Route exact path="/teacher/:id">
             <TeacherInfo />
@@ -136,7 +144,7 @@ const Root = (props) => {
           <Route component={NoMatch} />
         </Switch>
         <Footer />
-
+        </ScrollToTop>
         <Authentication />
         <SetRoleModal />
         <Alert />

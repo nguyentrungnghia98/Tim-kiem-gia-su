@@ -4,7 +4,7 @@ import Teacher from '../shared/Teacher/Teacher';
 import './Teachers.scss';
 import SelectOption from '../shared/SelectOption/SelectOption';
 import ReactPaginate from 'react-paginate';
-import { User } from '../../apis';
+import { User, TagSkill } from '../../apis';
 import history from '../../history';
 
 const arrSortOption = [
@@ -42,7 +42,8 @@ class Teachers extends Component {
       limit: 8,
       teachers: [],
       total: 0,
-      loading: true      
+      loading: true,
+      skills: []      
     };
     this.page = 1;
     this.selectedSortOption = arrSortOption[0]
@@ -103,8 +104,26 @@ class Teachers extends Component {
     }
   }
 
+  getSkills = async () => {
+    try {
+      const response = await TagSkill.getList();
+      this.setState({
+        skills: response.slice(0, 6)
+      })
+    } catch (error) {
+      TagSkill.alert.error(error);
+    }
+  }
+
   componentDidMount() {
-    this.reload();
+    try {
+      const tasks = [];
+      tasks.push(this.reload());
+      tasks.push(this.getSkills());
+      Promise.all(tasks);
+    } catch (error) {
+      console.log('error', error)
+    }
   }
 
   onClickBtnInfo = (id) => {
@@ -133,25 +152,25 @@ class Teachers extends Component {
   }
 
   renderHeader = () => {
-    const text = ['Toán học', 'Vật lý', 'Hóa học', 'Tiếng Anh', 'Tiếng Nhật', 'Lập trình'];
-
+    const {skills} = this.state;
+    if(skills.length === 0) return null;
     return (
       <div className="d-flex flex-wrap justify-content-between header">
         <div className="d-flex">
           {
-            text.map((item) => {
+            skills.map(({_id,content}) => {
               return (
                 <a className="header-menu-item ml-3 mr-5"
-                  href={`/cat/${item}/all`}
-                  key={item}>
-                  <h5><b>{item}</b></h5>
+                  href={`/cat/${content}/${_id}`}
+                  key={_id}>
+                  <h5><b>{content}</b></h5>
                 </a>
               );
             })
           }
         </div>
         <a className="header-menu-item ml-3 mr-3 text-primary"
-          href="/cat/all">
+          href="/all-skills">
           <h5><b>Xem tất cả kĩ năng</b></h5>
         </a>
       </div>
@@ -206,7 +225,7 @@ class Teachers extends Component {
   remderListTeacher = () => {
     const { total, loading, teachers } = this.state;
     const { match } = this.props;
-    const { category } = match.params;
+    const { category, search } = match.params;
     console.log('teachers', teachers,match)
 
 
@@ -215,7 +234,7 @@ class Teachers extends Component {
 
         <div className="mt-3 mb-3 ml-2">
 
-              <h4 className="mb-4">{`${(loading ||teachers.length === 0)?0:total} results for "${category}"`}</h4>
+              <h4 className="mb-4">{`${(loading ||teachers.length === 0)?0:total} kết quả cho "${category?category:search}"`}</h4>
         </div>
 
 

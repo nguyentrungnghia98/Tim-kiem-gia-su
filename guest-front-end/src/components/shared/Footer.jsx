@@ -1,6 +1,13 @@
-import React from "react";
+import React, {useState} from "react";
+import History from "../../history";
 
 const Footer = () => {
+  const [path, setPath] = useState(window.location.pathname);
+  History.listen(location => {
+    setPath(location.pathname)
+  });
+
+  if(path === '/messages') return null;
   return (
     <div className='footer'>
       <div className='footer-logo'>
