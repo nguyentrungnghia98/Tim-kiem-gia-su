@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+var mongoosePaginate = require('mongoose-paginate');
 const User = require('./user');
 
 const ContractSchema = new Schema({
@@ -35,8 +36,15 @@ const ContractSchema = new Schema({
       maxlength: 20,
       required: true,
       default: 'pending'
+  },
+  createTime: {
+      type: Date,
+      required: true
   }
 });
+
+ContractSchema.index({student: 1, teacher: 1});
+ContractSchema.plugin(mongoosePaginate);
 
 const Contract = mongoose.model("Contract", ContractSchema);
 
@@ -48,7 +56,8 @@ module.exports = {
             name: entity.name,
             feePerHour: entity.feePerHour,
             numberOfHour: entity.numberOfHour,
-            describe: entity.describe
+            describe: entity.describe,
+            createTime: new Date()
         });
 
         return contract.save();
@@ -61,7 +70,45 @@ module.exports = {
             .exec();
     },
 
-    updateById: (id, properties) => {
-        return Contract.updateOne({_id: id}, properties).exec;
+    updateById: (idUser, idContract, properties) => {
+        return Contract.updateOne({
+            _id: idContract,
+            $or: [
+                { student: idUser },
+                { teacher: idUser }
+            ]
+        }, properties).exec();
+    },
+
+    getListContractOfUser: (idUser, role, page, limit, sort, condition) => {
+        const query = { ...condition };
+
+        if (role === 0) {
+            query.student = idUser;
+        } else if (role === 1) {
+            query.teacher = idUser;
+        }
+
+        const option = {
+            page, limit,
+            populate: [
+                {
+                    path: 'student',
+                    select: '-password -contacts -contracts -major -__v'
+                },
+                {
+                    path: 'teacher',
+                    select: '-password -contacts -contracts -major -__v'
+                }
+            ]
+        }
+
+        if (sort) {
+            const temp = {};
+            temp[sort.field] = sort.type;
+            option.sort = temp;
+        }
+
+        return Contract.paginate(query, option);
     }
 }
