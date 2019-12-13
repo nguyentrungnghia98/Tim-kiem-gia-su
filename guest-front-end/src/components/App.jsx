@@ -25,6 +25,7 @@ import DetailContract from './DetailContract/DetaiContract';
 import Contracts from './Contracts/Contracts';
 import Messages from './Messages/Messages';
 import AllSkills from './AllSkills/AllSkills';
+import Salary from './Salary/Salary';
 import ProtectedRoute from './ProtectedRoute';
 import { openAuthenticationModal } from '../modals/Authentication/AuthenticationAction';
 import ScrollToTop from './ScrollToTop';
@@ -57,6 +58,7 @@ const Root = (props) => {
     fetchDataUser();
     // eslint-disable-next-line
   }, []);
+
 
   return (
     <>
@@ -96,6 +98,15 @@ const Root = (props) => {
             <TeacherInfo />
           </Route>
 
+          <ProtectedRoute
+            path="/salary"
+            isAuthenticated={isSignedIn}
+            triggerLogin={openAuthenticationModal}
+            isLoading={loading}
+            exact
+            component={Salary}
+          ></ProtectedRoute>
+          
           <ProtectedRoute
             path="/create-contract/:id"
             isAuthenticated={isSignedIn}

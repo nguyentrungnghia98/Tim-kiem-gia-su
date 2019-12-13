@@ -9,6 +9,8 @@ import { converCurrency, formatDate } from '../../utils/pipe';
 import ReactPaginate from 'react-paginate';
 import { withRouter } from 'react-router-dom';
 import { openAuthenticationModal } from '../../modals/Authentication/AuthenticationAction';
+import SendMessageModal from '../../modals/SendMessage/SendMessage';
+import {openSendMessageModal} from '../../modals/SendMessage/SendMessageAction';
 
 const review = {
   name: "Fake review",
@@ -71,6 +73,7 @@ const TeacherInfo = (props) => {
       User.alert.warn("Vui lòng đăng nhập để tiếp tục.")
       return props.openAuthenticationModal();
     }
+    props.openSendMessageModal();
   }
   function setSortOption(i) {
     setSelectedSortOption(arrSortOption[i]);
@@ -153,6 +156,7 @@ const TeacherInfo = (props) => {
     )
   }
   return (
+    <>
     <div className="page-wrapper teacher-info-container">
       <div className="row px no-gutters">
         <div className="col-12 col-lg-9">
@@ -245,6 +249,9 @@ const TeacherInfo = (props) => {
         </div>
       </div>
     </div>
+
+    <SendMessageModal/>
+    </>
   )
 }
 
@@ -259,6 +266,7 @@ const mapStateToProps = (state) => {
 const tmp = withRouter(TeacherInfo);
 export default connect(
   mapStateToProps,{
-    openAuthenticationModal
+    openAuthenticationModal,
+    openSendMessageModal
   }
 )(tmp);
