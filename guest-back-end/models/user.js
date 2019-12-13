@@ -42,7 +42,11 @@ const userSchema = Schema({
     job: { type: String },
     introduction: { type: String },
     address: { type: String },
-    job: {type: String}
+    job: {type: String},
+    contracts: [{
+        type: Schema.Types.ObjectId,
+        ref:'contract'
+    }]
 }, { collation: {
     locale: 'vi',
     strength: 2,
@@ -74,7 +78,7 @@ module.exports= {
     },
 
     findOneById: (id) => {
-        return User.findById(id).select('-password -__v').populate('major', '-__v').exec();
+        return User.findById(id).select('-password -contacts -contracts -__v').populate('major', '-__v').exec();
     },
 
     updateOne: (conditionObject, properies) => {
@@ -139,4 +143,8 @@ module.exports= {
 
         return User.paginate(query, option);
     },
+
+    addContract: (idUser, idContract) => {
+        User.updateOne({ _id: idUser }, { $push: { contracts: idContract } }).exec();
+    }
 }
