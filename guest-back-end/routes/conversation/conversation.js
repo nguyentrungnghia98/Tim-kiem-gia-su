@@ -9,8 +9,8 @@ const CheckUser = require('../../middlewares/CheckUser');
 // POST conversation/sendMessage
 router.post('/sendMessage', CheckUser.passIfHaveValidToken, (req, res) => {
     Conversation.sendMessage(req.userInfo.id, req.body.id, req.body.message)
-        .then((rs) => res.status(200).json({message: 'Gửi tin nhắn thành công'}))
-        .catch((err) => res.status(500).json({message: err.message}));
+        .then(() => res.status(200).json({message: 'Gửi tin nhắn thành công'}))
+        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
 });
 
 // Xử lí req lấy danh sách cuộc hội thoại của user
@@ -25,7 +25,7 @@ router.post('/getListConversation', CheckUser.passIfHaveValidToken, (req, res) =
                 }
             }
         }))
-        .catch((err) => res.status(500).json({message: err.message}));
+        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
 });
 
 // Xử lí req lấy danh sách tin nhắn của 1 cuộc thoại thoại của user
@@ -45,7 +45,7 @@ router.post('/getListMessages', CheckUser.passIfHaveValidToken, async (req, res)
             }
         });
     } catch (err) {
-        res.status(500).json({message: err.message});
+        res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
     }
 });
 
