@@ -1,61 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import { User } from '../../apis';
-import history from '../../history';
+import { Contract } from '../../apis';
 import './Contracts.scss';
 import { converCurrency } from '../../utils/pipe';
 import SelectOption from '../shared/SelectOption/SelectOption';
 import ReactPaginate from 'react-paginate';
 import {Link} from 'react-router-dom';
-
-const contracts = [{
-  teacher: {
-    avatar: 'https://www.upwork.com/profile-portraits/c1m-NSeiQdIlI4WsEQYDEuDtVoKWhoNMFkKyK1BF-TIyOgePyEw6ysNXU5VjPCPMG-',
-    username: 'Vũ Khắc Ngọc',
-    job: 'Giáo viên hóa học'
-  },
-  student: {
-    avatar: 'https://www.upwork.com/profile-portraits/c17BYIgRrMazxmNaAEJVgAVepi5QkQ77qyyv77n3NwVLxkLgtAtxS_ad96_Z4eS_CY',
-    username: 'Thị nở',
-    job: 'THPT Lê Hồng Phon'
-  },
-  name: 'Dạy hóa học 12 vào tối T5,T6,T7',
-  salaryPerHour: 100000,
-  status: 'pending_accept',
-  totalHour: 6,
-  description: `Dạy hóa học lớp 12 phục vụ mục đích thi đại học. Mỗi tối 2 tiếng, bắt đầu từ 7:30PM đến 9:30PM. Kết quả nhận được:Hệ thống toàn bộ kiến thức và phương pháp giải bài tập thi THPT quốc gia.
-  Hiểu được bản chất các hiện tượng hóa học và các quá trình phản ứng.
-  Được tiếp cận với những phương pháp giải nhanh để xử lí các bài toán phức tạp.
-  Được luyện tập với kho bài tập tự luyện phong phú và đa dạng.
-  Được trải nghiệm dịch vụ hỗ trợ học tập chu đáo.`
-}, {
-  teacher: {
-    avatar: 'https://www.upwork.com/profile-portraits/c1m-NSeiQdIlI4WsEQYDEuDtVoKWhoNMFkKyK1BF-TIyOgePyEw6ysNXU5VjPCPMG-',
-    username: 'Vũ Khắc Ngọc',
-    job: 'Giáo viên hóa học'
-  },
-  student: {
-    avatar: 'https://www.upwork.com/profile-portraits/c17BYIgRrMazxmNaAEJVgAVepi5QkQ77qyyv77n3NwVLxkLgtAtxS_ad96_Z4eS_CY',
-    username: 'Superman',
-    job: 'THPT Lê Hồng Phong'
-  },
-  status: 'processing',
-  name: 'Dạy hóa học 12 vào tối T5,T6,T7',
-  salaryPerHour: 50000,
-  totalHour: 2,
-  description: 'Dạy hóa học lớp 12 phục vụ mục đích thi đại học. Mỗi tối 2 tiếng, bắt đầu từ 7:30PM đến 9:30PM'
-}]
+import {connect} from 'react-redux';
 
 const arrSortOption = [
-  { text: 'Ngày tạo tăng', code: 'username_1' },
-  { text: 'Ngày tạo giảm', code: 'username_-1' },
-  { text: 'Giá tiền tăng', code: 'salaryPerHour_1' },
-  { text: 'Giá tiền giảm', code: 'salaryPerHour_-1' },
+  { text: 'Ngày tạo mới nhất', code: 'createTime_-1' },
+  { text: 'Ngày tạo cũ nhất', code: 'createTime_1' },
+  { text: 'Giá tiền tăng', code: 'totalPrice_1' },
+  { text: 'Giá tiền giảm', code: 'totalPrice_-1' },
 ]
 
 const arrStatusOption = [
   { text: 'Bất kì', code: 'any' },
-  { text: 'Chờ giáo viến đồng ý', code: 'pending_accept' , className:'text-warning'},
+  { text: 'Chờ giáo viến đồng ý', code: 'pending' , className:'text-warning'},
   { text: 'Đang học', code: 'processing', className:'text-success' },
   { text: 'Chờ giải quyết khiếu nại', code: 'processing_complaint' , className:'text-error'},
   { text: 'Khiếu nại thành công', code: 'complainted', className:'text-error' },
@@ -63,35 +25,63 @@ const arrStatusOption = [
 ]
 
 const Contracts = (props) => {
+  const {match} = props;
+  const {path} = match;
+  const initStatusOption = path === "/studying"?arrStatusOption[2]: (path === "/requests"? arrStatusOption[1] : arrStatusOption[0])
   const [loading, setLoading] = useState(false)
-  const { teacher, student, name, salaryPerHour, totalHour, description } = contracts[0];
   const [selectedSortOption, setSelectedSortOption] = useState(arrSortOption[0])
-  const [selectedStatusOption, setSelectedStatusOption] = useState(arrStatusOption[0]);
+  const [selectedStatusOption, setSelectedStatusOption] = useState(initStatusOption);
+  const [contracts, setContracts] = useState([]);
+  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const limit = 6;
+  const limit = 4;
 
   useEffect(() => {
-    async function loadInfoUser() {
-      const { match } = props;
-      console.log(props)
-      const { id } = match.params;
-      try {
-        setLoading(true);
+    setSelectedStatusOption(initStatusOption);
+    setPage(1);
+    //reload();
+  }, [path])
 
-        const response = await User.getItem(id);
-        //setTeacher(response)
-        //setSalaryPerHour(response.salaryPerHour)
-        setLoading(false);
-      } catch (error) {
-        console.log('err', error);
-        setLoading(false);
-        //setTeacher(null)
-        User.alertError(error);
-      }
+  useEffect(() => {
+    reload();
+  }, [selectedSortOption,selectedStatusOption, page])
+
+  function getFilterAndSort() {
+    const data = {};
+    let [property, type] = selectedSortOption.code.split("_")
+    data.sort = {
+      field : property,
+      type : Number.parseInt(type)
     }
-    console.log(selectedSortOption)
-    //loadInfoUser();
-  }, [selectedSortOption])
+
+    if(selectedStatusOption.code !== 'any'){
+      data.condition  = {
+        status: selectedStatusOption.code
+      };
+    }
+
+    return data;
+  }
+
+  async function reload() {
+    try {
+      setLoading(true);
+
+      const response = await Contract.getList({
+        page,
+        limit,
+        ...getFilterAndSort()
+      });
+      setContracts(response.docs);
+      setTotal(response.total);
+      setLoading(false);
+    } catch (error) {
+      console.log('err', error);
+      setLoading(false);
+      //setTeacher(null)
+      Contract.alertError(error);
+    }
+  }
 
   function setSortOption(i) {
     setSelectedSortOption(arrSortOption[i]);
@@ -106,9 +96,11 @@ const Contracts = (props) => {
     //this.reload();
   }
 
-  function renderButtonActions(status){       
+  function renderButtonActions(status){    
+    const {role} = props;   
     switch(status){
-      case 'pending_accept':
+      case 'pending':
+        if(role === 0) return;
         return (
           <>
             <button className="btn btn-secondary mr-3">Từ chối</button>
@@ -143,48 +135,51 @@ const Contracts = (props) => {
     }
     if (contracts.length === 0) {
       return (
-        <h5 className="mt-5"><i>Không tìm thấy hợp đồng</i></h5>
+        <h5 className="mt-5"><i>Danh sách hợp đồng rỗng</i></h5>
       )
     }
-    const total = contracts.length;
-    const pageCount = Math.ceil(total / limit);
-
+    
+    const role = props.role;
     return (
       <>
         <div className="contracts">
           {
-            contracts.map(({ status,name, student,salaryPerHour,totalHour,description }, index) => {
+            contracts.map(({_id, status,name, student, teacher,feePerHour,numberOfHour,describe }, index) => {
+              //reverse
+              const user = role === 1?student:teacher;
+              const userRole = role === 1?'student':'teacher';
+
               return (
-                <div key={index} className="contract">
-                <Link to={`/teacher/${'5dededd312755689983e05723'}`}>
-                  <img src={student.avatar ? student.avatar : "/images/avatar.png"}
+                <div key={_id} className="contract">
+                <Link to={`/${userRole}/${user._id}`}>
+                  <img src={user.avatar ? user.avatar : "/images/avatar.png"}
                     onError={(image) => {
                       image.target.src = "/images/avatar.png";
                     }} alt="avatar" />
                     </Link>
                   <div className="contract-info w-100">
-                    <Link to={`/teacher/${'5dededd312755689983e05723'}`} className="no-style-link">
+                    <Link to={`/${userRole}/${user._id}`} className="no-style-link">
                     <div className="row ">
                       <div className="col-8 d-flex text-primary align-items-center">
-                        <h5>{student.username}</h5>
-                        <small className="ml-3"> - {student.job || 'Không rõ'}</small>
+                        <h5>{user.username}</h5>
+                        <small className="ml-3"> - {user.job || 'Không rõ'}</small>
                       </div>
                       <div className="col-4 text-right">                      
                       {renderButtonActions(status)}
                       </div>
                     </div>
                     </Link>
-                    <Link to="/contract" className="no-style-link">
-                    <h5 className="mb-3">{name || 'Không rõ'}</h5>
+                    <Link to={`/contract/${_id}`} className="no-style-link">
+                    <h5 className="mb-2 mt-2">{name || 'Không rõ'}</h5>
                     <div className="row">
                       <div className="col-4">
-                        Giá tiền: <b> {converCurrency(salaryPerHour)} / hr</b>
+                        Giá tiền: <b> {converCurrency(feePerHour)} / hr</b>
                       </div>
                       <div className="col-4">
-                        Thời gian: <b> {converCurrency(totalHour)} / hr</b>
+                        Thời gian: <b> {converCurrency(numberOfHour)} / hr</b>
                       </div>
                       <div className="col-4">
-                        Tổng tiền: <b> {converCurrency(totalHour*salaryPerHour)} / hr</b>
+                        Tổng tiền: <b> {converCurrency(numberOfHour*feePerHour)} / hr</b>
                       </div>
                     </div>
 
@@ -195,7 +190,7 @@ const Contracts = (props) => {
                     <div className="d-flex mb-2">
                     <span className="mr-2">Mô tả: </span> 
                     <span className="description">
-                      {description}
+                      {describe}
                     </span>
                     </div>
                     </Link>
@@ -205,20 +200,27 @@ const Contracts = (props) => {
             })
           }
         </div>
-        <ReactPaginate
-          previousLabel={'Trước'}
-          nextLabel={'Tiếp'}
-          breakLabel={'...'}
-          breakClassName={'break-me'}
-          pageCount={pageCount}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={handlePageClick}
-          containerClassName={'pagination'}
-          subContainerClassName={'pages pagination'}
-          activeClassName={'active'}
-        />
       </>
+    )
+  }
+
+  function renderPageNumerNav(){
+    const pageCount = Math.ceil(total/limit);
+
+    return (
+      <ReactPaginate
+        previousLabel={'Trước'}
+        nextLabel={'Tiếp'}
+        breakLabel={'...'}
+        breakClassName={'break-me'}
+        pageCount={pageCount}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={5}
+        onPageChange={handlePageClick}
+        containerClassName={'pagination'}
+        subContainerClassName={'pages pagination'}
+        activeClassName={'active'}
+      />
     )
   }
 
@@ -235,7 +237,7 @@ const Contracts = (props) => {
                   <input
                     className='custom-input-text'
                     type='text'
-                    placeholder='Bạn muốn học gì...'
+                    placeholder='Tìm kiếm theo tên...'
                   />
                 </div>
               </div>
@@ -254,6 +256,7 @@ const Contracts = (props) => {
             <div className="custom-card--body">
 
               {renderContracts()}
+              {contracts.length !== 0 && (<>{renderPageNumerNav()}</>)}
             </div>
           </div>
         </div>
@@ -263,4 +266,13 @@ const Contracts = (props) => {
   )
 }
 
-export default withRouter(Contracts);
+const mapStateToProps = (state) => {
+  return {
+    role: state.auth.user.role
+  };
+};
+
+const _withRouter = withRouter(Contracts);
+export default connect(
+  mapStateToProps
+)(_withRouter);

@@ -10,11 +10,11 @@ export const fetchUser = (user) => {
 
 export const signIn = (response) => async (dispatch) => {
   console.log('action signIn');
+  localStorage.setItem('userToken', `${response.token}`);
   dispatch({
     type: SIGN_IN,
     user: response
   });
-  localStorage.setItem('userToken', `${response.token}`);
   // history.push('/profile');
 };
 

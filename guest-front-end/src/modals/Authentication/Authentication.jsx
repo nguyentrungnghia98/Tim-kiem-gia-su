@@ -119,7 +119,7 @@ const Authentication = props => {
     const message = "Đăng nhập thành công"
 
     const callback = (user) => {
-      signIn(user);
+      signIn(user); 
       closeAuthenticationModal();
       if(user.role === -1){
         openSetRoleModal();

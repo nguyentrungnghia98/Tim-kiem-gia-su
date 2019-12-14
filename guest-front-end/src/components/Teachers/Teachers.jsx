@@ -255,7 +255,7 @@ class Teachers extends Component {
                   <>{
                     teachers.map((item, index) => {
                       return (
-                        <div key={index} className="col-12 col-sm-6 col-md-4 col-xl-3">
+                        <div key={item._id} className="col-12 col-sm-6 col-md-4 col-xl-3">
                           <Teacher data={item} onClickBtn={this.onClickBtnInfo}/>
                         </div>
                       );

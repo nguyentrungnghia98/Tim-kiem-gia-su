@@ -29,7 +29,7 @@ import Salary from './Salary/Salary';
 import ProtectedRoute from './ProtectedRoute';
 import { openAuthenticationModal } from '../modals/Authentication/AuthenticationAction';
 import ScrollToTop from './ScrollToTop';
-
+import StudentInfo from './StudentInfo/StudentInfo';
 
 const Root = (props) => {
   const { isSignedIn, fetchUser, openSetRoleModal, openAuthenticationModal } = props;
@@ -58,7 +58,6 @@ const Root = (props) => {
     fetchDataUser();
     // eslint-disable-next-line
   }, []);
-
 
   return (
     <>
@@ -97,6 +96,9 @@ const Root = (props) => {
           <Route exact path="/teacher/:id">
             <TeacherInfo />
           </Route>
+          <Route exact path="/student/:id">
+            <StudentInfo />
+          </Route>
 
           <ProtectedRoute
             path="/salary"
@@ -117,7 +119,7 @@ const Root = (props) => {
           ></ProtectedRoute>
 
           <ProtectedRoute
-            path="/contract"
+            path="/contract/:id"
             isAuthenticated={isSignedIn}
             triggerLogin={openAuthenticationModal}
             isLoading={loading}
@@ -127,6 +129,32 @@ const Root = (props) => {
 
           <ProtectedRoute
             path="/contracts"
+            isAuthenticated={isSignedIn}
+            triggerLogin={openAuthenticationModal}
+            isLoading={loading}
+            exact
+            component={Contracts}
+          ></ProtectedRoute>
+
+          <ProtectedRoute
+            path="/contracts"
+            isAuthenticated={isSignedIn}
+            triggerLogin={openAuthenticationModal}
+            isLoading={loading}
+            exact
+            component={Contracts}
+          ></ProtectedRoute>
+
+          <ProtectedRoute
+            path="/studying"
+            isAuthenticated={isSignedIn}
+            triggerLogin={openAuthenticationModal}
+            isLoading={loading}
+            exact
+            component={Contracts}
+          ></ProtectedRoute>
+          <ProtectedRoute
+            path="/requests"
             isAuthenticated={isSignedIn}
             triggerLogin={openAuthenticationModal}
             isLoading={loading}

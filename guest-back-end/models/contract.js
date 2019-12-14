@@ -17,6 +17,7 @@ const ContractSchema = new Schema({
       type: Number,
       required: true,
   },
+  totalPrice: {type: Number, default:0},
   describe: {
       type: String,
       maxlength: 500,
@@ -57,7 +58,8 @@ module.exports = {
             feePerHour: entity.feePerHour,
             numberOfHour: entity.numberOfHour,
             describe: entity.describe,
-            createTime: new Date()
+            createTime: new Date(),
+            totalPrice: entity.feePerHour* entity.numberOfHour
         });
 
         return contract.save();
