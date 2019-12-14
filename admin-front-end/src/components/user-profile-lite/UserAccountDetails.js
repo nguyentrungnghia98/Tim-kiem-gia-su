@@ -1,130 +1,127 @@
-import React from "react";
+import React, {useState} from "react";
 import PropTypes from "prop-types";
 import {
   Card,
   CardHeader,
   ListGroup,
   ListGroupItem,
-  Row,
-  Col,
   Form,
   FormGroup,
   FormInput,
   FormSelect,
-  FormTextarea,
-  Button
+  Button,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Container,
+  Alert
 } from "shards-react";
 
-const UserAccountDetails = ({ title }) => (
+const UserAccountDetails = (props) => {
+
+  const {userInfo, message, fetchUpdate} = props;
+
+  const [password, setPassword] = useState('');
+  const [rePassword, setRePassword] = useState('');
+
+  const token = localStorage.getItem('token');
+
+  return (
   <Card small className="mb-4">
     <CardHeader className="border-bottom">
-      <h6 className="m-0">{title}</h6>
+      <center><h4 className="m-0">Cập nhật tài khoản</h4></center>
     </CardHeader>
+    {message ? <Container fluid className="px-0 mb-3">
+                <Alert className="mb-0">
+                <i className="fa fa-info mx-2"></i>{message}
+                </Alert>
+            </Container> : null}
     <ListGroup flush>
-      <ListGroupItem className="p-3">
-        <Row>
-          <Col>
-            <Form>
-              <Row form>
-                {/* First Name */}
-                <Col md="6" className="form-group">
-                  <label htmlFor="feFirstName">First Name</label>
-                  <FormInput
-                    id="feFirstName"
-                    placeholder="First Name"
-                    value="Sierra"
-                    onChange={() => {}}
-                  />
-                </Col>
-                {/* Last Name */}
-                <Col md="6" className="form-group">
-                  <label htmlFor="feLastName">Last Name</label>
-                  <FormInput
-                    id="feLastName"
-                    placeholder="Last Name"
-                    value="Brooks"
-                    onChange={() => {}}
-                  />
-                </Col>
-              </Row>
-              <Row form>
-                {/* Email */}
-                <Col md="6" className="form-group">
-                  <label htmlFor="feEmail">Email</label>
-                  <FormInput
-                    type="email"
-                    id="feEmail"
-                    placeholder="Email Address"
-                    value="sierra@example.com"
-                    onChange={() => {}}
-                    autoComplete="email"
-                  />
-                </Col>
-                {/* Password */}
-                <Col md="6" className="form-group">
-                  <label htmlFor="fePassword">Password</label>
-                  <FormInput
-                    type="password"
-                    id="fePassword"
-                    placeholder="Password"
-                    value="EX@MPL#P@$$w0RD"
-                    onChange={() => {}}
-                    autoComplete="current-password"
-                  />
-                </Col>
-              </Row>
-              <FormGroup>
-                <label htmlFor="feAddress">Address</label>
-                <FormInput
-                  id="feAddress"
-                  placeholder="Address"
-                  value="1234 Main St."
-                  onChange={() => {}}
-                />
-              </FormGroup>
-              <Row form>
-                {/* City */}
-                <Col md="6" className="form-group">
-                  <label htmlFor="feCity">City</label>
-                  <FormInput
-                    id="feCity"
-                    placeholder="City"
-                    onChange={() => {}}
-                  />
-                </Col>
-                {/* State */}
-                <Col md="4" className="form-group">
-                  <label htmlFor="feInputState">State</label>
-                  <FormSelect id="feInputState">
-                    <option>Choose...</option>
-                    <option>...</option>
-                  </FormSelect>
-                </Col>
-                {/* Zip Code */}
-                <Col md="2" className="form-group">
-                  <label htmlFor="feZipCode">Zip</label>
-                  <FormInput
-                    id="feZipCode"
-                    placeholder="Zip"
-                    onChange={() => {}}
-                  />
-                </Col>
-              </Row>
-              <Row form>
-                {/* Description */}
-                <Col md="12" className="form-group">
-                  <label htmlFor="feDescription">Description</label>
-                  <FormTextarea id="feDescription" rows="5" />
-                </Col>
-              </Row>
-              <Button theme="accent">Update Account</Button>
-            </Form>
-          </Col>
-        </Row>
-      </ListGroupItem>
-    </ListGroup>
-  </Card>
-);
+                    <ListGroupItem className="p-3">
+                        <Form onSubmit={(e) => {e.preventDefault(); fetchUpdate(password, rePassword, token)}}>             
+
+                        <FormGroup>
+                        <label htmlFor="feInputFullName">Họ và tên</label>
+                        <InputGroup seamless className="mb-3">
+                            <FormInput type="text" id="feInputFullName" value={userInfo.fullName} disabled/>
+                            <InputGroupAddon type="append">
+                                <InputGroupText>
+                                    <i className="material-icons">create</i>
+                                </InputGroupText>
+                            </InputGroupAddon>
+                        </InputGroup>
+                          </FormGroup>
+
+                            <FormGroup>
+                                <label htmlFor="feEmailAddress">Email</label>
+                                <InputGroup seamless className="mb-3">
+                                    <FormInput
+                                    id="feEmailAddress"
+                                    type="email"
+                                    value={userInfo.email || ''} 
+                                    required
+                                    disabled
+                                    />
+                                    <InputGroupAddon type="append">
+                                        <InputGroupText>
+                                            <i className="material-icons">email</i>
+                                        </InputGroupText>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                            </FormGroup>
+      
+                            <FormGroup> 
+                                <label htmlFor="fePassword">Mật khẩu mới</label>                              
+                                <InputGroup seamless className="mb-3">
+                                    <FormInput
+                                    id="fePassword"
+                                    type="password"
+                                    placeholder="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                    <InputGroupAddon type="append">
+                                        <InputGroupText>
+                                            <i className="material-icons">lock</i>
+                                        </InputGroupText>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                            </FormGroup>  
+
+                            <FormGroup> 
+                                <label htmlFor="rePassword">Nhập lại mật khẩu mới</label>                              
+                                <InputGroup seamless className="mb-3">
+                                    <FormInput
+                                    id="rePassword"
+                                    type="password"
+                                    placeholder="Nhập lại mật khẩu" value={rePassword} onChange={(e) => setRePassword(e.target.value)}
+                                    />
+                                    <InputGroupAddon type="append">
+                                        <InputGroupText>
+                                            <i className="material-icons">lock</i>
+                                        </InputGroupText>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                            </FormGroup>
+
+                            
+  
+                            <FormGroup>                        
+                                <label htmlFor="feInputState">Vai trò</label>
+                                <FormSelect id="feInputState" value={userInfo.role} disabled>
+                                    <option hidden>Chọn...</option>
+                                    <option>Admin</option>
+                                    <option>Quản trị viên</option>
+                                </FormSelect>
+                            </FormGroup>
+                               
+                         <center>
+                         
+                         <Button type="submit" >Cập nhật</Button>
+                         </center>
+                    </Form>
+                 </ListGroupItem>
+            </ListGroup>
+  </Card>);
+};
 
 UserAccountDetails.propTypes = {
   /**

@@ -11,8 +11,10 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 
 const indexRouter = require('./routes/index');
-const user = require('./routes/users');
+const userAdmin = require('./routes/user-admin');
 const profile = require('./routes/profile');
+const tagskill = require('./routes/tagskills');
+const user = require('./routes/user');
 
 require('./middleware/passport');
 
@@ -32,8 +34,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/user', user);
-app.use('/me', passport.authenticate('jwt',{session:false}), profile);
+app.use('/user', userAdmin);
+app.use('/profile', passport.authenticate('jwt',{session:false}), profile);
+app.use('/tag-skill', passport.authenticate('jwt',{session:false}), tagskill);
+app.use('/list-users', passport.authenticate('jwt',{session:false}), user);
 
 // Tạo kết nối tới database
 require('./utils/db.connection');

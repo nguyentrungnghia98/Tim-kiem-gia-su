@@ -9,21 +9,25 @@ import {
   Progress
 } from "shards-react";
 
-const UserDetails = ({ userDetails }) => (
+const UserDetails = (props) => {
+
+  const {userInfo, userDetails} = props;
+ 
+  return(
   <Card small className="mb-4 pt-3">
     <CardHeader className="border-bottom text-center">
       <div className="mb-3 mx-auto">
         <img
           className="rounded-circle"
-          src={userDetails.avatar}
-          alt={userDetails.name}
+          src={userInfo.avatar}
+          alt={userInfo.fullName}
           width="110"
         />
       </div>
-      <h4 className="mb-0">{userDetails.name}</h4>
-      <span className="text-muted d-block mb-2">{userDetails.jobTitle}</span>
+      <h4 className="mb-2">{userInfo.fullName}</h4>
+      <span className="text-success d-block mb-2">{userInfo.role}</span>
       <Button pill outline size="sm" className="mb-2">
-        <i className="material-icons mr-1">person_add</i> Follow
+        <i className="material-icons mr-1">add_a_photo</i> Chỉnh sửa avatar
       </Button>
     </CardHeader>
     <ListGroup flush>
@@ -42,15 +46,16 @@ const UserDetails = ({ userDetails }) => (
           </Progress>
         </div>
       </ListGroupItem>
-      <ListGroupItem className="p-4">
+      {/*<ListGroupItem className="p-4">
         <strong className="text-muted d-block mb-2">
           {userDetails.metaTitle}
         </strong>
         <span>{userDetails.metaValue}</span>
-      </ListGroupItem>
+        </ListGroupItem>*/}
     </ListGroup>
   </Card>
-);
+  )
+};
 
 UserDetails.propTypes = {
   /**

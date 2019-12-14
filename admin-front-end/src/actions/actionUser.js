@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import {USER_REQUEST, USER_FAILURE, USER_SUCCESS} from '../constants/actionTypes'
+import {USER_REQUEST, USER_FAILURE, USER_SUCCESS, LOG_OUT, GET_USER_REQUEST, GET_USER_FAILURE, GET_USER_SUCCESS, UPDATE_USER, GET_LIST_USER_SUCCESS, GET_LIST_STUDENT_SUCCESS} from '../constants/actionTypes'
 
 export const userRequest = (message) => {
     return {
@@ -48,7 +48,7 @@ export const fetchLogin = (email, password) => {
         .then(json => {
             if (json.token) {
                 localStorage.setItem('token', json.token);
-                dispatch(userSuccess('Đăng nhập thành công !'));         
+                dispatch(userSuccess(''));         
             }
             else {
                 dispatch(userFailure(json.message));
@@ -87,5 +87,179 @@ export const fetchRegister = (email, password, fullName, role) => {
             }
             
         })
+    }
+}
+
+export const updateUser = (userInfo) => {
+    return {
+        type: UPDATE_USER,
+        userInfo
+    };
+}
+
+export const fetchUpdate = (password, repassword, token) => {
+
+    return dispatch => {
+
+        dispatch(userRequest('Đang cập nhật... Vui lòng đợi trong giây lát ! '));
+
+        const bearerToken = `Bearer ${  token}`;
+
+        return fetch('http://localhost:3000/profile/update-profile', {
+            method: 'POST',
+            headers: {
+                'Authorization': bearerToken,
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify({
+                
+                password,
+                repassword
+            })
+        })
+        .then(
+            response => response.json(),
+        )
+        .then(json => {
+            if (json.err)
+                dispatch(userFailure(json.err));
+            else{
+                dispatch(userSuccess(json.message));
+                //dispatch(updateUser(json.user))
+            }
+            
+        })
+    }
+}
+
+export const getUserRequest = () => {
+    return {
+        type: GET_USER_REQUEST
+    };
+}
+
+export const getUserFailure = () => {
+    return {
+        type: GET_USER_FAILURE
+    };
+}
+export const getUserSuccess = (userInfo) => {
+    return {
+        type: GET_USER_SUCCESS,
+        userInfo
+    };
+}
+
+export const fetchUser = (token) => {
+
+    return dispatch => {
+  
+        dispatch(getUserRequest());
+
+        const bearerToken = `Bearer ${  token}`;
+
+        return fetch('http://localhost:3000/profile', {
+            method: 'GET',
+            headers: {
+                'Authorization': bearerToken
+            }
+        })
+        .then(
+            response => response.json(),
+            error => {
+                console.log(error);
+                dispatch(getUserFailure());
+            }
+        )
+        .then(json => {
+            dispatch(getUserSuccess(json));
+        })
+        .catch(err => {
+            console.log(err);
+            dispatch(getUserFailure());
+        })
+    }
+  }
+
+  export const getListUserSuccess = (listUsers) => {
+    return {
+        type: GET_LIST_USER_SUCCESS,
+        listUsers
+    };
+}
+
+  export const fetchListUser = (token) => {
+
+    return dispatch => {
+  
+        dispatch(getUserRequest());
+
+        const bearerToken = `Bearer ${  token}`;
+
+        return fetch('http://localhost:3000/list-users/teacher', {
+            method: 'GET',
+            headers: {
+                'Authorization': bearerToken
+            }
+        })
+        .then(
+            response => response.json(),
+            error => {
+                console.log(error);
+                dispatch(getUserFailure());
+            }
+        )
+        .then(json => {
+            dispatch(getListUserSuccess(json));
+        })
+        .catch(err => {
+            console.log(err);
+            dispatch(getUserFailure());
+        })
+    }
+  }
+
+  export const getListStudentSuccess = (listStudents) => {
+    return {
+        type: GET_LIST_STUDENT_SUCCESS,
+        listStudents
+    };
+}
+
+  export const fetchListStudents = (token) => {
+
+    return dispatch => {
+  
+        dispatch(getUserRequest());
+
+        const bearerToken = `Bearer ${  token}`;
+
+        return fetch('http://localhost:3000/list-users/student', {
+            method: 'GET',
+            headers: {
+                'Authorization': bearerToken
+            }
+        })
+        .then(
+            response => response.json(),
+            error => {
+                console.log(error);
+                dispatch(getUserFailure());
+            }
+        )
+        .then(json => {
+            dispatch(getListStudentSuccess(json));
+        })
+        .catch(err => {
+            console.log(err);
+            dispatch(getUserFailure());
+        })
+    }
+  }
+
+export const logOut = () => {
+    return {
+        type: LOG_OUT,
     }
 }

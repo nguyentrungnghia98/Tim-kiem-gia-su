@@ -74,7 +74,7 @@ module.exports= {
     },
 
     findOneById: (id) => {
-        return User.findById(id).select('-password -__v').populate('major', '-__v').exec();
+        return User.findById(id).select('-password -contacts -__v').populate('major', '-__v').exec();
     },
 
     updateOne: (conditionObject, properies) => {
@@ -139,4 +139,8 @@ module.exports= {
 
         return User.paginate(query, option);
     },
+
+    addContract: (idUser, idContract) => {
+        User.updateOne({ _id: idUser }, { $push: { contracts: idContract } }).exec();
+    }
 }
