@@ -40,7 +40,9 @@ router.post('/getListMessages', CheckUser.passIfHaveValidToken, async (req, res)
         res.status(200).json({
             results: {
                 object: {
-                    ...rs[0]._doc
+                    ...rs[0]._doc,
+                    nextPage: page + 1,
+                    limit
                 }
             }
         });
