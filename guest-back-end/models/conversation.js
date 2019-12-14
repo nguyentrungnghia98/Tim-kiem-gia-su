@@ -28,7 +28,8 @@ const ConversationSchema = new Schema({
     {
       content: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 300
       },
       sendBy: {
         type: Schema.Types.ObjectId,
