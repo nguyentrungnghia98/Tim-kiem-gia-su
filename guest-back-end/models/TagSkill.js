@@ -15,6 +15,7 @@ const tagSkillSchema = Schema({
     }
 });
 
+tagSkillSchema.index({content: 'text'});
 const TagSkill = mongoose.model('TagSkill', tagSkillSchema);
 
 module.exports = {

@@ -30,10 +30,6 @@ const userSchema = Schema({
     },
     isOnline: Boolean,
     lastOnline: Date,
-    contacts: [{
-      type: Schema.Types.ObjectId,
-      ref: 'Contact'
-    }],
     salaryPerHour: {type: Number},
     major: [{
         type: Schema.Types.ObjectId,
@@ -49,7 +45,7 @@ const userSchema = Schema({
     caseLevel: false
 }});
 
-userSchema.index({address: 'text'});
+userSchema.index({address: 'text', job: 1});
 userSchema.plugin(mongoosePaginate);
 const User = mongoose.model('User', userSchema);
 
@@ -96,7 +92,7 @@ module.exports= {
         return user.save();
     },
 
-    getListTeacherWithPagination: (page, limit, arrTagSkill, place, fee, sort) => {
+    getListTeacherWithPagination: (page, limit, arrTagSkill, place, fee, sort, searchText) => {
         const query = {};
         query.role = 1;
 
@@ -105,7 +101,7 @@ module.exports= {
         }
 
         if (place) {
-            query['$text'] = {$search: place};
+            query['$text'] = {$search: `\"${place}\"`};
         }
 
         if (fee) {
@@ -124,12 +120,28 @@ module.exports= {
 
         const option = { 
             page, limit,
-            select: '-password -__v',
+            select: '-password -contacts -__v',
             populate: {
                 path: 'major',
                 select: '-__v'
             }
         };
+
+        if(skill) {
+            query['$or'] = [
+                {
+                    job: {
+                        $regex: `${skill}`,
+                        $options: 'i'
+                    }
+                }, {
+                    introduction: {
+                        $regex: `${skill}`,
+                        $options: 'i'
+                    }
+                }
+            ]
+        }
 
         if (sort) {
             const temp = {};

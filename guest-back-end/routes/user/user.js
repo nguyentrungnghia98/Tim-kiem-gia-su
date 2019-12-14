@@ -166,8 +166,8 @@ router.post('/update', passIfHaveValidToken, (req, res) => {
 // kèm phân trang
 // POST /user/getListTeacher
 router.post("/getListTeacher", (req, res) => {
-    const { page, limit, arrTagSkill, place, fee, sort } = req.body;
-    User.getListTeacherWithPagination(page, limit, arrTagSkill, place, fee, sort)
+    const { page, limit, arrTagSkill, place, fee, sort, searchText } = req.body;
+    User.getListTeacherWithPagination(page, limit, arrTagSkill, place, fee, sort, searchText)
         .then((rs) => res.status(200).json({
             results: {
                 object: {
@@ -175,7 +175,7 @@ router.post("/getListTeacher", (req, res) => {
                 }
             }
         }))
-        .catch((err) => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+        .catch((err) => res.status(500).json({message: err.message}));
 });
 
 // Xử lí req lấy info của 1 user theo id
