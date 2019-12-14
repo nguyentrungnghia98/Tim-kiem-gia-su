@@ -18,6 +18,7 @@ const usersRouter = require('./routes/user/user');
 const secureRouter = require('./routes/secure/secure');
 const tagSkillRouter = require('./routes/TagSkill/TagSkill');
 const contractRouter = require('./routes/contract/contract');
+const conversationRouter = require('./routes/conversation/conversation');
 
 var app = express();
 dotenv.config();
@@ -58,6 +59,7 @@ app.options('*', cors())
 app.use(cors());
 
 app.use(getPayloadToken);
+app.use('/conversation', conversationRouter);
 app.use('/contract', contractRouter);
 app.use('/tagSkill', tagSkillRouter);
 app.use('/secure', secureRouter);

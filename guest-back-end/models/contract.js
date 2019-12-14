@@ -79,7 +79,7 @@ module.exports = {
                 { student: idUser },
                 { teacher: idUser }
             ]
-        }, properties).exec();
+        }, {$set: properties}).exec();
     },
 
     getListContractOfUser: (idUser, role, page, limit, sort, condition) => {
