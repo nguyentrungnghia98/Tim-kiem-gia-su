@@ -34,7 +34,8 @@ const ContractSchema = new Schema({
   },
   status: {
       type: String,
-      maxlength: 20,
+      enum: ['pending', 'processing', 'processing_complaint',
+        'complainted', 'finished'],
       required: true,
       default: 'pending'
   },
@@ -75,6 +76,7 @@ module.exports = {
     updateById: (idUser, idContract, properties) => {
         return Contract.updateOne({
             _id: idContract,
+            status: { $ne: 'finished' },
             $or: [
                 { student: idUser },
                 { teacher: idUser }

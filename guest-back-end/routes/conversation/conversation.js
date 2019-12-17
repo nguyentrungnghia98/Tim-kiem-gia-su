@@ -42,7 +42,8 @@ router.post('/getListMessages', CheckUser.passIfHaveValidToken, async (req, res)
                 object: {
                     ...rs[0]._doc,
                     nextPage: page + 1,
-                    limit
+                    limit,
+                    messages: rs[0]._doc.messages.reverse()
                 }
             }
         });
