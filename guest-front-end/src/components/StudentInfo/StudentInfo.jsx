@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { User } from '../../apis';
-import history from '../../history';
-import { converCurrency, formatDate } from '../../utils/pipe';
 import { withRouter } from 'react-router-dom';
 import { openAuthenticationModal } from '../../modals/Authentication/AuthenticationAction';
 import SendMessageModal from '../../modals/SendMessage/SendMessage';

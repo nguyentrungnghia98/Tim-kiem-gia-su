@@ -127,16 +127,16 @@ module.exports= {
             }
         };
 
-        if(skill) {
+        if(searchText) {
             query['$or'] = [
                 {
                     job: {
-                        $regex: `${skill}`,
+                        $regex: `${searchText}`,
                         $options: 'i'
                     }
                 }, {
-                    introduction: {
-                        $regex: `${skill}`,
+                    username: {
+                        $regex: `${searchText}`,
                         $options: 'i'
                     }
                 }

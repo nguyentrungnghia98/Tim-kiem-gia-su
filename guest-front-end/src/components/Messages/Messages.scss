@@ -334,11 +334,14 @@
     .content{
       overflow-y: scroll;
       overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
       position: relative;
       height: calc(90vh - 192px);
-      justify-content: flex-end;
+       display: flex;
+      flex-direction: column;
+      &::before {
+        content: "";
+        flex: 1 1;
+    }
     }
   }
   header{

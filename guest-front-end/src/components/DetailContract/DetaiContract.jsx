@@ -12,7 +12,7 @@ const DetailContract = (props) => {
   const [reviewContent, setReviewContent] = useState('');
   const [rating, setRating] = useState(5);
   const [contract, setContract] = useState();
-  const { teacher, student, name, feePerHour, salaryPerHour, numberOfHour, describe, status } = contract || {};
+  const { teacher, student, feePerHour,  numberOfHour, describe, status } = contract || {};
 
   useEffect(() => {
     async function reload() {

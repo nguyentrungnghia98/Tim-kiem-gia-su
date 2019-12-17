@@ -1,12 +1,12 @@
-import {Api} from './api';
+import { Api } from './api';
 
-class User extends Api{
-  constructor(){
+class User extends Api {
+  constructor() {
     super();
     this.module = 'user';
   }
 
-  async getInfo(){
+  async getInfo() {
     const setting = {
       method: 'GET',
       url: '/me',
@@ -17,7 +17,7 @@ class User extends Api{
     return response.data.results.object;
   }
 
-  async  updateInfo(data){
+  async  updateInfo(data) {
     const setting = {
       method: 'POST',
       url: this.getUrl('update'),
@@ -29,7 +29,7 @@ class User extends Api{
     return response.data.results.object;
   }
 
-  async  changePassword(data){
+  async  changePassword(data) {
     const setting = {
       method: 'POST',
       url: this.getUrl('changePassword'),
@@ -41,18 +41,39 @@ class User extends Api{
     return response.data;
   }
 
-  async  getListTeacher(data){
+  async  getListTeacher(data, reload = false) {
     const setting = {
       method: 'POST',
       url: this.getUrl('getListTeacher'),
       headers: this.tokenHeader,
       data
     }
-    const response = await this.exec(setting);
+    const hashedQuery = this.hash(data);
+    console.log('hash', this.hashCache, hashedQuery)
+    if (
+      !reload &&
+      this.hashCache[hashedQuery] &&
+      this.hashCache[hashedQuery].expired > new Date()
+    ) {
+      let items = this.hashCache[hashedQuery].item;
+      return items;
+    }
 
-    return response.data.results.object;
+    const response = await this.exec(setting);
+    const item =  response.data.results.object;
+    if(reload){
+      this.hashCache[hashedQuery] = {
+        item,
+        expired: this.moment()
+            .add(5, "minutes")
+            .toDate(),
+        isGetList: true
+      };
+    }
+    return item;
+    
   }
-  
+
 }
 
 export default User;

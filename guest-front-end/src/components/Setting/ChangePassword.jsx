@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
 
   CircularProgress
 } from '@material-ui/core';
 import CssTextField from './CssTextField';
 import {User} from '../../apis';
-import { logOut, fetchUser } from '../../actions/user';
+import { logOut } from '../../actions/user';
 import {connect} from 'react-redux';
 import toast from '../../utils/toast';
 
-const ChangePassword = (props) => {
-  const { fetchUser,logOut, user } = props;
+const ChangePassword = () => {
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -114,4 +113,4 @@ const mapStateToProps = (state) => {
     user: state.auth.user
   };
 };
-export default connect(mapStateToProps, {fetchUser,logOut})(ChangePassword) ;
+export default connect(mapStateToProps, {logOut})(ChangePassword) ;

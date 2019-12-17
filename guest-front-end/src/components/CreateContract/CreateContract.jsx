@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import {connect} from 'react-redux';
 import { User, Contract } from '../../apis';
-import history from '../../history';
 import './CreateContract.scss';
 import {TextField, TextareaAutosize } from '@material-ui/core';
 import { converCurrency } from '../../utils/pipe';

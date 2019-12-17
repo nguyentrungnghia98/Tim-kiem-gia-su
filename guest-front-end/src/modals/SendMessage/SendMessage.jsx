@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import {User} from '../../apis';
+import {Conversation} from '../../apis';
 import { connect } from 'react-redux';
 import { closeModal } from './SendMessageAction';
 import './SendMessage.scss';
 import {
   Dialog,TextareaAutosize
 } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
 
 const SendMessageModal = props => {
   const {
     toggle,
-    closeModal,
-    user
+    closeModal
   } = props;
 
   const [loading, setLoading] = useState(false);
@@ -24,21 +24,26 @@ const SendMessageModal = props => {
     closeModal();
   }
 
-  async function handleSubmit(event, type) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    
+    event.persist();
+    const { match } = props;
+    const { id } = match.params;
     try {
       setLoading(true);
-      // const response = await User.post(url,data, {
-      //   headers: { authorization : userToken }
-      // });
-    
+      const message = event.target.content.value;
+      const response = await Conversation.sendMessage({
+        id,
+        message
+      })
+      console.log('res',response)
+      event.target.content.value = "";
       setLoading(false);
       closeModal();
-      User.alert.success(event.target.content.value);
+      Conversation.alert.success("Gửi thành công");
     } catch (error) {
       setLoading(false);
-      User.alertError(error);
+      Conversation.alertError(error);
     }
   }
 
@@ -99,10 +104,13 @@ const mapStateToProps = (state) => {
     toggle: state.sendMessageModal,
     user: state.auth.user,
   };
-};
+}; 
+
+
+const _widthRouter = withRouter(SendMessageModal);
 
 export default connect(
   mapStateToProps, {
     closeModal    
   }
-)(SendMessageModal);
+)(_widthRouter);

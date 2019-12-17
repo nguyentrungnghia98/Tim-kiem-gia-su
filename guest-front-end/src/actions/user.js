@@ -1,5 +1,4 @@
 import { FETCH_USER, SIGN_IN, SIGN_OUT } from './types';
-import history from '../history';
 
 export const fetchUser = (user) => {
   return {

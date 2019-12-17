@@ -11,7 +11,8 @@ class NavBar extends Component {
     super(props);
     this.state = {
       path: window.location.pathname,
-      visible: window.location.pathname !== '/'
+      visible: window.location.pathname !== '/',
+      search: ''
     }
 
     History.listen(location => {
@@ -21,6 +22,10 @@ class NavBar extends Component {
         this.setState({ visible: false });
       }else{
         this.setState({ visible: true });
+      }
+
+      if (!location.pathname.includes('/search')) {
+        this.setState({ search: '' });
       }
     });
   }
@@ -72,7 +77,7 @@ class NavBar extends Component {
 
   goToSearch = (e) => {
     e.preventDefault();
-    History.push('/cat/all');
+    History.push(`/search/${this.state.search}`);
   }
 
   renderElement = () => {
@@ -177,7 +182,7 @@ class NavBar extends Component {
   };
 
   render() {
-    const { visible } = this.state;
+    const { visible, search } = this.state;
     return (
       <nav className={`navbar navbar-expand-lg bg-white ${visible ? 'visible navbar-light' : 'non-visible navbar-dark'}`} id="header">
         <Link to='/'>
@@ -211,6 +216,10 @@ class NavBar extends Component {
           <div className='search-input'>
             <input
               className='custom-input-text'
+              name="search"
+              value={search}
+              onChange={e => this.setState({search: e.target.value})}
+              required
               type='text'
               placeholder='Bạn muốn học gì...'
             />

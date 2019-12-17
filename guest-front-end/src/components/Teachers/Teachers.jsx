@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import Teacher from '../shared/Teacher/Teacher';
 import './Teachers.scss';
 import SelectOption from '../shared/SelectOption/SelectOption';
@@ -49,6 +49,11 @@ class Teachers extends Component {
     this.selectedSortOption = arrSortOption[0]
     this.selectedPriceOption = arrPriceOption[0]
     this.selectedAddressOption = arrAddressOption[0]
+
+    history.listen(location => {
+      console.log(location)
+      //this.reload();
+    });
   }
 
   getFilterAndSort = () => {
@@ -78,12 +83,18 @@ class Teachers extends Component {
     return data;
   }
 
-  reload = async () => {
+  reload = async (reload = false) => {
     const { match } = this.props;
-    const { category, id } = match.params;
+    const { category, id,search } = match.params;
     const {limit} = this.state;
-    let arrTagSkill = [id];
-    if(category=== 'all') arrTagSkill = null;
+    console.log(match)
+    const filter = {};
+    if(match.path.includes('/search')){
+      filter.searchText = search;
+    }else{
+      if(category !== 'all') filter.arrTagSkill = [id];
+    }
+    
 
     try {
       this.setState({loading: true});
@@ -91,9 +102,9 @@ class Teachers extends Component {
       const {docs, total} = await User.getListTeacher({
         page: this.page,
         limit,
-        arrTagSkill,
+        ...filter,
         ...this.getFilterAndSort()
-      });
+      },reload);
       this.setState({teachers:docs, total});
 
       this.setState({loading: false});
@@ -118,12 +129,16 @@ class Teachers extends Component {
   componentDidMount() {
     try {
       const tasks = [];
-      tasks.push(this.reload());
+      tasks.push(this.reload(true));
       tasks.push(this.getSkills());
       Promise.all(tasks);
     } catch (error) {
       console.log('error', error)
     }
+  }
+
+  componentDidUpdate(prevProps){
+    if(prevProps.match.url !== this.props.match.url) this.reload();
   }
 
   onClickBtnInfo = (id) => {
@@ -226,7 +241,6 @@ class Teachers extends Component {
     const { total, loading, teachers } = this.state;
     const { match } = this.props;
     const { category, search } = match.params;
-    console.log('teachers', teachers,match)
 
 
     return (

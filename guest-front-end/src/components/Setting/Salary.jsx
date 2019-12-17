@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  InputBase,
   CircularProgress
 } from '@material-ui/core';
 import CssTextField from './CssTextField';

@@ -1,5 +1,6 @@
 import React from "react";
 import history from '../../../history';
+import {Link} from 'react-router-dom';
 import './Teacher.scss';
 // const teacher = {
 //   avatar: '',
@@ -45,11 +46,13 @@ const Teacher = (props) => {
         <div className="skills">
         {major &&(
           <>
-          {major.map(({content},index) => {
+          {major.map(({content,_id}) => {
             return (
-              <button key={index} type="button" className="btn btn-tag">
+              <Link to={`/cat/${content}/${_id}`} key={_id}>
+              <button  type="button" className="btn btn-tag">
                 {content}
               </button>
+              </Link>
             )
           })}
           </>

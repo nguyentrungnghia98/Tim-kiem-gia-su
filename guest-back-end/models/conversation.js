@@ -136,7 +136,7 @@ module.exports = {
           userOne: idUser
         },
         {
-          uerTwo: idUser
+          userTwo: idUser
         }
       ]
     }).slice('messages', [((page - 1) * limit), limit])

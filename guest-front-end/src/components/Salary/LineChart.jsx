@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import CanvasJSReact from './canvasjs.react';
-import {converCurrency} from '../../utils/pipe';
 
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 

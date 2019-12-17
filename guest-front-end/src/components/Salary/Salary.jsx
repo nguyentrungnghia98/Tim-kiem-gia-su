@@ -7,7 +7,7 @@ import MomentUtils from '@date-io/moment';
 import LineChart from './LineChart';
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index } = props;
   const [date, setDate] = React.useState('7day');
   const [fromDate, setFromDate] = React.useState(new Date());
   const [toDate, setToDate] = React.useState(new Date());

@@ -84,6 +84,9 @@ const Root = (props) => {
             <Home />
           </Route>
           <Route exact path="/cat" render={() => <Redirect to="/cat/all" />}></Route>
+          <Route exact path="/search/:search">
+            <Teachers />
+          </Route>
           <Route exact path="/cat/:category">
             <Teachers />
           </Route>

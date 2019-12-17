@@ -47,6 +47,7 @@ router.post('/getListMessages', CheckUser.passIfHaveValidToken, async (req, res)
             }
         });
     } catch (err) {
+        console.log('err',err)
         res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
     }
 });
