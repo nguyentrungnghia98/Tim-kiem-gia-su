@@ -1,55 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import { User } from '../../apis';
-import history from '../../history';
+import { Contract } from '../../apis';
 import './DetailContract.scss';
 import { TextField, TextareaAutosize } from '@material-ui/core';
 import { converCurrency } from '../../utils/pipe';
 import StarRatings from 'react-star-ratings';
+import { connect } from 'react-redux';
 
-
-const contract = {
-  teacher: {
-    avatar: 'https://www.upwork.com/profile-portraits/c1m-NSeiQdIlI4WsEQYDEuDtVoKWhoNMFkKyK1BF-TIyOgePyEw6ysNXU5VjPCPMG-',
-    username: 'Vũ Khắc Ngọc',
-    job: 'Giáo viên hóa học'
-  },
-  student: {
-    avatar: 'https://www.upwork.com/profile-portraits/c17BYIgRrMazxmNaAEJVgAVepi5QkQ77qyyv77n3NwVLxkLgtAtxS_ad96_Z4eS_CY',
-    username: 'Thị nở',
-    job: 'THPT Lê Hồng Phon'
-  },
-  name: 'Dạy hóa học 12 vào tối T5,T6,T7',
-  salaryPerHour: 100000,
-  totalHour: 6,
-  description: 'Dạy hóa học lớp 12 phục vụ mục đích thi đại học. Mỗi tối 2 tiếng, bắt đầu từ 7:30PM đến 9:30PM'
-}
 const DetailContract = (props) => {
   const [loading, setLoading] = useState(false)
-  const { teacher, student, name, salaryPerHour, totalHour, description } = contract;
   const [reviewContent, setReviewContent] = useState('');
   const [rating, setRating] = useState(5);
+  const [contract, setContract] = useState();
+  const { teacher, student, feePerHour,  numberOfHour, describe, status } = contract || {};
 
   useEffect(() => {
-    async function loadInfoUser() {
+    async function reload() {
       const { match } = props;
       console.log(props)
       const { id } = match.params;
       try {
         setLoading(true);
-
-        const response = await User.getItem(id);
-        //setTeacher(response)
-        //setSalaryPerHour(response.salaryPerHour)
+        const response = await Contract.getItem(id);
+        setContract(response);
         setLoading(false);
       } catch (error) {
         console.log('err', error);
         setLoading(false);
-        //setTeacher(null)
-        User.alertError(error);
+        Contract.alertError(error);
       }
     }
-    //loadInfoUser();
+    reload();
   }, [])
 
   if (loading) {
@@ -118,8 +99,10 @@ const DetailContract = (props) => {
                   variant="outlined"
                   placeholder="Ví dụ: 100000"
                   className='w-40 mr-3'
-                  value={salaryPerHour}
-                  readOnly
+                  value={feePerHour}
+                  InputProps={{
+                    readOnly: true,
+                  }}
                   required
                 />
                 <span>/hr</span>
@@ -135,15 +118,17 @@ const DetailContract = (props) => {
                   variant="outlined"
                   placeholder="Ví dụ: 1"
                   className='w-40 mr-3'
-                  value={totalHour}
-                  readOnly
+                  value={numberOfHour}
+                  InputProps={{
+                    readOnly: true,
+                  }}
                   required
                 />
                 <span>giờ</span>
               </div>
             </div>
             <div className="form-field">
-              <div>=>  Tổng tiền: <b>{converCurrency(totalHour * salaryPerHour)}đ</b></div>
+              <div>=>  Tổng tiền: <b>{converCurrency(numberOfHour * feePerHour)}đ</b></div>
             </div>
 
             <div className="form-field">
@@ -155,7 +140,7 @@ const DetailContract = (props) => {
                 rows="6"
                 placeholder="Nhập mô tả hợp đồng ví dự lịch học, môn học, ..."
                 className='textarea-custom'
-                value={description}
+                value={describe}
                 readOnly
                 required
               />
@@ -179,23 +164,23 @@ const DetailContract = (props) => {
       <div className="teacher custom-card">
         <div className="custom-card-container">
           <div className="custom-card--header teacher">
-            
+
             <h5>Đánh giá và nhận xét</h5>
           </div>
- 
+
           <div className="custom-card--body">
             <div className="form-field">
               <div className="d-flex mb-4 align-items-center">
                 <p className="mr-4 my-0">Đánh giá của bạn về chất lượng giảng dạy của gia sư:</p>
                 <StarRatings
-                      starRatedColor="#ffde23"
-                      rating={rating}
-                      numberOfStars={5}
-                      changeRating={(value)=> setRating(value)}
-                      starDimension="16px"
-                      name='rating'
-                      starSpacing="0"
-                    />
+                  starRatedColor="#ffde23"
+                  rating={rating}
+                  numberOfStars={5}
+                  changeRating={(value) => setRating(value)}
+                  starDimension="16px"
+                  name='rating'
+                  starSpacing="0"
+                />
               </div>
 
               <p>Viết nhận xét của bạn vào bên dưới</p>
@@ -206,7 +191,6 @@ const DetailContract = (props) => {
                 className='textarea-custom'
                 value={reviewContent}
                 onChange={e => setReviewContent(e.target.value)}
-                readOnly
                 required
               />
 
@@ -217,87 +201,99 @@ const DetailContract = (props) => {
           </div>
         </div>
       </div>
-    )   
+    )
   }
   function renderActionContract() {
-    return (
-      <>
-      <div className="custom-card">
-        <div className="custom-card-container">
-          <div className="custom-card--body">
-            <div className="form-field align-items-center">
-              <h5>Trạng thái</h5>
-              <span className="text-warning mt-3">
-                Gia sư chưa xác nhận
+    switch (status) {
+      case 'pending':
+        return (
+          <div className="custom-card">
+            <div className="custom-card-container">
+              <div className="custom-card--body">
+                <div className="form-field align-items-center">
+                  <h5>Trạng thái</h5>
+                  <span className="text-warning mt-3">
+                    Gia sư chưa xác nhận
                   </span>
-              <button className="btn btn-primary mt-4">
-                Hủy hợp đồng
+                  <button className="btn btn-primary mt-4">
+                    Hủy hợp đồng
                   </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="custom-card mt-3">
-        <div className="custom-card-container">
-          <div className="custom-card--body">
-            <div className="form-field align-items-center">
-              <h5>Trạng thái</h5>
-              <span className="text-success mt-3">
-                Đã thanh toán.          
+        )
+      case 'processing':
+        return (
+          <div className="custom-card mt-3">
+            <div className="custom-card-container">
+              <div className="custom-card--body">
+                <div className="form-field align-items-center">
+                  <h5>Trạng thái</h5>
+                  <span className="text-success mt-3">
+                    Đã thanh toán.
                   </span>
                   <span className="text-success ">Đang trong quá trình học</span>
-              <button className="btn btn-danger mt-4">
-                Khiếu nại hợp đồng
+                  <button className="btn btn-danger mt-4">
+                    Khiếu nại hợp đồng
                   </button>
                   <button className="btn btn-danger mt-3">
-                Chấm dứt hợp đồng
+                    Chấm dứt hợp đồng
                   </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      
-      <div className="custom-card mt-3">
-        <div className="custom-card-container">
-          <div className="custom-card--body">
-            <div className="form-field align-items-center">
-              <h5>Trạng thái</h5>
-              <span className="text-danger mt-3">
-                Học sinh đã khiếu nại.  
+        )
+      case 'processing_complaint':
+        return (
+          <div className="custom-card mt-3">
+            <div className="custom-card-container">
+              <div className="custom-card--body">
+                <div className="form-field align-items-center">
+                  <h5>Trạng thái</h5>
+                  <span className="text-danger mt-3">
+                    Học sinh đã khiếu nại.
                   </span>
-                  <span className="text-danger text-center">Đang trong quá trình giải quyết</span>             
+                  <span className="text-danger text-center">Đang trong quá trình giải quyết</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="custom-card mt-3">
-        <div className="custom-card-container">
-          <div className="custom-card--body">
-            <div className="form-field align-items-center">
-              <h5>Trạng thái</h5>
-              <span className="text-success text-center mt-3">
-                Học sinh khiếu nại thành công  
-                  </span>                          
+        )
+      case 'complainted':
+        return (
+          <div className="custom-card mt-3">
+            <div className="custom-card-container">
+              <div className="custom-card--body">
+                <div className="form-field align-items-center">
+                  <h5>Trạng thái</h5>
+                  <span className="text-success text-center mt-3">
+                    Học sinh khiếu nại thành công
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="custom-card mt-3">
-        <div className="custom-card-container">
-          <div className="custom-card--body">
-            <div className="form-field align-items-center">
-              <h5>Trạng thái</h5>
-              <span className="text-success text-center mt-3">
-                Hợp đồng kết thúc thành công
-                  </span>                          
+        )
+      case 'finished':
+        return (
+          <div className="custom-card mt-3">
+            <div className="custom-card-container">
+              <div className="custom-card--body">
+                <div className="form-field align-items-center">
+                  <h5>Trạng thái</h5>
+                  <span className="text-success text-center mt-3">
+                    Hợp đồng kết thúc thành công
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      </>
-    )
+        )
+      default:
+        return null;
+    }
   }
   return (
     <div className="page-wrapper">
@@ -322,4 +318,14 @@ const DetailContract = (props) => {
   )
 }
 
-export default withRouter(DetailContract);
+
+const mapStateToProps = (state) => {
+  return {
+    role: state.auth.user.role
+  };
+};
+
+const _withRouter = withRouter(DetailContract);
+export default connect(
+  mapStateToProps
+)(_withRouter);

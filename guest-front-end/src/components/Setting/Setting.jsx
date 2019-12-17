@@ -1,4 +1,4 @@
-import React,{ useState } from 'react';
+import React, { useState } from 'react';
 import {
   Typography,
   Box,
@@ -11,6 +11,8 @@ import BasicInfo from './BasicInfo';
 import Job from './Job';
 import Salary from './Salary';
 import ChangePassword from './ChangePassword';
+import { connect } from 'react-redux';
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -66,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 const Setting = (props) => {
   const classes = useStyles();
   const [value, setValue] = useState(0);
-
+  const {role} = props;
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -74,34 +76,44 @@ const Setting = (props) => {
   return (
     <div className="setting page-wrapper">
       <div className={classes.root}>
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={value}
-            onChange={handleChange}
-            aria-label="Vertical tabs example"
-            className={classes.tabs}
-          >
-            <Tab label="Thông tin cơ bản" icon={<i className="fas fa-user"/>} {...a11yProps(0)} />
-            <Tab label="Nghề nghiệp và kĩ năng" icon={<i className="fas  fa-graduation-cap"/>} {...a11yProps(1)} />
-            <Tab label="Thu thập" icon={<i className="fas fa-dollar-sign"/>} {...a11yProps(2)} />
-            <Tab label="Đổi mật khẩu" icon={<i className="fas fa-key"/>} {...a11yProps(3)} />
-          </Tabs>
-          <TabPanel className={classes.tab} value={value} index={0}>
-            <BasicInfo/>
-          </TabPanel>
-          <TabPanel className={classes.tab} value={value} index={1}>
-            <Job/>
-          </TabPanel>
-          <TabPanel className={classes.tab} value={value} index={2}>
-            <Salary/>
-          </TabPanel>
-          <TabPanel className={classes.tab} value={value} index={3}>
-            <ChangePassword/>
-          </TabPanel>
-        </div>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value}
+          onChange={handleChange}
+          aria-label="Vertical tabs example"
+          className={classes.tabs}
+        >
+          <Tab label="Thông tin cơ bản" icon={<i className="fas fa-user" />} {...a11yProps(0)} />
+          <Tab label={role === 1 ? "Nghề nghiệp và kĩ năng" : "Nghề nghiệp"} icon={<i className="fas  fa-graduation-cap" />} {...a11yProps(1)} />
+          {role === 1 && <Tab label="Thu thập" icon={<i className="fas fa-dollar-sign" />} {...a11yProps(2)} />}
+          <Tab label="Đổi mật khẩu" icon={<i className="fas fa-key" />} {...a11yProps(3)} />
+        </Tabs>
+        <TabPanel className={classes.tab} value={value} index={0}>
+          <BasicInfo />
+        </TabPanel>
+        <TabPanel className={classes.tab} value={value} index={1}>
+          <Job />
+        </TabPanel>
+        {role === 1 && <TabPanel className={classes.tab} value={value} index={2}>
+          <Salary />
+        </TabPanel>}
+
+        <TabPanel className={classes.tab} value={value} index={role === 1 ? 3 : 2}>
+          <ChangePassword />
+        </TabPanel>
+      </div>
     </div>
   )
 }
 
-export default Setting;
+
+const mapStateToProps = (state) => {
+  return {
+    role: state.auth.user.role
+  };
+};
+
+export default connect(
+  mapStateToProps
+)(Setting);

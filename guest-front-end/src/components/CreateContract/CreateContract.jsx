@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import {connect} from 'react-redux';
-import { User } from '../../apis';
-import history from '../../history';
+import { User, Contract } from '../../apis';
 import './CreateContract.scss';
 import {TextField, TextareaAutosize } from '@material-ui/core';
 import { converCurrency } from '../../utils/pipe';
@@ -14,8 +13,9 @@ const CreateContract = (props) => {
   const [totalHour, setTotalHour] = useState(1);
   const [description, setDescription] = useState('');
   const [isCheck, setIsCheck] = useState(true);
+  const [loadingCreate, setLoadingCreate] = useState(false);
+  const [error, setError] = useState({ totalHour: '', salaryPerHour: ''});
 
-  
   useEffect(() => {
     async function loadInfoUser() {
       const { match } = props;
@@ -67,11 +67,54 @@ const CreateContract = (props) => {
     )
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    history.push(`/contract`);
+  function validFormInput() {
+    let check = true;
+    const err = {...error}
+    if (isNaN(salaryPerHour)) {
+      err.salaryPerHour = 'Định dạng không hợp lệ! Vui lòng nhập số.';
+      check = false;
+    } else {
+      err.salaryPerHour = '';
+    }
+
+    if (isNaN(totalHour)) {
+      err.totalHour = 'Định dạng không hợp lệ! Vui lòng nhập số.';
+      check = false;
+    } else {
+      err.totalHour = '';
+    }
+    console.log(err)
+    setError(err)
+    return check;
   }
-  console.log('value', teacher, salaryPerHour)
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!validFormInput()) {
+      Contract.alert.error("Dữ liệu nhập không hợp lệ!");
+      return
+    }
+    //history.push(`/contract`);
+    const data = {
+      name,
+      feePerHour: salaryPerHour,
+      numberOfHour: totalHour,
+      describe: description,
+      teacher: teacher._id,
+    }
+    try {
+      setLoadingCreate(true);
+
+      const response = await Contract.create(data);
+
+      Contract.alert.success("Tạo hợp đồng thành công.");
+      setLoadingCreate(false);
+    } catch (error) {
+      console.log('err', error);
+      setLoadingCreate(false);
+      Contract.alertError(error);
+    }
+  }
+
   return (
     <div className="page-wrapper">
       <div className="contract-container">
@@ -123,6 +166,8 @@ const CreateContract = (props) => {
                       variant="outlined"
                       placeholder="Ví dụ: 100000"
                       className='w-40 mr-3'
+                      error={error.salaryPerHour === '' ? false : true}
+                      helperText={error.salaryPerHour}
                       value={salaryPerHour}
                       onChange={e => setSalaryPerHour(e.target.value)}
                       required
@@ -140,6 +185,8 @@ const CreateContract = (props) => {
                       variant="outlined"
                       placeholder="Ví dụ: 1"
                       className='w-40 mr-3'
+                      error={error.totalHour === '' ? false : true}
+                      helperText={error.totalHour}
                       value={totalHour}
                       onChange={e => setTotalHour(e.target.value)}
                       required
@@ -209,7 +256,7 @@ const CreateContract = (props) => {
                   <input type="checkbox" className="mr-2" name="vehicle1" checked={isCheck} onChange={e => setIsCheck(e.target.checked)}/> 
                    <span> Có, tôi đã đọc và đồng ý với <a href="script:0"> điều khoản </a> của công ty</span>
                   </div>
-                  <button type="submit" className="btn btn-primary w-30 mt-3" disabled={!isCheck}>
+                  <button type="submit" className="btn btn-primary w-30 mt-3" disabled={!isCheck || loadingCreate}>
                     Thuê {teacher.username}
                   </button>        
                 </div>

@@ -35,7 +35,7 @@ const SetRoleModal = props => {
       setLoading(true);
 
       const userToken = localStorage.getItem('userToken');
-        const response = await User.post(url,data, {
+        const response = await User.axios.post(url,data, {
           headers: { authorization : userToken }
         });
 

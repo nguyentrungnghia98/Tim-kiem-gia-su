@@ -7,37 +7,37 @@ import {
 } from '@material-ui/core';
 import CssTextField from './CssTextField';
 import ReactTags from 'react-tag-autocomplete'
-import {User, TagSkill} from '../../apis';
+import { User, TagSkill } from '../../apis';
 import { fetchUser } from '../../actions/user';
 import { connect } from 'react-redux';
 import toast from '../../utils/toast';
 
-const defaultJobs = ['Giáo viên','Giáo viên toán', 'Giáo viên hóa học', 'Giáo viên văn học', 'Giáo viên tiếng Anh', 'Lập trình viên','Freelancer'];
+const defaultJobs = ['Giáo viên', 'Giáo viên toán', 'Giáo viên hóa học', 'Giáo viên văn học', 'Giáo viên tiếng Anh', 'Lập trình viên', 'Freelancer'];
 
 const Job = (props) => {
-  const {user, fetchUser} = props;
+  const { user, fetchUser } = props;
 
-  const [job, setJob] = useState(user.job||'');
+  const [job, setJob] = useState(user.job || '');
   const [otherJob, setOtherJob] = useState("");
   const [loadSaveDone, setLoadSaveDone] = useState(true);
-  const [tags, setTags] = useState(user.major.map(convertDataToSuggestion) ||[])
+  const [tags, setTags] = useState(user.major.map(convertDataToSuggestion) || [])
   const [suggestions, setSuggestions] = useState([])
 
-  function convertDataToSuggestion(item){
+  function convertDataToSuggestion(item) {
     return {
       id: item._id,
-      name: item.content,   
+      name: item.content,
       ...item
     }
   }
 
-  useEffect(()=>{
-    async function reload(){
+  useEffect(() => {
+    async function reload() {
       try {
         const response = await TagSkill.getList();
         setSuggestions(response.map(convertDataToSuggestion))
         console.log('data', response)
-  
+
       } catch (error) {
         console.log({ error });
         let message = 'Some thing wrong!';
@@ -45,7 +45,7 @@ const Job = (props) => {
         toast.error(message);
       }
     }
-    
+
     reload();
   }, [])
   function handleDelete(i) {
@@ -66,9 +66,11 @@ const Job = (props) => {
     try {
       setLoadSaveDone(false);
       const data = {
-        job: job !== "0"? job: otherJob,
-        major: tags.map(item => item._id)
+        job: job !== "0" ? job : otherJob
       };
+      if (user.role === 1) {
+        data.major = tags.map(item => item._id);
+      }
       const response = await User.updateInfo(data);
       fetchUser(response);
       console.log('data', data, response)
@@ -97,12 +99,12 @@ const Job = (props) => {
           id="job-select"
           value={job}
           onChange={handleChange}
-          displayEmpty 
+          displayEmpty
         >
           <MenuItem value="" disabled>
             Chọn nghề nghiệp của bạn
           </MenuItem>
-          {defaultJobs.map((item,index) => {
+          {defaultJobs.map((item, index) => {
             return <MenuItem key={index} value={item}>{item}</MenuItem>
           })}
           <MenuItem value="0">
@@ -121,16 +123,21 @@ const Job = (props) => {
       </>
       }
 
-      <label className="text-label">
-        Những kĩ năng mà bạn sẽ dạy là gì?
-    </label>
 
-      <ReactTags
-        tags={tags}
-        suggestions={suggestions}
-        handleDelete={handleDelete}
-        handleAddition={handleAddition}
-      />
+
+      {user.role === 1 &&
+        <>
+          <label className="text-label">
+            Những kĩ năng mà bạn sẽ dạy là gì?
+          </label>
+          <ReactTags
+            tags={tags}
+            suggestions={suggestions}
+            handleDelete={handleDelete}
+            handleAddition={handleAddition}
+          />
+        </>}
+
 
       <div className="actions">
         <button className="btn btn-primary">

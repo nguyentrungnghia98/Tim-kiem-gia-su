@@ -1,7 +1,28 @@
 import axios from "./axios";
 import toast from "../utils/toast";
+import * as hash from "object-hash";
+import * as moment from "moment";
+
 export class Api{
   module = '';
+
+//   hashCache: {
+//     [hash: string]: {
+//         pagination: iCrudPagination;
+//         items: T[];
+//         expired: Date;
+//         isGetList: boolean;
+//     };
+// };
+  hashCache = {}
+
+  get hash(){
+    return hash;
+  }
+
+  get moment(){
+    return moment;
+  }
 
   get axios(){
     return axios;

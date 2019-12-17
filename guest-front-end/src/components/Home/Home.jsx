@@ -8,7 +8,7 @@ import ListSkill from "./ListSkill";
 class Home extends Component {
   goToSearch = (e) => {
     e.preventDefault();
-    history.push('/cat/all');
+    history.push(`/search/${e.target.search.value}`);
   }
  
   render() {
@@ -29,6 +29,7 @@ class Home extends Component {
                     <input
                       className='custom-input-text'
                       type='text'
+                      name="search"
                       required
                       placeholder='Bạn muốn học gì ...'
                     />

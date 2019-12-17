@@ -16,8 +16,8 @@ router.post('/sendMessage', CheckUser.passIfHaveValidToken, (req, res) => {
 // Xử lí req lấy danh sách cuộc hội thoại của user
 // POST /conversation/getListConversation
 router.post('/getListConversation', CheckUser.passIfHaveValidToken, (req, res) => {
-    const { page, limit, sort } = req.body;
-    Conversation.getListConversationsOfUser(req.userInfo.id, page, limit, sort)
+    const { page, limit, sort, condition } = req.body;
+    Conversation.getListConversationsOfUser(req.userInfo.id, page, limit, sort, condition)
         .then((rs) => res.status(200).json({
             results: {
                 object: {
@@ -48,6 +48,7 @@ router.post('/getListMessages', CheckUser.passIfHaveValidToken, async (req, res)
             }
         });
     } catch (err) {
+        console.log('err',err)
         res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
     }
 });

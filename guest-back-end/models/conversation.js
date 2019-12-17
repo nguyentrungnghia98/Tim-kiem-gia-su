@@ -90,8 +90,10 @@ module.exports = {
     }, update, { upsert: true, new: true }).exec();
   },
 
-  getListConversationsOfUser: (idUser, page, limit, sort) => {
+  getListConversationsOfUser: (idUser, page, limit, sort, condition) => {
+    console.log('condition', condition)
     const query = { 
+      ...condition,
       $or: [
         {
           userOne: idUser
@@ -136,7 +138,7 @@ module.exports = {
           userOne: idUser
         },
         {
-          uerTwo: idUser
+          userTwo: idUser
         }
       ]
     }).slice('messages', [((page - 1) * limit), limit])

@@ -11,7 +11,8 @@ class NavBar extends Component {
     super(props);
     this.state = {
       path: window.location.pathname,
-      visible: window.location.pathname !== '/'
+      visible: window.location.pathname !== '/',
+      search: ''
     }
 
     History.listen(location => {
@@ -21,6 +22,10 @@ class NavBar extends Component {
         this.setState({ visible: false });
       }else{
         this.setState({ visible: true });
+      }
+
+      if (!location.pathname.includes('/search')) {
+        this.setState({ search: '' });
       }
     });
   }
@@ -49,12 +54,12 @@ class NavBar extends Component {
       { text: "Đăng kí", data: 'signup' }
     ],
     LoginAsStudent: [
-      { text: "Đang học", isHightLight: true, link: "/contracts" },
-      { text: "Lịch sử lớp học", link: "/contracts" },
+      { text: "Đang học", isHightLight: true, link: "/studying" },
+      { text: "Hợp đồng học", link: "/contracts" },
       { text: "Tin nhắn", link: "/messages" }
     ],
     LoginAsTeacher: [
-      { text: "Yêu cầu dạy học", isHightLight: true, link: "/contracts" },
+      { text: "Yêu cầu dạy học", isHightLight: true, link: "/requests" },
       { text: "Hợp đồng học", link: "/contracts" },
       { text: "Doanh thu", link: "/salary" },
       { text: "Tin nhắn", link: "/messages" }
@@ -72,7 +77,7 @@ class NavBar extends Component {
 
   goToSearch = (e) => {
     e.preventDefault();
-    History.push('/cat/all');
+    History.push(`/search/${this.state.search}`);
   }
 
   renderElement = () => {
@@ -126,11 +131,11 @@ class NavBar extends Component {
           })}
           <li className='nav-item'>
             <div className="dropdown avatar" data-toggle='dropdown'>
-              <img src={user.avatar} onError={this.imgError} alt="" />
+              <img src={user.avatar || "/images/avatar.png"} onError={this.imgError} alt="" />
             </div>
             <div className='dropdown-menu'>
               <div className="user-info">
-                <img src={user.avatar} onError={this.imgError} alt="avatar" />
+                <img src={user.avatar || "/images/avatar.png"}  onError={this.imgError} alt="avatar" />
                 <p>{user.username}</p>
               </div>
               <Link to="/setting">
@@ -177,7 +182,7 @@ class NavBar extends Component {
   };
 
   render() {
-    const { visible } = this.state;
+    const { visible, search } = this.state;
     return (
       <nav className={`navbar navbar-expand-lg bg-white ${visible ? 'visible navbar-light' : 'non-visible navbar-dark'}`} id="header">
         <Link to='/'>
@@ -211,6 +216,10 @@ class NavBar extends Component {
           <div className='search-input'>
             <input
               className='custom-input-text'
+              name="search"
+              value={search}
+              onChange={e => this.setState({search: e.target.value})}
+              required
               type='text'
               placeholder='Bạn muốn học gì...'
             />
