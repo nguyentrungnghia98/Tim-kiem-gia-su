@@ -17,26 +17,16 @@ module.exports = function (server) {
     socket.on('join', (data) => {
       me = data.me;
       other = data.other;
-
-      room = genarateRoom(me.email, other.email);
+      console.log(data)
+      room = genarateRoom(me, other);
       socket.join(room);
 
-      io.to(room).emit('users-changed', { user: room, event: 'joined' })
+      io.to(room).emit('users-changed', { room: room, event: 'joined' })
 
     });
-
+ 
     socket.on('add-message', (message) => {
-      try {
-        let data = { content: message.message, from: me._id, createAt: new Date() }
-        
-        io.to(room).emit('message', data);
-        // call API add message
-      } catch (err) {
-        console.log(err)
-        io.to(room).emit('error', {
-          message: 'something wrong'
-        })
-      }
+        io.to(room).emit('new-message', message);
     });
   })
 }

@@ -2,26 +2,63 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { formatChatDate } from '../../utils/pipe';
 import { Conversation } from '../../apis';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import socketIOClient from 'socket.io-client';
+import shortid from 'shortid';
+import Config from '../../config';
+let socket;
+
 const ListMessages = (props) => {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [loadingMessage, setLoadingMessage] = useState(false);
-  const { user, conversationID } = props;
+  const { user, conversation } = props;
+  const { _id: conversationID, userOne: _userOne, userTwo: _userTwo } = conversation;
+  let other;
+  if (conversationID) {
+    other = user.email !== _userOne.email ? _userOne : _userTwo;
+  }
   const [selectedConversation, setSelectedConversation] = useState();
   const limit = 6;
   let scroll = useRef();
 
+  async function loadMessages() {
+    await loadMessage(conversationID, true);
+    setTimeout(() => {
+      scrollToBottom()
+    })
+  }
+
   useEffect(() => {
-    async function loadMessages() {
-      if (conversationID) {
-        await loadMessage(conversationID, true);
-        setTimeout(() => {
-          scrollToBottom()
-        })
-      }
-    }
+    if (!conversationID) return;
+
+    socket = socketIOClient(Config.url.API_URL);
+
     loadMessages()
+    console.log('other',user, other)
+
+    socket.emit('join', {
+      me: user.email,
+      other: other.email
+    });
+
+    socket.on('users-changed', (data) => {
+      console.log("on-join", data)
+    });
+
+    return () => socket.close();
+
   }, [conversationID])
+
+  useEffect(()=>{
+    if(!socket) return;
+    
+    socket.on('new-message', (data) => {
+      renderNewMessage(data);
+    });
+    
+    return () => socket.off('new-message');
+  }, [selectedConversation])
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,7 +69,6 @@ const ListMessages = (props) => {
   })
 
   function scrollToBottom() {
-    console.log('scroll', scroll);
     if (scroll && scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight - scroll.current.clientHeight;
   }
 
@@ -42,17 +78,17 @@ const ListMessages = (props) => {
 
       const response = await Conversation.getListMessages({
         id: conversationID,
-        page: loadNew?1 : (selectedConversation? selectedConversation.nextPage:1),
+        page: loadNew ? 1 : (selectedConversation ? selectedConversation.nextPage : 1),
         limit
       });
       if (!selectedConversation || loadNew) {
         setSelectedConversation(response);
       } else {
-        if(response.messages.length === 0){
-          setSelectedConversation({...selectedConversation, isEnd: true})
-        }else{
+        if (response.messages.length === 0) {
+          setSelectedConversation({ ...selectedConversation, isEnd: true })
+        } else {
           const newMessages = response.messages.concat(selectedConversation.messages);
-          setSelectedConversation({ ...selectedConversation, messages: newMessages,isEnd: false, nextPage: response.nextPage })
+          setSelectedConversation({ ...selectedConversation, messages: newMessages, isEnd: false, nextPage: response.nextPage })
         }
       }
       setLoadingMessage(false);
@@ -67,12 +103,21 @@ const ListMessages = (props) => {
   async function onScroll(event) {
     if (scroll.current.scrollTop === 0 && !loadingMessage) {
       console.log("LOADMORE MESSAGE")
-      if(!selectedConversation.isEnd){
+      if (!selectedConversation.isEnd) {
         await loadMessage(conversationID);
-        if (scroll) scroll.current.scrollTop = 30;
+        if (scroll) scroll.current.scrollTop = 60;
       }
-      
+
     }
+  }
+
+  function renderNewMessage(data) {
+    console.log('renderNewMessage', data)
+    setSelectedConversation({ ...selectedConversation, messages: selectedConversation.messages.concat(data) });
+    setCurrentTime(new Date())
+    setTimeout(() => {
+      scrollToBottom()
+    })
   }
 
   async function sendMessage(event, id, userId) {
@@ -85,23 +130,18 @@ const ListMessages = (props) => {
         id,
         message
       })
-      const rd = Math.random() * 100
+
       const data = {
-        _id: rd,
+        _id: shortid.generate(),
         createAt: new Date(),
         content: message,
         sendBy: userId
       }
-      console.log('res', response, data)
+      socket.emit("add-message", data);
       event.target.content.value = "";
 
-      setSelectedConversation({ ...selectedConversation, messages: selectedConversation.messages.concat(data) });
-      setCurrentTime(new Date())
-
-      setTimeout(() => {
-        scrollToBottom()
-      })
     } catch (error) {
+      console.log(error, error)
       Conversation.alertError(error);
     }
   }
@@ -203,7 +243,7 @@ const ListMessages = (props) => {
           <section className="about">
             <header><h2>About</h2></header>
             <div className="summary">
-              <Link to={`/${_user.role?'teacher':'student'}/${_user._id}`} className="profile-image-link no-style-link">
+              <Link to={`/${_user.role ? 'teacher' : 'student'}/${_user._id}`} className="profile-image-link no-style-link">
                 <figure className="profile-image">
                   <img src={_user.avatar}
                     onError={(image) => {
@@ -211,7 +251,7 @@ const ListMessages = (props) => {
                     }} alt="avatar" />
                   <figcaption className="font-accent">M</figcaption>
                 </figure></Link>
-                <Link to={`/${_user.role?'teacher':'student'}/${_user._id}`} className="username no-style-link">{_user.username}</Link>
+              <Link to={`/${_user.role ? 'teacher' : 'student'}/${_user._id}`} className="username no-style-link">{_user.username}</Link>
               <div><span className="user-level">{_user.job || null}</span></div>
             </div>
           </section>

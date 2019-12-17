@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Teacher from '../shared/Teacher/Teacher';
 import './Teachers.scss';
 import SelectOption from '../shared/SelectOption/SelectOption';
@@ -175,19 +175,19 @@ class Teachers extends Component {
           {
             skills.map(({_id,content}) => {
               return (
-                <a className="header-menu-item ml-3 mr-5"
-                  href={`/cat/${content}/${_id}`}
+                <Link className="header-menu-item ml-3 mr-5"
+                  to={`/cat/${content}/${_id}`}
                   key={_id}>
                   <h5><b>{content}</b></h5>
-                </a>
+                </Link>
               );
             })
           }
         </div>
-        <a className="header-menu-item ml-3 mr-3 text-primary"
-          href="/all-skills">
+        <Link className="header-menu-item ml-3 mr-3 text-primary"
+          to="/all-skills">
           <h5><b>Xem tất cả kĩ năng</b></h5>
-        </a>
+        </Link>
       </div>
     );
   }

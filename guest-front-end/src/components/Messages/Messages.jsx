@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { formatChatDate } from '../../utils/pipe';
 import SelectOption from '../shared/SelectOption/SelectOption';
 import { Conversation } from '../../apis';
@@ -8,9 +8,9 @@ import './Messages.scss';
 
 const arrOption = [
   { text: 'Tất cả tin nhắn', code: 'all' },
-  { text: 'Tin nhắn chưa đọc', code: 'username_-1' },
-  { text: 'Tin nhắn mới nhất', code: 'salaryPerHour_1' },
-  { text: 'Tin nhắn cũ nhất', code: 'salaryPerHour_-1' },
+  { text: 'Tin nhắn chưa đọc', code: 'unread' },
+  { text: 'Tin nhắn mới nhất', code: 'newest' },
+  { text: 'Tin nhắn cũ nhất', code: 'oldest' },
 ]
 
 
@@ -21,22 +21,35 @@ const Messages = (props) => {
   const [selectedConversation, setSelectedConversation] = useState({});
   const [currentTime, setCurrentTime] = useState(new Date())
   const [conversations, setConversations] = useState([])
-  const {user} = props;
+  const { user } = props;
   useEffect(() => {
+    const data = {}
+    switch (selectedOption.code) {
+      case 'unread':
+        data.condition = { readNewestMessage: false }; break;
+      case 'newest':
+        data.sort = { field:"haveNewMessageAt", type : -1 }; break;
+      case 'oldest':
+        data.sort = { field:"haveNewMessageAt", type : 1 }; break;
+      default:
+        break;
+    }
+
     async function loadConversations() {
       try {
         setLoading(true);
 
         const response = await Conversation.getListConversation({
           page: 1,
-          limit:12
+          limit: 12,
+          ...data
         });
         const conversations = response.docs;
         setConversations(conversations);
-        if(conversations && conversations.length > 0){
-          setSelectedConversation(conversations[0]);
+        if (conversations && conversations.length > 0) {
+          //setSelectedConversation(conversations[0]);
         }
-        
+
         setLoading(false);
       } catch (error) {
         console.log('err', error);
@@ -46,8 +59,12 @@ const Messages = (props) => {
       }
     }
     loadConversations();
-    setLoading(false);
-  }, [])
+    console.log('change', selectedOption)
+  }, [selectedOption])
+
+  function setOption(i) {
+    setSelectedOption(arrOption[i]);
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,14 +74,11 @@ const Messages = (props) => {
     return () => clearInterval(interval);
   })
 
-  function setOption(i) {
-    setSelectedOption(arrOption[i]);
-  }
 
-  function selectConversation(id){
-    console.log('id',id)
-    const conversation = conversations.find(({_id}) => id === _id);
-    if(conversation) setSelectedConversation(conversation);
+  function selectConversation(id) {
+    console.log('id', id)
+    const conversation = conversations.find(({ _id }) => id === _id);
+    if (conversation) setSelectedConversation(conversation);
   }
 
   if (loading) {
@@ -84,10 +98,10 @@ const Messages = (props) => {
     if (conversations.length === 0) return null;
     return (
       <nav className="contacts-list">
-        {conversations.map(({ _id, userOne,userTwo, newestMessage, haveNewMessageAt }, index) => {
-          const _user = user.email !== userOne.email? userOne: userTwo;
+        {conversations.map(({ _id, userOne, userTwo, newestMessage, haveNewMessageAt }, index) => {
+          const _user = user.email !== userOne.email ? userOne : userTwo;
           return (
-            <a key={_id} href="script:0" onClick={selectConversation.bind(this,_id)} className={`contact ${(selectedConversation && selectedConversation._id === _id) ? 'active-contact' : ''} no-style-link`}>
+            <a key={_id} href="script:0" onClick={selectConversation.bind(this, _id)} className={`contact ${(selectedConversation && selectedConversation._id === _id) ? 'active-contact' : ''} no-style-link`}>
               <span className="image-container">
                 <figure className="profile-image">
                   <img src={_user.avatar}
@@ -141,7 +155,7 @@ const Messages = (props) => {
                             <input
                               className='custom-input-text'
                               type='text'
-                              placeholder='Bạn muốn học gì...'
+                              placeholder='Tìm kiếm theo tên...'
                             />
                           </div>
                         </div>
@@ -154,7 +168,7 @@ const Messages = (props) => {
               {renderContactList()}
             </aside>
 
-            <ListMessage conversationID={selectedConversation._id}/>
+            <ListMessage conversation={selectedConversation} />
 
 
           </div>

@@ -12,9 +12,28 @@ class TagSkill extends Api{
       url: this.getUrl('getListTagSkill'),
       headers: this.tokenHeader,
     }
+
+    const hashedQuery = this.hash({url: 'getListTagSkill'});
+    if (
+      this.hashCache[hashedQuery] &&
+      this.hashCache[hashedQuery].expired > new Date()
+    ) {
+      let items = this.hashCache[hashedQuery].item;
+      return items;
+    }
+
     const response = await this.exec(setting);
 
-    return response.data.results.objects;
+    const item =  response.data.results.objects;
+    
+    this.hashCache[hashedQuery] = {
+      item,
+      expired: this.moment()
+          .add(3, "minutes")
+          .toDate(),
+      isGetList: true
+    };
+    return item;
   }
 
 }

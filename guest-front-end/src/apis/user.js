@@ -48,10 +48,8 @@ class User extends Api {
       headers: this.tokenHeader,
       data
     }
-    const hashedQuery = this.hash(data);
-    console.log('hash', this.hashCache, hashedQuery)
+    const hashedQuery = this.hash({...data, url:'getListTeacher' });
     if (
-      !reload &&
       this.hashCache[hashedQuery] &&
       this.hashCache[hashedQuery].expired > new Date()
     ) {
@@ -61,15 +59,14 @@ class User extends Api {
 
     const response = await this.exec(setting);
     const item =  response.data.results.object;
-    if(reload){
-      this.hashCache[hashedQuery] = {
-        item,
-        expired: this.moment()
-            .add(5, "minutes")
-            .toDate(),
-        isGetList: true
-      };
-    }
+
+    this.hashCache[hashedQuery] = {
+      item,
+      expired: this.moment()
+          .add(3, "minutes")
+          .toDate(),
+      isGetList: true
+    };
     return item;
     
   }
