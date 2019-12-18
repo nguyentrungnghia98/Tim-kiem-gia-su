@@ -61,6 +61,11 @@
 .contract-container{
   padding: 0 20% 0 10%;
 }
+@media (max-width: 960px){
+  .contract-container{
+    padding: 0 5%;
+  }
+}
 .textarea-custom{
   border-radius: 4px;
   padding:12px;
@@ -74,4 +79,28 @@
 }
 .w-30{
   width: 30%!important;
+}
+
+.StripeElement {
+  display: block;
+  margin: 10px 0 20px 0;
+  min-width: 200px;
+  padding: 16px 24px;
+  font-size: 1em;
+  font-family: 'Source Code Pro', monospace;
+  box-shadow: 0px 2px 8px #80808078;
+  border: 0;
+  outline: 0;
+  border-radius: 4px;
+  background: white;
+}
+.checkout{
+  .error {
+    color: #c23d4b;
+    margin: 12px 0;
+  }
+}
+
+.text-card{
+  
 }

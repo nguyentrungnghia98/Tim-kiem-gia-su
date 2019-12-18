@@ -1,5 +1,5 @@
 const socketIo = require("socket.io");
-
+const User = require('../models/user');
 
 function genarateRoom(email1, email2) {
   const tmp = [email1, email2];
@@ -14,6 +14,13 @@ module.exports = function (server) {
     let me ="";
     let other = "";
     let room = 0;
+    let userID;
+
+    socket.on('login', id => {
+      console.log('login ', id);
+      userID = id;
+    })
+
     socket.on('join', (data) => {
       me = data.me;
       other = data.other;
@@ -27,6 +34,15 @@ module.exports = function (server) {
  
     socket.on('add-message', (message) => {
         io.to(room).emit('new-message', message);
+    });
+
+    socket.on('disconnect',  () => {
+        try{
+          console.log('disconnect')
+          if(userID) User.updateOne({_id: userID}, {isOnline: false})
+        }catch(err){
+          console.log( err)
+        }
     });
   })
 }

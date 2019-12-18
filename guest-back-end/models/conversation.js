@@ -91,7 +91,6 @@ module.exports = {
   },
 
   getListConversationsOfUser: (idUser, page, limit, sort, condition) => {
-    console.log('condition', condition)
     const query = { 
       ...condition,
       $or: [

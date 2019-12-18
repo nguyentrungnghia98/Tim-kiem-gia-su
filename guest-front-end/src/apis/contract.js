@@ -30,6 +30,18 @@ class Contract extends Api{
     return response.data.results.object;
   }
 
+  async  getListReview(data){
+    const setting = {
+      method: 'POST',
+      url: this.getUrl('getListReview'),
+      headers: this.tokenHeader,
+      data
+    }
+    const response = await this.exec(setting);
+
+    return response.data.results.object;
+  }
+
   async  update(data){
     const setting = {
       method: 'POST',

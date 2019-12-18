@@ -8,14 +8,15 @@ export function converCurrency(money) {
   return formatter.format(money).slice(1);
 }
 
-export function formatDate(date) {
+export function formatDate(_date) {
+  if(!_date) return null;
   var monthNames = [
     "January", "February", "March",
     "April", "May", "June", "July",
     "August", "September", "October",
     "November", "December"
   ];
-
+  const date = new Date(_date)
   var day = date.getDate();
   var monthIndex = date.getMonth();
   var year = date.getFullYear();

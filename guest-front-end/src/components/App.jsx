@@ -30,6 +30,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { openAuthenticationModal } from '../modals/Authentication/AuthenticationAction';
 import ScrollToTop from './ScrollToTop';
 import StudentInfo from './StudentInfo/StudentInfo';
+import socket from '../utils/socket';
 
 const Root = (props) => {
   const { isSignedIn, fetchUser, openSetRoleModal, openAuthenticationModal } = props;
@@ -42,6 +43,8 @@ const Root = (props) => {
 
         const user = await User.getInfo();
         fetchUser(user);
+        User.updateInfo({isOnline: true})
+        socket.emit('login', user.id)
 
         setLoading(false);
 
@@ -56,6 +59,12 @@ const Root = (props) => {
       }
     };
     fetchDataUser();
+
+    // window.addEventListener("beforeunload", async (event) => {
+    //   event.preventDefault();
+    //   await User.updateInfo({isOnline: false});
+    // });
+
     // eslint-disable-next-line
   }, []);
 
