@@ -34,7 +34,7 @@ const ContractSchema = new Schema({
   },
   status: {
       type: String,
-      enum: ['pending', 'processing', 'processing_complaint',
+      enum: ['pending', 'denied', 'processing', 'processing_complaint',
         'complainted', 'finished'],
       required: true,
       default: 'pending'

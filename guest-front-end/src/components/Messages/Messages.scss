@@ -136,6 +136,8 @@
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     margin-left: 5px;
+    display: flex;
+    flex-direction: column;
     .time {
       color: #999;
       font-size: 12px;
@@ -144,8 +146,13 @@
       white-space: pre;
       margin-bottom: 5px;
     }
+    .unread-count{
+      margin-left: auto;
+      font-size: 16px;
+      color: #8a8a8a;
+      margin-top: 3px;
+    }
   }
-  
 }
 .contact{
   background: #fff;
@@ -190,7 +197,7 @@
   p {
     color: #555;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     height: 15px;
   }
 }
@@ -258,6 +265,9 @@
     border-radius: 50%;
     transition: background .3s;
   }
+}
+.online i{
+  background-color: #00cc44;
 }
 .conversation {
   width: 100%;

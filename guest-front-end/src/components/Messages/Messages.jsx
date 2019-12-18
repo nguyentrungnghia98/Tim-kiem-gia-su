@@ -41,7 +41,7 @@ const Messages = (props) => {
 
         const response = await Conversation.getListConversation({
           page: 1,
-          limit: 12,
+          limit: 50,
           ...data
         });
         const conversations = response.docs;
@@ -98,7 +98,7 @@ const Messages = (props) => {
     if (conversations.length === 0) return null;
     return (
       <nav className="contacts-list">
-        {conversations.map(({ _id, userOne, userTwo, newestMessage, haveNewMessageAt }, index) => {
+        {conversations.map(({ _id, userOne, userTwo, newestMessage, haveNewMessageAt, readNewestMessage }) => {
           const _user = user.email !== userOne.email ? userOne : userTwo;
           return (
             <a key={_id} href="script:0" onClick={selectConversation.bind(this, _id)} className={`contact ${(selectedConversation && selectedConversation._id === _id) ? 'active-contact' : ''} no-style-link`}>
@@ -110,7 +110,7 @@ const Messages = (props) => {
                     }} alt="avatar" />
                   <figcaption className="font-accent">M</figcaption>
                 </figure>
-                <span className="online-indicator online">
+                <span className={`online-indicator ${_user.isOnline?'online':''}`}>
                   <i />
                 </span>
               </span>
@@ -125,8 +125,12 @@ const Messages = (props) => {
               </div>
               <aside>
                 <div className="time">
-                  {formatChatDate(haveNewMessageAt, currentTime)}
+                  {formatChatDate(haveNewMessageAt, currentTime)}                 
                 </div>
+                {!readNewestMessage && <span className="unread-count">
+                  <i className="far fa-envelope"/>
+                </span>}
+                
               </aside>
             </a>
           )

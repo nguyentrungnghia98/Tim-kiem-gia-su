@@ -13,25 +13,51 @@ const DetailContract = (props) => {
   const [rating, setRating] = useState(5);
   const [contract, setContract] = useState();
   const { teacher, student, feePerHour,  numberOfHour, describe, status } = contract || {};
+  let processing = false;
 
   useEffect(() => {
-    async function reload() {
-      const { match } = props;
-      console.log(props)
-      const { id } = match.params;
-      try {
-        setLoading(true);
-        const response = await Contract.getItem(id);
-        setContract(response);
-        setLoading(false);
-      } catch (error) {
-        console.log('err', error);
-        setLoading(false);
-        Contract.alertError(error);
-      }
-    }
     reload();
   }, [])
+
+  async function reload() {
+    const { match } = props;
+    console.log(props)
+    const { id } = match.params;
+    try {
+      setLoading(true);
+      const response = await Contract.getItem(id);
+      setContract(response);
+      setLoading(false);
+    } catch (error) {
+      console.log('err', error);
+      setLoading(false);
+      Contract.alertError(error);
+    }
+  }
+
+  async function updateContract(status){
+    
+    if(processing) return;
+    const data = {id: contract._id, status};
+    
+    try {
+      processing = true;
+
+      const response = await Contract.update(data);
+      
+      reload();
+
+      processing = false;
+    } catch (error) {
+      console.log('err', error);
+      processing = false;
+      //setTeacher(null)
+      Contract.alertError(error);
+    }
+  }
+
+
+
 
   if (loading) {
     return (
@@ -160,6 +186,7 @@ const DetailContract = (props) => {
     )
   }
   function renderContractReview() {
+    if(contract.status === 'pending' || contract.status ==='denied') return;
     return (
       <div className="teacher custom-card">
         <div className="custom-card-container">
@@ -215,7 +242,7 @@ const DetailContract = (props) => {
                   <span className="text-warning mt-3">
                     Gia sư chưa xác nhận
                   </span>
-                  <button className="btn btn-primary mt-4">
+                  <button onClick={e => updateContract('denied')} className="btn btn-primary mt-4">
                     Hủy hợp đồng
                   </button>
                 </div>
@@ -234,11 +261,11 @@ const DetailContract = (props) => {
                     Đã thanh toán.
                   </span>
                   <span className="text-success ">Đang trong quá trình học</span>
-                  <button className="btn btn-danger mt-4">
+                  <button onClick={e => updateContract('processing_complaint')} className="btn btn-danger mt-4">
                     Khiếu nại hợp đồng
                   </button>
-                  <button className="btn btn-danger mt-3">
-                    Chấm dứt hợp đồng
+                  <button onClick={e => updateContract('finished')} className="btn btn-success mt-3">
+                    Kết thúc hợp đồng
                   </button>
                 </div>
               </div>
@@ -300,11 +327,11 @@ const DetailContract = (props) => {
       <div className="contract-detail-container">
         <h4 className="ml-5">Thông tin hợp đồng</h4>
         <div className="row">
-          <div className="col-9">
+          <div className="col-12 col-lg-9">
             {renderContractInfo()}
             {renderContractReview()}
           </div>
-          <div className="col-3">
+          <div className="col-12 col-lg-3">
             <div className="mt-3">
               {renderActionContract()}
             </div>

@@ -18,16 +18,17 @@ const arrSortOption = [
 const arrStatusOption = [
   { text: 'Bất kì', code: 'any' },
   { text: 'Chờ giáo viến đồng ý', code: 'pending' , className:'text-warning'},
+  { text: 'Đã từ chối', code: 'denied' , className:'text-danger'},
   { text: 'Đang học', code: 'processing', className:'text-success' },
-  { text: 'Chờ giải quyết khiếu nại', code: 'processing_complaint' , className:'text-error'},
-  { text: 'Khiếu nại thành công', code: 'complainted', className:'text-error' },
+  { text: 'Chờ giải quyết khiếu nại', code: 'processing_complaint' , className:'text-danger'},
+  { text: 'Khiếu nại thành công', code: 'complainted', className:'text-danger' },
   { text: 'Kết thúc thành công', code: 'finished' , className:'text-success'},
 ]
 
 const Contracts = (props) => {
   const {match} = props;
   const {path} = match;
-  const initStatusOption = path === "/studying"?arrStatusOption[2]: (path === "/requests"? arrStatusOption[1] : arrStatusOption[0])
+  const initStatusOption = path === "/studying"?arrStatusOption[3]: (path === "/requests"? arrStatusOption[1] : arrStatusOption[0])
   const [loading, setLoading] = useState(false)
   const [selectedSortOption, setSelectedSortOption] = useState(arrSortOption[0])
   const [selectedStatusOption, setSelectedStatusOption] = useState(initStatusOption);
@@ -35,6 +36,7 @@ const Contracts = (props) => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const limit = 4;
+  let processing = false;
 
   useEffect(() => {
     setSelectedStatusOption(initStatusOption);
@@ -83,6 +85,29 @@ const Contracts = (props) => {
     }
   }
 
+  async function updateContract(e,status, id){
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if(processing) return;
+    const data = {id, status};
+    
+    try {
+      processing = true;
+
+      const response = await Contract.update(data);
+      
+      reload();
+
+      processing = false;
+    } catch (error) {
+      console.log('err', error);
+      processing = false;
+      //setTeacher(null)
+      Contract.alertError(error);
+    }
+  }
+
   function setSortOption(i) {
     setSelectedSortOption(arrSortOption[i]);
   }
@@ -96,21 +121,21 @@ const Contracts = (props) => {
     //this.reload();
   }
 
-  function renderButtonActions(status){    
+  function renderButtonActions(status, id){    
     const {role} = props;   
     switch(status){
       case 'pending':
         if(role === 0) return;
         return (
           <>
-            <button className="btn btn-secondary mr-3">Từ chối</button>
-            <button className="btn btn-primary">Đồng ý</button>
+            <button onClick={e => updateContract(e,'denied',id)} className="btn btn-secondary mr-3">Từ chối</button>
+            <button onClick={e => updateContract(e,'processing',id)} className="btn btn-primary">Đồng ý</button>
           </>
         )
       case 'processing':
           return (
             <>
-              <button className="btn btn-danger">Khiếu nại</button>
+              <button onClick={e => updateContract(e,'processing_complaint',id)} className="btn btn-danger">Khiếu nại</button>
             </>
           )
       default:
@@ -165,7 +190,7 @@ const Contracts = (props) => {
                         <small className="ml-3"> - {user.job || 'Không rõ'}</small>
                       </div>
                       <div className="col-4 text-right">                      
-                      {renderButtonActions(status)}
+                      {renderButtonActions(status, _id)}
                       </div>
                     </div>
                     </Link>

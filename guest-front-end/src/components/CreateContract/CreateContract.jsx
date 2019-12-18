@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { User, Contract } from '../../apis';
 import './CreateContract.scss';
-import {TextField, TextareaAutosize } from '@material-ui/core';
+import { TextField, TextareaAutosize } from '@material-ui/core';
 import { converCurrency } from '../../utils/pipe';
+import { Elements, StripeProvider } from 'react-stripe-elements';
+import CheckoutForm from './CheckoutForm';
+
+let getTokenPurchase;
 const CreateContract = (props) => {
   const [teacher, setTeacher] = useState();
   const [loading, setLoading] = useState(true)
@@ -14,7 +18,8 @@ const CreateContract = (props) => {
   const [description, setDescription] = useState('');
   const [isCheck, setIsCheck] = useState(true);
   const [loadingCreate, setLoadingCreate] = useState(false);
-  const [error, setError] = useState({ totalHour: '', salaryPerHour: ''});
+  const [error, setError] = useState({ totalHour: '', salaryPerHour: '' });
+  
 
   useEffect(() => {
     async function loadInfoUser() {
@@ -35,15 +40,15 @@ const CreateContract = (props) => {
         User.alertError(error);
       }
     }
-    if(props.role === 0) loadInfoUser();
+    if (props.role === 0) loadInfoUser();
   }, [])
 
-  if(props.role !== 0){
+  if (props.role !== 0) {
     return (
-      <div className="page-wrapper text-center">        
-          <h5 className="mt-5">
-            <i>Chúng tôi không hỗ trợ thuê gia sư nếu bạn đã là gia sư.<br/> Vui lòng tạo tài khoản khác với vai trò là học sinh</i>
-          </h5>        
+      <div className="page-wrapper text-center">
+        <h5 className="mt-5">
+          <i>Chúng tôi không hỗ trợ thuê gia sư nếu bạn đã là gia sư.<br /> Vui lòng tạo tài khoản khác với vai trò là học sinh</i>
+        </h5>
       </div>
     )
   }
@@ -69,7 +74,7 @@ const CreateContract = (props) => {
 
   function validFormInput() {
     let check = true;
-    const err = {...error}
+    const err = { ...error }
     if (isNaN(salaryPerHour)) {
       err.salaryPerHour = 'Định dạng không hợp lệ! Vui lòng nhập số.';
       check = false;
@@ -89,12 +94,24 @@ const CreateContract = (props) => {
   }
   async function handleSubmit(e) {
     e.preventDefault();
+    let token;
+    if(getTokenPurchase){
+      token = await getTokenPurchase();
+    }
+    console.log('token',token);
+    if(!token)
+      return Contract.alert.error("Kết nối thanh toán thất bại!");
+    if(!token.token || !token.token.id)
+      return Contract.alert.error("Vui lòng nhập đúng thẻ thanh toán!");
+    
+    
     if (!validFormInput()) {
       Contract.alert.error("Dữ liệu nhập không hợp lệ!");
       return
     }
     //history.push(`/contract`);
     const data = {
+      tokenId: token.token.id,
       name,
       feePerHour: salaryPerHour,
       numberOfHour: totalHour,
@@ -192,16 +209,16 @@ const CreateContract = (props) => {
                       required
                     />
                     <span>giờ</span>
-                  </div>                 
+                  </div>
                 </div>
                 <div className="form-field">
-                  <div>=>  Tổng tiền: <b>{converCurrency(totalHour*salaryPerHour)}đ</b></div>
+                  <div>=>  Tổng tiền: <b>{converCurrency(totalHour * salaryPerHour)}đ</b></div>
                 </div>
               </div>
             </div>
           </div>
 
-          
+
           <div className="teacher custom-card">
             <div className="custom-card-container">
               <div className="custom-card--header">
@@ -209,16 +226,16 @@ const CreateContract = (props) => {
               </div>
               <div className="custom-card--body">
 
-                <div className="form-field">                  
-                    <TextareaAutosize
-                      variant="outlined"
-                      rows="6"                      
-                      placeholder="Nhập mô tả hợp đồng ví dự lịch học, môn học, ..."
-                      className='textarea-custom'
-                      value={description}
-                      onChange={e => setDescription(e.target.value)}
-                      required
-                    />           
+                <div className="form-field">
+                  <TextareaAutosize
+                    variant="outlined"
+                    rows="6"
+                    placeholder="Nhập mô tả hợp đồng ví dự lịch học, môn học, ..."
+                    className='textarea-custom'
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -227,20 +244,29 @@ const CreateContract = (props) => {
           <div className="teacher custom-card">
             <div className="custom-card-container">
               <div className="custom-card--header">
-                <h5>Phương thức thanh toán</h5>
+                <h5>Thanh toán</h5>
               </div>
               <div className="custom-card--body">
-                
-                <div className="form-field">
-                <span className="ml-1">
-                  Bạn sẽ trả thêm phí tương ứng với phương thức thanh toán
-                </span>
-                <button type="button" className="btn btn-primary w-30 mt-3 mb-4">
-                  Thêm phương thức thanh toán
-                </button>
 
-                  <div className="text-warning">
-                    Chúng tôi đang trong giai đoạn thử nghiệm, bạn có thể bỏ qua bước này
+                <div className="form-field">
+                  <span className="ml-1 mb-3">Tổng tiền: <b>{converCurrency(totalHour * salaryPerHour)}đ</b></span>
+                 
+
+                  <StripeProvider apiKey="pk_test_JE8m9Z9tVIoUAu6yOjRvLaHy">
+                    <div className="example">
+                      <Elements>
+                        <CheckoutForm setFunction={fn => {
+                          console.log('inital',fn);
+                          getTokenPurchase = fn
+                        }}/>
+                      </Elements>
+                    </div>
+                  </StripeProvider>
+                  <div className="text-secondary text-card px-2">
+                  <small style={{fontSize:'14px'}}>
+                    Need a test card?<br /> Try 4242 4242 4242 4242, a valid expiration date in the future, and any CVC number and zip code.
+                  </small>
+                    
                   </div>
                 </div>
               </div>
@@ -250,15 +276,15 @@ const CreateContract = (props) => {
           <div className="teacher custom-card">
             <div className="custom-card-container">
               <div className="custom-card--body">
-                <div className="form-field">   
-                  
+                <div className="form-field">
+
                   <div className="flex-row-center">
-                  <input type="checkbox" className="mr-2" name="vehicle1" checked={isCheck} onChange={e => setIsCheck(e.target.checked)}/> 
-                   <span> Có, tôi đã đọc và đồng ý với <a href="script:0"> điều khoản </a> của công ty</span>
+                    <input type="checkbox" className="mr-2" name="vehicle1" checked={isCheck} onChange={e => setIsCheck(e.target.checked)} />
+                    <span> Có, tôi đã đọc và đồng ý với <a href="script:0"> điều khoản </a> của công ty</span>
                   </div>
                   <button type="submit" className="btn btn-primary w-30 mt-3" disabled={!isCheck || loadingCreate}>
                     Thuê {teacher.username}
-                  </button>        
+                  </button>
                 </div>
               </div>
             </div>

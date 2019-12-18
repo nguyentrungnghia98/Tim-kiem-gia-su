@@ -3,10 +3,8 @@ import { connect } from 'react-redux';
 import { formatChatDate } from '../../utils/pipe';
 import { Conversation } from '../../apis';
 import { Link } from 'react-router-dom';
-import socketIOClient from 'socket.io-client';
 import shortid from 'shortid';
-import Config from '../../config';
-let socket;
+import socket from '../../utils/socket';
 
 const ListMessages = (props) => {
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -31,8 +29,6 @@ const ListMessages = (props) => {
   useEffect(() => {
     if (!conversationID) return;
 
-    socket = socketIOClient(Config.url.API_URL);
-
     loadMessages()
     console.log('other',user, other)
 
@@ -44,9 +40,6 @@ const ListMessages = (props) => {
     socket.on('users-changed', (data) => {
       console.log("on-join", data)
     });
-
-    return () => socket.close();
-
   }, [conversationID])
 
   useEffect(()=>{
@@ -84,12 +77,13 @@ const ListMessages = (props) => {
       if (!selectedConversation || loadNew) {
         setSelectedConversation(response);
       } else {
-        if (response.messages.length === 0) {
-          setSelectedConversation({ ...selectedConversation, isEnd: true })
-        } else {
+        let isEnd = false;
+        if (response.messages.length < limit) {
+          isEnd = true;
+        } 
           const newMessages = response.messages.concat(selectedConversation.messages);
-          setSelectedConversation({ ...selectedConversation, messages: newMessages, isEnd: false, nextPage: response.nextPage })
-        }
+          setSelectedConversation({ ...selectedConversation, messages: newMessages, isEnd, nextPage: response.nextPage })
+        
       }
       setLoadingMessage(false);
 
@@ -162,9 +156,9 @@ const ListMessages = (props) => {
                   }} alt="avatar" />
                 <figcaption className="font-accent">M</figcaption>
               </figure>
-              <span className="online-indicator online">
+              {/* <span className={`online-indicator ${from.isOnline?'online':''}`}>
                 <i />
-              </span>
+              </span> */}
             </span>
 
             <div className="user-info">
@@ -201,7 +195,7 @@ const ListMessages = (props) => {
       <header>
         <div className="upper-row">
           <div className="user-info">
-            <h1><span className="online-indicator online"><i></i></span>
+            <h1><span className={`online-indicator ${_user.isOnline?'online':''}`}><i></i></span>
               {_user.username}
             </h1>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { User } from '../../apis';
+import { User, Contract } from '../../apis';
 import history from '../../history';
 import './TeacherInfo.scss';
 import SelectOption from '../shared/SelectOption/SelectOption';
@@ -10,7 +10,7 @@ import ReactPaginate from 'react-paginate';
 import { withRouter } from 'react-router-dom';
 import { openAuthenticationModal } from '../../modals/Authentication/AuthenticationAction';
 import SendMessageModal from '../../modals/SendMessage/SendMessage';
-import {openSendMessageModal} from '../../modals/SendMessage/SendMessageAction';
+import { openSendMessageModal } from '../../modals/SendMessage/SendMessageAction';
 
 const review = {
   name: "Fake review",
@@ -22,7 +22,7 @@ const review = {
 }
 
 const arrSortOption = [
-  { text: 'Mới nhất', code: 'newest' },
+  { text: 'Mới nhất', code: "createTime_-1" },
   { text: 'Đánh giá cao nhất', code: 'highest' },
   { text: 'Đánh giá thấp nhất', code: 'lowest' },
   { text: 'Số học sinh đã dạy', code: 'students' }
@@ -32,36 +32,78 @@ const arrSortOption = [
 const TeacherInfo = (props) => {
   const [teacher, setTeacher] = useState();
   const [selectedSortOption, setSelectedSortOption] = useState(arrSortOption[0]);
+  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true)
+  const [loadingReviews, setLoadingReviews] = useState(true);
   const limit = 5;
-  const reviews = Array(10).fill(0)
+  const [reviews, setReviews] = useState([]);
 
 
   useEffect(() => {
-    async function loadInfoUser() {
-      const { match } = props;
-      console.log(props)
-      const { id } = match.params;
-      try {
-        setLoading(true);
-
-        const response = await User.getItem(id);
-        setTeacher(response)
-
-        setLoading(false);
-      } catch (error) {
-        console.log('err', error);
-        setLoading(false);
-        setTeacher(null)
-        User.alertError(error);
-      }
-    }
     loadInfoUser();
   }, [])
 
+  useEffect(() => {
+    if(!teacher) return;
+    loadingTeacherReviews();
+  }, [selectedSortOption, page, teacher])
+
+  async function loadInfoUser() {
+    const { match } = props;
+    console.log(props)
+    const { id } = match.params;
+    try {
+      setLoading(true);
+
+      const response = await User.getItem(id);
+      setTeacher(response)
+
+      setLoading(false);
+    } catch (error) {
+      console.log('err', error);
+      setLoading(false);
+      setTeacher(null)
+      User.alertError(error);
+    }
+  }
+
+  function getFilterAndSort() {
+    const data = {};
+    let [property, type] = selectedSortOption.code.split("_")
+    data.sort = {
+      field : property,
+      type : Number.parseInt(type)
+    }
+
+    return data;
+  }
+
+  async function loadingTeacherReviews() {
+    try {
+      setLoadingReviews(true);
+
+      const response = await Contract.getListReview({
+        id: teacher._id,
+        role: teacher.role,
+        page,
+        limit,
+        ...getFilterAndSort()
+      });
+      setReviews(response.docs);
+      setTotal(response.total);
+
+      setLoadingReviews(false);
+    } catch (error) {
+      console.log('err', error);
+      setLoadingReviews(false);
+      //setTeacher(null)
+      Contract.alertError(error);
+    }
+  }
+
   function createContract() {
-    if(!props.isSignedIn){
+    if (!props.isSignedIn) {
       User.alert.warn("Vui lòng đăng nhập để tiếp tục.")
       return props.openAuthenticationModal();
     }
@@ -69,7 +111,7 @@ const TeacherInfo = (props) => {
   }
 
   function sendMessage() {
-    if(!props.isSignedIn){
+    if (!props.isSignedIn) {
       User.alert.warn("Vui lòng đăng nhập để tiếp tục.")
       return props.openAuthenticationModal();
     }
@@ -91,14 +133,31 @@ const TeacherInfo = (props) => {
   };
 
   function renderReviews() {
+    if(loadingReviews){
+      return (
+        <div className="spinner-wrapper mt-5" >
+          <div className="spinner-border" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+      )
+    } 
+    if (reviews.length === 0) {
+      return (
+        <div className="d-flex justify-content-center">
+          <h5 className="mt-5"><i>Danh sách rỗng</i></h5>
+        </div>
+      )
+    }
+    console.log('reviews',reviews);
     return (
       <>
-        {reviews.slice((page - 1) * limit, page * limit).map((_, index) => {
+        {reviews.map((review, index) => {
           return (
             <div className="review " key={index}>
               <div className="row no-gutters">
                 <div className="col-10 review-content">
-                  <h5>{review.name + " " + ((page - 1) * limit + index + 1)}</h5>
+                  <h5>{review.name}</h5>
                   <div className="d-flex align-items-center review-info">
                     <StarRatings
                       starRatedColor="#ffde23"
@@ -109,30 +168,17 @@ const TeacherInfo = (props) => {
                       starSpacing="0"
                     />
                     <div className="rating mx-3">{review.rate}</div>
-                    <div className="date">{formatDate(review.date)}</div>
+                    <div className="date">{formatDate(review.createTime)}</div>
                   </div>
                   <span className="comment"><i>{review.comment}</i></span>
                 </div>
                 <div className="col-2 price">
-                  {converCurrency(review.price)}đ
+                  {converCurrency(review.totalPrice)}đ
                 </div>
               </div>
             </div>
           )
         })}
-        <ReactPaginate
-          previousLabel={'Trước'}
-          nextLabel={'Tiếp'}
-          breakLabel={'...'}
-          breakClassName={'break-me'}
-          pageCount={Math.ceil(reviews.length / limit)}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={handlePageClick}
-          containerClassName={'pagination'}
-          subContainerClassName={'pages pagination'}
-          activeClassName={'active'}
-        />
       </>
     )
   }
@@ -155,102 +201,117 @@ const TeacherInfo = (props) => {
       </div>
     )
   }
+
+  const pageCount = Math.ceil(total / limit);
   return (
     <>
-    <div className="page-wrapper teacher-info-container">
-      <div className="row px no-gutters">
-        <div className="col-12 col-lg-9">
-          <div className="teacher">
-            <div className="teacher-container">
-              <div className="teacher-info">
-                <div className="d-flex">
-                  <div className="info-left">
-                    <img src={teacher.avatar ? teacher.avatar : "/images/avatar.png"}
-                      onError={(image) => {
-                        image.target.src = "/images/avatar.png";
-                      }} alt="avatar" />
+      <div className="page-wrapper teacher-info-container">
+        <div className="row px no-gutters">
+          <div className="col-12 col-lg-9">
+            <div className="teacher">
+              <div className="teacher-container">
+                <div className="teacher-info">
+                  <div className="d-flex">
+                    <div className="info-left">
+                      <img src={teacher.avatar ? teacher.avatar : "/images/avatar.png"}
+                        onError={(image) => {
+                          image.target.src = "/images/avatar.png";
+                        }} alt="avatar" />
+                    </div>
+                    <div className="info-right">
+                      <div className="name">{teacher.username}</div>
+                      <div className="job"><i className="fas fa-map-marker-alt mr-2"></i> {teacher.address}</div>
+                    </div>
                   </div>
-                  <div className="info-right">
-                    <div className="name">{teacher.username}</div>
-                    <div className="job"><i className="fas fa-map-marker-alt mr-2"></i> {teacher.address}</div>
+                  <div className="review">
+                    <div className="section">
+                      <b>100%</b>
+                      <div className="divide-primary" />
+                      <span>Buổi học thành công</span>
+                    </div>
+                    <div className="section">
+                      <b>100%</b>
+                      <div className="divide-primary" />
+                      <span>Đánh giá tốt</span>
+                    </div>
                   </div>
                 </div>
-                <div className="review">
-                  <div className="section">
-                    <b>100%</b>
-                    <div className="divide-primary" />
-                    <span>Buổi học thành công</span>
-                  </div>
-                  <div className="section">
-                    <b>100%</b>
-                    <div className="divide-primary" />
-                    <span>Đánh giá tốt</span>
-                  </div>
-                </div>
-              </div>
-              <h4 className="teacher--title">{teacher.job ? teacher.job : 'Không rõ nghề nghiệp'}</h4>
-              <p className="introduction">{teacher.introduction}</p>
-              <h4 className="teacher--title">Kĩ năng</h4>
-              <div className="skills">
-                {teacher.major && (<>
-                  {teacher.major.map(({ content }, index) => {
-                    return (
-                      <button key={index} type="button" className="btn btn-tag">
-                        {content}
-                      </button>
-                    )
-                  })}
-                </>)}
+                <h4 className="teacher--title">{teacher.job ? teacher.job : 'Không rõ nghề nghiệp'}</h4>
+                <p className="introduction">{teacher.introduction}</p>
+                <h4 className="teacher--title">Kĩ năng</h4>
+                <div className="skills">
+                  {teacher.major && (<>
+                    {teacher.major.map(({ content }, index) => {
+                      return (
+                        <button key={index} type="button" className="btn btn-tag">
+                          {content}
+                        </button>
+                      )
+                    })}
+                  </>)}
 
+                </div>
+                <div className="statistic row">
+                  <div className="col-3">
+                    <p>{converCurrency(teacher.salaryPerHour)}đ</p>
+                    <span>1 giờ học</span>
+                  </div>
+                  <div className="col-3">
+                    <p>100tr+</p>
+                    <span>tổng thu nhập</span>
+                  </div>
+                  <div className="col-3">
+                    <p>{converCurrency(1000)}đ</p>
+                    <span>học viên</span>
+                  </div>
+                  <div className="col-3">
+                    <p>{converCurrency(4320)}đ</p>
+                    <span>giờ dạy</span>
+                  </div>
+                </div>
               </div>
-              <div className="statistic row">
-                <div className="col-3">
-                  <p>{converCurrency(teacher.salaryPerHour)}đ</p>
-                  <span>1 giờ học</span>
+            </div>
+            <div className="teacher history">
+              <div className="history-container">
+                <div className="history--header">
+                  <h5>Lịch sử dạy học và đánh giá</h5>
+                  <SelectOption setOption={setSortOption} selectedOption={selectedSortOption} arrOption={arrSortOption} />
                 </div>
-                <div className="col-3">
-                  <p>100tr+</p>
-                  <span>tổng thu nhập</span>
-                </div>
-                <div className="col-3">
-                  <p>{converCurrency(1000)}đ</p>
-                  <span>học viên</span>
-                </div>
-                <div className="col-3">
-                  <p>{converCurrency(4320)}đ</p>
-                  <span>giờ dạy</span>
+                <div className="history--body">
+                  {renderReviews()}
+                  {reviews.length > 0 && <ReactPaginate
+                    previousLabel={'Trước'}
+                    nextLabel={'Tiếp'}
+                    breakLabel={'...'}
+                    breakClassName={'break-me'}
+                    pageCount={pageCount}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={handlePageClick}
+                    containerClassName={'pagination'}
+                    subContainerClassName={'pages pagination'}
+                    activeClassName={'active'}
+                  />}
+
                 </div>
               </div>
             </div>
           </div>
-          <div className="teacher history">
-            <div className="history-container">
-              <div className="history--header">
-                <h5>Lịch sử dạy học và đánh giá</h5>
-                <SelectOption setOption={setSortOption} selectedOption={selectedSortOption} arrOption={arrSortOption} />
-              </div>
-              <div className="history--body">
-                {renderReviews()}
-
-              </div>
+          <div className="col-12 col-lg-3">
+            <div className="actions">
+              {props.role !== 1 && (
+                <>
+                  <button className="btn btn-primary" onClick={createContract}>Thuê ngay</button>
+                  <button className="btn btn-light" onClick={sendMessage}><i className="far fa-paper-plane mr-2" />Nhắn tin</button>
+                  <button className="btn btn-light"><i className="far fa-heart mr-2" />  Save</button>
+                </>
+              )}
             </div>
-          </div>
-        </div>
-        <div className="col-12 col-lg-3">
-          <div className="actions">
-            {props.role !== 1 && (
-              <>
-                <button className="btn btn-primary" onClick={createContract}>Thuê ngay</button>
-                <button className="btn btn-light" onClick={sendMessage}><i className="far fa-paper-plane mr-2" />Nhắn tin</button>
-                <button className="btn btn-light"><i className="far fa-heart mr-2" />  Save</button>
-              </>
-            )}
           </div>
         </div>
       </div>
-    </div>
 
-    <SendMessageModal/>
+      <SendMessageModal />
     </>
   )
 }
@@ -265,7 +326,7 @@ const mapStateToProps = (state) => {
 
 const tmp = withRouter(TeacherInfo);
 export default connect(
-  mapStateToProps,{
+  mapStateToProps, {
     openAuthenticationModal,
     openSendMessageModal
   }
