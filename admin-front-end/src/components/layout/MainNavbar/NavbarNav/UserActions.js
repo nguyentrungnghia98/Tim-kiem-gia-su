@@ -17,19 +17,15 @@ const UserActions = (props) => {
 
   const [visible, setVisible] = useState(false);
   const {logOut, userInfo, fetchUser} = props;
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDataUser = async () => {
       try {
-        setLoading(true);
         const token = localStorage.getItem('token');
         await fetchUser(token);
-        
-        setLoading(false);
+      
       } catch (err) {
         console.log('err', err);
-        setLoading(false);
       }
     };
     fetchDataUser();
@@ -40,10 +36,10 @@ const UserActions = (props) => {
         <DropdownToggle caret tag={NavLink} className="text-nowrap px-3">
           <img
             className="user-avatar rounded-circle mr-2"
-            src={userInfo.avatar}
+            src={userInfo ? userInfo.avatar : ""}
             alt="User Avatar"
           />{" "}
-          <span className="d-none d-md-inline-block">{loading ? "" : userInfo.fullName}</span>
+          <span className="d-none d-md-inline-block">{userInfo !== null ? userInfo.fullName : ""}</span>
         </DropdownToggle>
         <Collapse tag={DropdownMenu} right small open={visible}>
           <DropdownItem tag={Link} to="user-profile">

@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {Alert, Container, Row, Col, Card, CardHeader, CardBody , Button,Modal, ModalBody, ModalHeader, Form, FormGroup, FormInput} from "shards-react";
 
 import PageTitle from "../components/common/PageTitle";
+import Loading from "../components/loading/Loading";
 
 import {fetchTagSkill, fetchAddTagSkill, fetchDelTagSkill, fetchUpdateTagSkill} from '../actions/actionTagSkill'
 
@@ -39,22 +40,23 @@ let rowsTagSkill;
 if(tagskills !== null){
   rowsTagSkill = tagskills.map((tagskill, index) => {
     return(
-                <tr>
+              
+                <tr key={index}>
                   <td><center>{index+1}</center></td>
                   <td><center>{tagskill.content}</center></td>
                   <td><center>{tagskill.numOfTeacher}</center></td>
                   <td><center>
-                  <Button theme="while" className="p-0" onClick={() => {setOpenModalUp(!openModalUp); setContent(tagskill.content); setId(tagskill._id)}}><i class="material-icons icon-blue">
+                  <Button theme="while" className="p-0 btn-icon" title="Chỉnh sửa" onClick={() => {setOpenModalUp(!openModalUp); setContent(tagskill.content); setId(tagskill._id)}}><i className="material-icons icon-blue">
                   edit
                   </i></Button>
-                  <Button theme="while" className="p-0" onClick={() => {setOpenModalDel(!openModalDel); setContent(tagskill.content); setId(tagskill._id)}}><i class="material-icons ml-2 icon-red">delete</i></Button>
+                  <Button theme="while" className="p-0 btn-icon" title="Xóa" onClick={() => {setOpenModalDel(!openModalDel); setContent(tagskill.content); setId(tagskill._id)}}><i className="material-icons ml-2 icon-red">delete</i></Button>
                   </center></td>
                   
                </tr>
     )
 });
 }else{
-  return <tr></tr>
+  return <Loading/>
 }
 
 return(
@@ -118,7 +120,9 @@ return(
                 </tr>
               </thead>
               <tbody>
-                {rowsTagSkill}
+                
+                  {rowsTagSkill}
+                
               </tbody>
             </table>
           </CardBody>
