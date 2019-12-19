@@ -3,7 +3,7 @@ var router = express.Router();
 const jwt = require('../../utils/jwt');
 const User = require('../../models/user');
 const Conversation = require('../../models/conversation');
-const CheckUser = require('../../middlewares/CheckUser');
+const CheckUser = require('../../middlewares/checkUser');
 
 // Xử lí req send tin nhắn
 // POST conversation/sendMessage

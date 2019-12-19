@@ -154,5 +154,5 @@ module.exports= {
 
     addContract: (idUser, idContract) => {
         User.updateOne({ _id: idUser }, { $push: { contracts: idContract } }).exec();
-    }
+    },
 }

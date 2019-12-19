@@ -3,6 +3,7 @@ var router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const jwt = require('../../utils/jwt');
+const topt = require('../../utils/totp');
 const User = require('../../models/user');
 const TagSkill = require('../../models/TagSkill');
 
@@ -138,6 +139,10 @@ router.post('/update', passIfHaveValidToken, (req, res) => {
     const entity = {...req.body};
     const { role } = req.body;
 
+    if (entity.password) {
+        return res.status(400).json({message: 'data không hợp lệ'});
+    }
+
     if (req.body.role) {
         req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
         const errors = req.validationErrors();
@@ -191,6 +196,34 @@ router.get('/:id', (req, res) => {
         }))
         .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
     
+});
+
+// Xử lí req đổi mật khẩu khi quên mật khẩu
+// POST /user/forgetPassword
+router.post('/forgetPassword', (req, res) => {
+    const { email, otp, newPassword } = req.body;
+
+    // Kiểm tra mã OTP
+    const result = topt.verify(otp, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
+
+    //Nếu mã OTP không chính xác
+    if (!result) {
+        return res.status(400).json({message: 'OTP không hợp lệ'});
+    }
+
+    bcrypt.hash(newPassword, 5, (err, hash) => {
+        if (err) {
+            return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
+        }
+
+        User.updateOne({email}, {password: hash})
+            .then(() => {
+                return res.status(200).json({message: 'Đổi mật khẩu thành công'});
+            })
+            .catch(() => {
+                return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
+            });
+    });
 });
 
 module.exports = router;
