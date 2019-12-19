@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import { Container, Row, Col } from "shards-react";
 
 import PageTitle from "../components/common/PageTitle";
-import UserDetails from "../components/user-profile-lite/UserDetails";
-import UserAccountDetails from "../components/user-profile-lite/UserAccountDetails";
+import UserProfileDetails from "../components/user-profile/UserProfileDetails";
+import UserAccountDetails from "../components/user-profile/UserAccountDetails";
 import { fetchUpdate } from "../actions/actionUser";
 
 import Loading from "../components/loading/Loading";
@@ -26,7 +26,7 @@ const UserProfile = props => {
         </Row>
         <div className="create-account">
           <Col lg="4">
-            <UserDetails userInfo={userInfo} />
+            <UserProfileDetails userInfo={userInfo} />
           </Col>
           <Col lg="6">
             <UserAccountDetails

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
+import {Link} from 'react-router-dom';
 import {Container, Row, Col, Card, CardBody, Button, ModalHeader, ModalBody, Modal, Alert} from "shards-react";
 
 import PageTitle from "../components/common/PageTitle";
@@ -47,7 +48,7 @@ if(listStudents !== null){
                   <td><center>{user.email}</center></td>
                   <td><center>{(user.status === 'active') ? <i className="material-icons icon-green">done</i> : <i className="material-icons icon-red">highlight_off</i>}</center></td>
                   <td><center>
-                  <Button theme="while" className="p-0 btn-icon" title="Xem chi tiết" onClick={() => {}}><i className="material-icons icon-blue">remove_red_eye</i></Button>
+                  <Button theme="while" className="p-0 btn-icon" title="Xem chi tiết" onClick={() => {}}><Link to={`/user-detail/${user._id}`}><i className="material-icons icon-blue">remove_red_eye</i></Link></Button>
                   <Button theme="while" className="p-0 btn-icon" title="Khóa tài khoản" onClick={() => {setInfoModal(user._id,'block')}}><i className="material-icons ml-2 icon-red">block</i></Button>
                   <Button theme="while" className="p-0 btn-icon" title="Mở khóa tài khoản" onClick={() => {setInfoModal(user._id,'active')}}><i className="material-icons ml-2 icon-green">lock_open</i></Button>
                   </center></td>            
@@ -73,27 +74,6 @@ return(
     <Row>
       <Col>
         <Card small className="mb-4">
-            {/*<Button type="button" className="mr-3" onClick={() => setOpen(!open)}>Thêm Tag mới</Button>
-            <Modal size="sm" open={open} toggle={() => setOpen(!open)} centered>
-              <ModalHeader><center>Thêm tag kĩ năng mới</center></ModalHeader>
-              <ModalBody className="p-3">
-              
-              <Form onSubmit={(e) => {e.preventDefault(); fetchAddTagSkill(content, token); setOpen(!open)}}>             
-              <FormGroup>
-                  <label htmlFor="feTagSkill">Tag kĩ năng</label>    
-                      <FormInput
-                      id="feTagSkill"
-                      type="text"
-                      value={content} onChange={(e) => setContent(e.target.value)} required
-                      />
-
-              </FormGroup><center>
-              <Button theme="secondary" className="mr-3" type="button"  onClick={() => setOpen(!open)}>Đóng</Button>
-              <Button type="submit">Tạo</Button></center>
-              </Form>
-              
-              </ModalBody>
-                </Modal>*/}
           <CardBody className="p-0 pb-3">
             <table className="table mb-0">
               <thead className="bg-light">

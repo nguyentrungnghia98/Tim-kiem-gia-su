@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+
 import {
   Card,
   CardHeader,
@@ -9,11 +10,11 @@ import {
   Progress
 } from "shards-react";
 
-const UserDetails = (props) => {
+const UserProfileDetails = (props) => {
 
   const {userInfo, userDetails} = props;
  
-  return(
+  return(<div>
   <Card small className="mb-4 pt-3">
     <CardHeader className="border-bottom text-center">
       <div className="mb-3 mx-auto">
@@ -21,7 +22,7 @@ const UserDetails = (props) => {
           className="rounded-circle"
           src={userInfo.avatar}
           alt={userInfo.fullName}
-          width="110"
+          width="150"
         />
       </div>
       <h4 className="mb-2">{userInfo.fullName}</h4>
@@ -46,25 +47,19 @@ const UserDetails = (props) => {
           </Progress>
         </div>
       </ListGroupItem>
-      {/*<ListGroupItem className="p-4">
-        <strong className="text-muted d-block mb-2">
-          {userDetails.metaTitle}
-        </strong>
-        <span>{userDetails.metaValue}</span>
-        </ListGroupItem>*/}
     </ListGroup>
   </Card>
-  )
-};
+</div>
+)};
 
-UserDetails.propTypes = {
+UserProfileDetails.propTypes = {
   /**
    * The user details object.
    */
   userDetails: PropTypes.object
 };
 
-UserDetails.defaultProps = {
+UserProfileDetails.defaultProps = {
   userDetails: {
     name: "Sierra Brooks",
     avatar: require("./../../images/avatars/0.jpg"),
@@ -77,4 +72,4 @@ UserDetails.defaultProps = {
   }
 };
 
-export default UserDetails;
+export default UserProfileDetails;

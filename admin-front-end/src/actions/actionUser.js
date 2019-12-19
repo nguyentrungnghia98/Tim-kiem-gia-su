@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import {USER_REQUEST, USER_FAILURE, USER_SUCCESS, LOG_OUT, GET_USER_REQUEST, GET_USER_FAILURE, GET_USER_SUCCESS, UPDATE_USER, GET_LIST_USER_SUCCESS, GET_LIST_STUDENT_SUCCESS, SET_STATUS_SUCCESS} from '../constants/actionTypes'
+import {USER_REQUEST, USER_FAILURE, USER_SUCCESS, LOG_OUT, GET_USER_REQUEST, GET_USER_FAILURE, GET_USER_SUCCESS, UPDATE_USER, GET_LIST_USER_SUCCESS, GET_LIST_STUDENT_SUCCESS, SET_STATUS_SUCCESS, GET_USER_DETAIL_SUCCESS} from '../constants/actionTypes'
 
 export const userRequest = (message) => {
     return {
@@ -289,6 +289,43 @@ export const fetchUser = (token) => {
         )
         .then(json => {
             dispatch(setStatusSuccess(json.message, id, status));
+        })
+        .catch(err => {
+            //console.log(err);
+            dispatch(getUserFailure());
+        })
+    }
+  }
+
+export const getUserDetailSuccess = (user) => {
+    return {
+        type: GET_USER_DETAIL_SUCCESS,
+        user
+    };
+}
+
+  export const fetchUserDetail = (token, id) => {
+
+    return dispatch => {
+  
+        dispatch(getUserRequest());
+
+        const bearerToken = `Bearer ${  token}`;
+        return fetch(`http://localhost:3000/list-users/user-detail/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': bearerToken
+            }
+        })
+        .then(
+            response => response.json(),
+            error => {
+                // console.log(error);
+                dispatch(getUserFailure());
+            }
+        )
+        .then(json => {
+            dispatch(getUserDetailSuccess(json.user));
         })
         .catch(err => {
             //console.log(err);

@@ -36,13 +36,13 @@ const UserActions = (props) => {
         <DropdownToggle caret tag={NavLink} className="text-nowrap px-3">
           <img
             className="user-avatar rounded-circle mr-2"
-            src={userInfo ? userInfo.avatar : ""}
-            alt="User Avatar"
+            src={userInfo ? `/${userInfo.avatar}` : "/"}
+            alt=""
           />{" "}
           <span className="d-none d-md-inline-block">{userInfo !== null ? userInfo.fullName : ""}</span>
         </DropdownToggle>
         <Collapse tag={DropdownMenu} right small open={visible}>
-          <DropdownItem tag={Link} to="user-profile">
+          <DropdownItem tag={Link} to="/user-profile">
             <i className="material-icons">&#xE7FD;</i> Tài khoản của tôi
           </DropdownItem>
           {/*<DropdownItem tag={Link} to="edit-user-profile">

@@ -7,7 +7,6 @@ import EmptyLayout from "./layouts/Empty";
 
 // Route Views
 import BlogOverview from "./views/BlogOverview";
-import UserProfileLite from "./views/UserProfileLite";
 import AddNewPost from "./views/AddNewPost";
 import Errors from "./views/Errors";
 import ComponentsOverview from "./views/ComponentsOverview";
@@ -19,6 +18,7 @@ import UserProfile from "./views/UserProfile";
 import TagSkill from "./views/TagSkill";
 import ManagerUsers from "./views/ManagerUsers";
 import ManagerStudents from "./views/ManagerStudents";
+import UserDetail from "./views/UserDetail";
 
 export default [
   {
@@ -58,14 +58,14 @@ export default [
     component: ManagerStudents
   },
   {
+    path: "/user-detail/:id",
+    layout: DefaultLayout,
+    component: UserDetail
+  },
+  {
     path: "/blog-overview",
     layout: DefaultLayout,
     component: BlogOverview
-  },
-  {
-    path: "/user-profile-lite",
-    layout: DefaultLayout,
-    component: UserProfileLite
   },
   {
     path: "/add-new-post",
