@@ -51,13 +51,6 @@ router.post('/create', CheckUser.passIfIsStudent, async (req, res) => {
 
     try {
         const contract = await Contract.create(req.userInfo.id, req.body);
-        await Receipt.create({
-            contract: contract.id,
-            student: req.userInfo.id,
-            teacher: req.body.teacher,
-            skill: req.body.skill,
-            amount
-        });
         res.status(200).json({
             results: {
                 object: {
@@ -74,7 +67,8 @@ router.post('/create', CheckUser.passIfIsStudent, async (req, res) => {
 // Xử lí req update hợp đồng
 // POST /contract/update
 router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
-    const { numberOfHour, checksumToken, timestamp, status } = req.body;
+    const { numberOfHour, checksumToken, timestamp, status, 
+        id, idStudent, idTeacher, skill, feePerHour } = req.body;
     const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
 
     if (!isValid) {
@@ -82,8 +76,8 @@ router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
     }
 
     try {
-        if (status != null && status === 'processing') {
-            await Promise.all([Contract.updateById(req.userInfo.id, req.body.id, req.body),
+        if (status != null && status === 'finished') {
+            await Promise.all([Contract.updateById(req.body.id, req.body),
                 User.updateOne({
                     _id: req.userInfo.id,
                     role: 1
@@ -92,9 +86,16 @@ router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
                         numberOfStudent: 1,
                         teachedHour: numberOfHour
                     }
+                }), Receipt.create({
+                    contract: id,
+                    student: idStudent,
+                    teacher: idTeacher,
+                    skill: skill,
+                    amount: feePerHour * numberOfHour
                 })]);
-        } else {
-            await Contract.updateById(req.userInfo.id, req.body.id, req.body);
+        } 
+        else {
+            await Contract.updateById(id, req.body);
         }
 
         res.status(200).json({
