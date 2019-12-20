@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
 const CheckUser = require('../../middlewares/checkUser');
-const Contract = require('../../models/contract');
-const User = require('../../models/user');
 const stripe = require("stripe")("sk_test_u1KwHkCuj6A5ivGUQd3y1Jce");
+const ChecksumToken = require('../../utils/checksumToken');
+const Contract = require('../../models/contract');
+const Receipt = require('../../models/receipt');
+const User = require('../../models/user');
 
 // Xử lí req lấy hợp đồng theo id
 // GET /contract/:id
@@ -23,25 +25,39 @@ router.get('/:id', (req, res) => {
 // Xử lí req tạo hợp đồng
 // POST /contract/create
 router.post('/create', CheckUser.passIfIsStudent, async (req, res) => {
-    const {tokenId,feePerHour,numberOfHour} = req.body;
+    const { tokenId, feePerHour, numberOfHour, checksumToken, timestamp } = req.body;
+    const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
+
+    if (!isValid) {
+        return res.status(400).json({message: 'checksumToken không hợp lệ'});
+    }
+
     if(!tokenId) res.status(500).json({message: "Thanh toán lỗi. Token is undefined"});
 
-    let status
+    let status;
+    const amount = feePerHour * numberOfHour;
+
     try {
-      const res = await stripe.charges.create({
-        amount: feePerHour*numberOfHour,
-        currency: "vnd",
-        description: "An example charge",
-        source: tokenId
-      });
-      status = res.status;
+        const res = await stripe.charges.create({
+            amount,
+            currency: "vnd",
+            description: "An example charge",
+            source: tokenId
+        });
+        status = res.status;
     } catch(err) {
-      console.log('err',err)
-      return res.status(500).json({message: "Thanh toán thất bại"});
+        return res.status(500).json({message: "Thanh toán thất bại"});
     }
 
     try {
         const contract = await Contract.create(req.userInfo.id, req.body);
+        await Receipt.create({
+            contract: contract.id,
+            student: req.userInfo.id,
+            teacher: req.body.teacher,
+            skill: req.body.skill,
+            amount
+        });
         res.status(200).json({
             results: {
                 object: {
@@ -51,22 +67,46 @@ router.post('/create', CheckUser.passIfIsStudent, async (req, res) => {
             }
         });
     } catch (err) {
-        res.status(500).json({message: "Lỗi không xác định được. Thử lại sau"});
+        res.status(500).json({message: err.message});
     }
 });
 
 // Xử lí req update hợp đồng
 // POST /contract/update
-router.post('/update', CheckUser.passIfHaveValidToken, (req, res) => {
-    Contract.updateById(req.userInfo.id, req.body.id, req.body)
-        .then(() => res.status(200).json({
+router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
+    const { numberOfHour, checksumToken, timestamp, status } = req.body;
+    // const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
+
+    // if (!isValid) {
+    //     return res.status(400).json({message: 'checksumToken không hợp lệ'});
+    // }
+
+    try {
+        if (status != null && status === 'processing') {
+            await Promise.all([Contract.updateById(req.userInfo.id, req.body.id, req.body),
+                User.updateOne({
+                    _id: req.userInfo.id,
+                    role: 1
+                }, {
+                    $inc: {
+                        numberOfStudent: 1,
+                        teachedHour: numberOfHour
+                    }
+                })]);
+        } else {
+            await Contract.updateById(req.userInfo.id, req.body.id, req.body);
+        }
+
+        res.status(200).json({
             results: {
                 object: {
                     ...req.body
                 }
             }
-        }))
-        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+        })
+    } catch (err) {
+        res.status(500).json({message: err.message});
+    }
 });
 
 // Xử lí req lấy danh sách hợp đồng

@@ -38,7 +38,9 @@ const userSchema = Schema({
     job: { type: String },
     introduction: { type: String },
     address: { type: String },
-    job: {type: String}
+    job: {type: String},
+    numberOfStudent: Number,
+    teachedHour: Number
 }, { collation: {
     locale: 'vi',
     strength: 2,
@@ -74,7 +76,7 @@ module.exports= {
     },
 
     updateOne: (conditionObject, properies) => {
-        return User.updateOne(conditionObject, {$set: properies}).exec();
+        return User.updateOne(conditionObject, properies).exec();
     },
 
     deleteOne: (conditionObject) => {
@@ -152,7 +154,12 @@ module.exports= {
         return User.paginate(query, option);
     },
 
-    addContract: (idUser, idContract) => {
-        User.updateOne({ _id: idUser }, { $push: { contracts: idContract } }).exec();
-    },
+    incHourAndNumberOfStudent: (id, hours, student) => {
+        return User.updateOne({_id: id}, {
+            $inc: {
+                numberOfStudent: student,
+                teachedHour: hours
+            }
+        }).exec();
+    }
 }

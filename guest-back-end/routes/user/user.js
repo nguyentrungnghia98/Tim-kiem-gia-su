@@ -139,7 +139,7 @@ router.post('/update', passIfHaveValidToken, (req, res) => {
     const entity = {...req.body};
     const { role } = req.body;
 
-    if (entity.password) {
+    if (entity.password || entity.numberOfStudent || entity.teachedHour) {
         return res.status(400).json({message: 'data không hợp lệ'});
     }
 
