@@ -75,11 +75,11 @@ router.post('/create', CheckUser.passIfIsStudent, async (req, res) => {
 // POST /contract/update
 router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
     const { numberOfHour, checksumToken, timestamp, status } = req.body;
-    // const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
+    const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
 
-    // if (!isValid) {
-    //     return res.status(400).json({message: 'checksumToken không hợp lệ'});
-    // }
+    if (!isValid) {
+        return res.status(400).json({message: 'checksumToken không hợp lệ'});
+    }
 
     try {
         if (status != null && status === 'processing') {
