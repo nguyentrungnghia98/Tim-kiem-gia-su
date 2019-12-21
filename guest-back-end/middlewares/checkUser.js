@@ -23,4 +23,12 @@ module.exports = {
 
         next();
     },
+
+    blockIfIsStudent: (req, res, next) => {
+        if (!req.userInfo || req.userInfo.role === 0) {
+            return res.status(403).json({message: 'Không đủ quyền truy cập'});
+        }
+
+        next();
+    }
 }

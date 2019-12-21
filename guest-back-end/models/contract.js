@@ -73,14 +73,9 @@ module.exports = {
             .exec();
     },
 
-    updateById: (idUser, idContract, properties) => {
+    updateById: (idContract, properties) => {
         return Contract.updateOne({
             _id: idContract,
-            status: { $ne: 'finished' },
-            $or: [
-                { student: idUser },
-                { teacher: idUser }
-            ]
         }, {$set: properties}).exec();
     },
 

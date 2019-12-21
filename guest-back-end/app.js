@@ -19,9 +19,12 @@ const secureRouter = require('./routes/secure/secure');
 const tagSkillRouter = require('./routes/TagSkill/TagSkill');
 const contractRouter = require('./routes/contract/contract');
 const conversationRouter = require('./routes/conversation/conversation');
+const receiptRouter = require('./routes/receipt/receipt');
 
 var app = express();
 dotenv.config();
+const temp = require('./utils/checksumToken');
+temp.verifyToken();
 
 // Config kết nối db
 require('./config/db-connection');
@@ -59,6 +62,7 @@ app.options('*', cors())
 app.use(cors());
 
 app.use(getPayloadToken);
+app.use('/receipt', receiptRouter);
 app.use('/conversation', conversationRouter);
 app.use('/contract', contractRouter);
 app.use('/tagSkill', tagSkillRouter);
