@@ -40,7 +40,12 @@ const userSchema = Schema({
     address: { type: String },
     job: {type: String},
     numberOfStudent: Number,
-    teachedHour: Number
+    teachedHour: Number,
+    money: {
+        type: Number,
+        required: true,
+        default: 0
+    }
 }, { collation: {
     locale: 'vi',
     strength: 2,

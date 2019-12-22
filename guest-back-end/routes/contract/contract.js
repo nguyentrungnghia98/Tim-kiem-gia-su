@@ -84,7 +84,8 @@ router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
                 }, {
                     $inc: {
                         numberOfStudent: 1,
-                        teachedHour: numberOfHour
+                        teachedHour: numberOfHour,
+                        money: numberOfHour * feePerHour * 0.8
                     }
                 }), Receipt.create({
                     contract: id,
