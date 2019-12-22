@@ -69,7 +69,7 @@ module.exports = {
     getOneById: (id) => {
         return Contract.findOne({_id: id})
             .populate('student', '-password -contracts -contacts -major -__v')
-            .populate('teacher', '-password -contracts -contacts -major -__v')
+            .populate('teacher', '-password -contracts -contacts -__v')
             .exec();
     },
 
@@ -97,7 +97,7 @@ module.exports = {
                 },
                 {
                     path: 'teacher',
-                    select: '-password -contacts -contracts -major -__v'
+                    select: '-password -contacts -contracts -__v'
                 }
             ]
         }

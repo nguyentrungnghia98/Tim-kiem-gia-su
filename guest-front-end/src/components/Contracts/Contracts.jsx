@@ -90,15 +90,20 @@ const Contracts = (props) => {
     e.stopPropagation();
     
     if(processing) return;
-    const data = {id, status};
-    
+    let data = {id, status};
+    if(status === 'finished'){
+      const contract = contracts.find(el => el._id === id);
+      if(!contract) return Contract.alertError('id not found');
+      const {student, teacher, feePerHour, numberOfHour} = contract;
+      data = { ...data, idStudent: student._id, idTeacher: teacher._id, skill: teacher.major, feePerHour, numberOfHour }
+    }
     try {
       processing = true;
 
       const response = await Contract.update(data);
       
       reload();
-
+      Contract.alert.success("Cập nhật thành công.");
       processing = false;
     } catch (error) {
       console.log('err', error);
@@ -136,6 +141,7 @@ const Contracts = (props) => {
           return (
             <>
               <button onClick={e => updateContract(e,'processing_complaint',id)} className="btn btn-danger">Khiếu nại</button>
+              {role === 0 && <button onClick={e => updateContract(e,'finished',id)} className="btn btn-success ml-3">Hoàn thành</button>}
             </>
           )
       default:
@@ -185,11 +191,11 @@ const Contracts = (props) => {
                   <div className="contract-info w-100">
                     <Link to={`/${userRole}/${user._id}`} className="no-style-link">
                     <div className="row ">
-                      <div className="col-8 d-flex text-primary align-items-center">
+                      <div className="col-7 d-flex text-primary align-items-center">
                         <h5>{user.username}</h5>
                         <small className="ml-3"> - {user.job || 'Không rõ'}</small>
                       </div>
-                      <div className="col-4 text-right">                      
+                      <div className="col-5 text-right">                      
                       {renderButtonActions(status, _id)}
                       </div>
                     </div>

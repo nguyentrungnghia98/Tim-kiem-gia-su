@@ -38,8 +38,11 @@ const DetailContract = (props) => {
   async function updateContract(status){
     
     if(processing) return;
-    const data = {id: contract._id, status};
-    
+    let data = {id: contract._id, status};
+    if(status === 'finished'){
+      const {student, teacher, feePerHour, numberOfHour} = contract;
+      data = { ...data, idStudent: student._id, idTeacher: teacher._id, skill: teacher.major, feePerHour, numberOfHour }
+    }
     try {
       processing = true;
 

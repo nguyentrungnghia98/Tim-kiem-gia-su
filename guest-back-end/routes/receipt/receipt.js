@@ -17,9 +17,9 @@ router.post('/getListByTimeScope', CheckUser.blockIfIsStudent, (req, res) => {
     Receipt.getListByTimeScope(condition, from, to, skill)
         .then((rs) => res.status(200).json({
             results: {
-                object: {
+                object: [
                     ...rs
-                }
+                ]
             }
         }))
         .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
