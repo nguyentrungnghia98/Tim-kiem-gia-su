@@ -87,6 +87,7 @@ const Authentication = props => {
         break;
       case 'emailPassword':
         setEmailPassword(value);
+        break;
       default:
         return
     }
@@ -117,7 +118,8 @@ const Authentication = props => {
 
   function handleLoginSocial(_data) {
     console.log('data jwt', _data)
-    const token = jwt.generateJWT(_data, config.SECRET_KEY, config.EXPIRE_IN);
+    console.log('env', process.env)
+    const token = jwt.generateJWT(_data, process.env.SECRET_KEY || process.env.REACT_APP_SECRET_KEY, process.env.EXPIRE_IN || process.env.REACT_APP_EXPIRE_IN);
     const url = `/user/loginSocial`;
     const data = { token };
     const message = "Đăng nhập thành công"
@@ -254,6 +256,15 @@ const Authentication = props => {
           closeAuthenticationModal()
         };
         break;
+      case 'forgetPassword':
+        url = `/user/forgetPassword`;
+        data = { otp: verifyCode, email: emailPassword, newPassword: passwordRegister};
+        message = "Đổi mật khẩu thành công"
+        callback = (user) => {
+          clearFillFormInfo();
+          setMode('login');
+        };
+        break;
       default:
         return;
     }
@@ -263,7 +274,7 @@ const Authentication = props => {
   function renderPasswordForm(){
     return (
       <div className='popup-form'>
-        <form autoComplete="off" onSubmit={(e) => handleSubmit(e, 'register')}>
+        <form autoComplete="off" onSubmit={(e) => handleSubmit(e, 'forgetPassword')}>
           <div className='form-row cf'>
             <div className='input-wrap'>
               <CssTextField

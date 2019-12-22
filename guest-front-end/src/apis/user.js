@@ -41,6 +41,18 @@ class User extends Api {
     return response.data;
   }
 
+  async  forgetPassword(data) {
+    const setting = {
+      method: 'POST',
+      url: this.getUrl('forgetPassword'),
+      headers: this.tokenHeader,
+      data
+    }
+    const response = await this.exec(setting);
+
+    return response.data;
+  }
+
   async  getListTeacher(data, reload = false) {
     const setting = {
       method: 'POST',
