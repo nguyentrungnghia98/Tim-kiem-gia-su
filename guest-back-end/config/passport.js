@@ -89,10 +89,14 @@ passport.use('local.login', new LocalStrategy({
         return done(null, false, {message: 'Email hoặc mật khẩu không hợp lệ.'});
     }
 
-    User.findOneAccountActiveByEmail(email)
+    User.findOneByEmail(email)
         .then(user => {
             if (!user){
                 return done(null, false, {message: 'Email không tồn tại.'});
+            }
+
+            if (user.status != 'active') {
+                return done(null, false, {message: 'Tài khoản đã bị khóa'});
             }
 
             bcrypt.compare(password, user.password, (err, result) => {
@@ -131,6 +135,9 @@ passport.use('social.login', new LocalStrategy({
                     .then((rs) => done(null, rs))
                     .catch((err) => done(err));
             } else {
+                if (user.status != 'active') {
+                    return done(null, false, {message: 'Tài khoản đã bị khóa'});
+                }
                 return done(null, user);
             }
         }).catch((err) => done(err));
