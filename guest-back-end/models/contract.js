@@ -22,6 +22,14 @@ const ContractSchema = new Schema({
       type: String,
       maxlength: 500,
   },
+  reviewRate: {type: Number, default:0},
+  reviewContent: {
+      type: String,
+      maxlength: 500,
+  },
+  reviewAt: {
+    type: Date,
+  },
   student: {
       type: Schema.Types.ObjectId,
       ref: 'User',

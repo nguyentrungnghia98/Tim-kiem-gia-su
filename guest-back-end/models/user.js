@@ -40,7 +40,12 @@ const userSchema = Schema({
     address: { type: String },
     job: {type: String},
     numberOfStudent: Number,
-    teachedHour: Number
+    teachedHour: Number,
+    money: {
+        type: Number,
+        required: true,
+        default: 0
+    }
 }, { collation: {
     locale: 'vi',
     strength: 2,
@@ -69,6 +74,10 @@ module.exports= {
 
     findOneAccountActiveByEmail: (email) => {
         return User.findOne({email, status: 'active' }).populate('major', 'content').populate().exec();
+    },
+
+    findOneByIdWidthPassword: (id) => {
+      return User.findById(id).select('-contacts -__v').populate('major', '-__v').exec();
     },
 
     findOneById: (id) => {

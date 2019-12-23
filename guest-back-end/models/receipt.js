@@ -52,19 +52,20 @@ const Receipt = mongoose.model('Receipt', receiptSchema);
 
 module.exports = {
     create: (entity) => {
+        const temp = new Date();
         const receipt = new Receipt({
             student: entity.student,
             teacher: entity.teacher,
             contract: entity.contract,
             skill: entity.skill,
-            x: new Date(),
+            x: new Date(temp.getFullYear(), temp.getMonth(), temp.getDate()),
             y: entity.amount
         });
 
         return receipt.save();
     },
 
-    getListByTimeScope: (condition, from, to, skill) => {
+    getDataForStatistic: (condition, from, to, skill) => {
         const query = { 
             ...condition,
             x: {
@@ -76,7 +77,7 @@ module.exports = {
         if (skill != null && skill.length != 0) {
             query.skill = { $in: skill };
         }
-  
-        return Receipt.find(query).sort({x: 1}).select('-__v').exec();
+        
+        return Receipt.find(query).sort({x: 1}).select('x y').exec();
     }
 }

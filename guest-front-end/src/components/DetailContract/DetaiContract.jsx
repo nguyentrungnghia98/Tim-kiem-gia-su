@@ -8,9 +8,10 @@ import StarRatings from 'react-star-ratings';
 import { connect } from 'react-redux';
 
 const DetailContract = (props) => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [processingReview, setProcessingReview] = useState(false)
   const [reviewContent, setReviewContent] = useState('');
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
   const [contract, setContract] = useState();
   const { teacher, student, feePerHour,  numberOfHour, describe, status } = contract || {};
   let processing = false;
@@ -27,6 +28,8 @@ const DetailContract = (props) => {
       setLoading(true);
       const response = await Contract.getItem(id);
       setContract(response);
+      setRating(response.reviewRate);
+      setReviewContent(response.reviewContent); 
       setLoading(false);
     } catch (error) {
       console.log('err', error);
@@ -51,6 +54,7 @@ const DetailContract = (props) => {
       reload();
 
       processing = false;
+      Contract.alert.success("Cập nhật thành công");
     } catch (error) {
       console.log('err', error);
       processing = false;
@@ -59,6 +63,29 @@ const DetailContract = (props) => {
     }
   }
 
+  async function updateReview(event){
+    event.preventDefault();
+    
+    try {
+      setProcessingReview(true);
+
+      const response = await Contract.update({
+        id: contract._id, 
+        reviewRate: rating,
+        reviewContent,
+        reviewAt: new Date()
+      });
+      
+
+      setProcessingReview(false);
+      Contract.alert.success("Cập nhật thành công");
+    } catch (error) {
+      console.log('err', error);
+      setProcessingReview(false);
+      //setTeacher(null)
+      Contract.alertError(error);
+    }
+  }
 
 
 
@@ -199,8 +226,8 @@ const DetailContract = (props) => {
           </div>
 
           <div className="custom-card--body">
-            <div className="form-field">
-              <div className="d-flex mb-4 align-items-center">
+            <form onSubmit={updateReview} className="form-field">
+              <div className="d-flex mb-4 align-items-center review-container">
                 <p className="mr-4 my-0">Đánh giá của bạn về chất lượng giảng dạy của gia sư:</p>
                 <StarRatings
                   starRatedColor="#ffde23"
@@ -224,10 +251,10 @@ const DetailContract = (props) => {
                 required
               />
 
-              <button className="btn btn-primary mt-4 w-30 ml-auto">
+              <button disabled={processingReview} type="submit" className="btn btn-primary mt-4 w-30 ml-auto">
                 Đánh giá
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -335,7 +362,7 @@ const DetailContract = (props) => {
             {renderContractReview()}
           </div>
           <div className="col-12 col-lg-3">
-            <div className="mt-3">
+            <div className="mt-3 actions-contract">
               {renderActionContract()}
             </div>
 

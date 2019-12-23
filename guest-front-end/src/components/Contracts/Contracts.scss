@@ -66,3 +66,50 @@
     }
   color:unset!important;
 }
+
+@media (max-width: 950px){
+  .contract-detail-container{
+    padding: 0 20px;
+  }
+  .contracts-container .contract{
+    font-size: 13px;
+  }
+  .contracts-container .contract  h5{
+    font-size: 120%;
+  }
+  
+}
+
+@media (max-width: 650px){
+  .contract-detail-container{
+    padding: 0;
+  }
+  .contracts-container .contract {
+    .col-4, .col-7, .col-3{
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+    .col-7 small{
+      display: none;
+    }
+  }
+  .custom-card .custom-card--body{
+    padding: 20px 20px;
+  }
+  .contract-description{
+    flex-direction: column;
+  }
+  .contracts-container .contract img{
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+  }
+  .search-input{
+    width: 200px;
+  }
+  .select-option .sort-options .selected-option{
+    margin-left: 0;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+}

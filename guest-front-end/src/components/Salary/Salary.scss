@@ -1,5 +1,7 @@
 .salary-container{
-  margin: 0 15%;
+  margin: 0 auto;
+  max-width: 700px;
+  width: 90vw;
   border: 1px solid #d4d4d4;
   box-shadow: 0 4px 8px #c1c1c1;
   .MuiAppBar-colorDefault{
@@ -71,3 +73,22 @@
     }
   }
 } 
+
+@media (max-width: 650px){
+  .salary-container .statistic-box{
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 500px){
+  .filter-date{
+    flex-direction: column;
+  }
+  .salary-container .statistic-title span{
+    font-size: 12px;
+    text-align: left;
+  }
+  .salary-container .statistic-title h5{
+    font-size: 16px;
+  }
+}

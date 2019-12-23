@@ -84,7 +84,8 @@ router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
                 }, {
                     $inc: {
                         numberOfStudent: 1,
-                        teachedHour: numberOfHour
+                        teachedHour: numberOfHour,
+                        money: numberOfHour * feePerHour * 0.8
                     }
                 }), Receipt.create({
                     contract: id,
@@ -128,7 +129,10 @@ router.post('/getList', CheckUser.passIfHaveValidToken, (req, res) => {
 // Xử lí req lấy danh sách hợp đồng có đánh giá của giáo viên
 // POST /contract/getListReview
 router.post('/getListReview', (req, res) => {
-  const {id,role, page, limit, sort, condition } = req.body;
+  const {id,role, page, limit, sort } = req.body;
+  const condition = {
+    status: 'finished'
+  }
   Contract.getListContractOfUser(id, role, page, limit, sort, condition)
       .then((rs) => res.status(200).json({
           results: {

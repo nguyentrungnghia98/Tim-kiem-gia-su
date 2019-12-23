@@ -103,10 +103,11 @@ router.post('/loginSocial', (req, res) => {
 // Xử lí thay đổi mật khẩu
 // POST /user/change-password
 router.post('/changePassword', passIfHaveValidToken, (req, res) => {
-    User.findOneById({_id: req.userInfo.id})
+    User.findOneByIdWidthPassword({_id: req.userInfo.id})
         .then(user => {
             bcrypt.compare(req.body.oldPassword, user.password, (err, result) => {
                 if (err) {
+                  console.log(err)
                     return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
                 } 
 
@@ -128,7 +129,8 @@ router.post('/changePassword', passIfHaveValidToken, (req, res) => {
                         });
                     });
             });
-        }).catch(() => {
+        }).catch((err) => {
+            console.log(err)
             return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
         });
 });

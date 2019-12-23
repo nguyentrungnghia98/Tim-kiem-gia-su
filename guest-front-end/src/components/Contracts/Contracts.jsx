@@ -218,7 +218,7 @@ const Contracts = (props) => {
                       <span className="mr-2">Trạng thái: </span> {renderStatus(status)}
                     </div>
 
-                    <div className="d-flex mb-2">
+                    <div className="d-flex mb-2 contract-description">
                     <span className="mr-2">Mô tả: </span> 
                     <span className="description">
                       {describe}

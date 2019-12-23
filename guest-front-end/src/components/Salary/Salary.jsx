@@ -7,16 +7,17 @@ import {  MuiPickersUtilsProvider, DatePicker  } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import LineChart from './LineChart';
 import * as moment from 'moment';
+import {converCurrency} from '../../utils/pipe';
 
 function _TabPanel(props) {
   const { children, value, index } = props;
   const [loading, setLoading] = useState(false);
   const [date, setDate] = React.useState('7day');
   const [fromDate, setFromDate] = React.useState(moment().subtract(1, 'days').format());
-  const [toDate, setToDate] = React.useState(new Date());
+  const [toDate, setToDate] = React.useState(moment().format());
   const [data, setData] = useState([]);
   const {user} = props;
-
+  const [total, setTotal] = useState(0);
 
   function getDate(){
     const res = {
@@ -44,9 +45,10 @@ function _TabPanel(props) {
         ...getDate()
       }
       
-      const from = moment(data.from);
-      const to = moment(data.to);
-      const count = to.diff(from,'days');
+      const from = moment(data.from).zone("+7:00");
+      const to = moment(data.to).zone("+7:00");
+      console.log(from,to)
+      const count = to.diff(from,'days') + (date === 'custom'?1:0);
       if(count < 0) return Receipt.alert.error('Vui lòng chọn ngày hợp lệ.');
 
       setLoading(true);
@@ -58,12 +60,13 @@ function _TabPanel(props) {
         console.log('date',count, date)
         map[date] = 0;
       }
-      
+      let sum = 0;
       response.forEach(({x,y}) => {
-        const date = moment(x).format('DD/MM/YYYY');
-        map[date] = y;
+        // const date = moment(x).format('DD/MM/YYYY');
+        map[x] = y;
+        sum+=y;
       })
-      
+      setTotal(sum);
       const dates = Object.entries(map).map(item => {
         var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
         return {
@@ -91,7 +94,8 @@ function _TabPanel(props) {
   }, [date])
 
   useEffect(() => {
-    if(value === index){
+    if(value === index && date === 'custom'){
+      console.log('CALL RELOAD')
       reload()
     }
     
@@ -143,6 +147,7 @@ function _TabPanel(props) {
             />
             <span>đến</span>
             <DatePicker 
+              disableToolbar
               variant="inline"
               format="DD/MM/YYYY"
               margin="normal"
@@ -154,8 +159,11 @@ function _TabPanel(props) {
         </header>
       )}
 
-      {value === index && <div className="pt-3 pb-5">
+      {value === 0 && <div className="pt-3 pb-5">
           <LineChart data={data}/>
+          <div className="w-100 text-center mt-3">
+            <span>Tổng: <b>{converCurrency(total)} đ</b></span>
+          </div>
         </div>}
     </div>
   );
@@ -179,7 +187,7 @@ function a11yProps(index) {
 
 const Salary = (props) => {
   const [value, setValue] = useState(0);
-  
+  const {user} = props;
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -193,25 +201,24 @@ const Salary = (props) => {
         <AppBar position="static" color="default">
           <Tabs
             value={value}
-            onChange={handleChange}
             indicatorColor="primary"
             textColor="primary"
 
           >
-            <Tab label={<div className="statistic-title"><span>Số tiền nhận được</span><h5>12,000,000đ</h5></div>} {...a11yProps(0)} />
-            <Tab label={<div className="statistic-title"><span>Số học sinh</span><h5>123</h5></div>} {...a11yProps(1)} />
-            <Tab label={<div className="statistic-title"><span>Số hợp đồng</span><h5>321</h5></div>} {...a11yProps(2)} />
-            <Tab label={<div className="statistic-title"><span>Chờ nhận tiền</span><h5>1,000,000đ</h5></div>} {...a11yProps(3)} />
+            <Tab label={<div className="statistic-title"><span>Số tiền nhận được</span></div>} {...a11yProps(0)} />
+  <Tab label={<div className="statistic-title"><span>Số học sinh</span><h5>{user.numberOfStudent}</h5></div>} {...a11yProps(1)} />
+            <Tab label={<div className="statistic-title"><span>Số hợp đồng</span><h5>21</h5></div>} {...a11yProps(2)} />
+  <Tab label={<div className="statistic-title"><span>Số giờ dạy</span><h5>{user.teachedHour}</h5></div>} {...a11yProps(3)} />
           </Tabs>
         </AppBar>
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <TabPanel value={value} index={0}>
           </TabPanel>
-          <TabPanel value={value} index={1}>
+          <TabPanel value={-1} index={1}>
           </TabPanel>
-          <TabPanel value={value} index={2}>
+          <TabPanel value={-1} index={2}>
           </TabPanel>
-          <TabPanel value={value} index={3}>
+          <TabPanel value={-1} index={3}>
           </TabPanel>
         </MuiPickersUtilsProvider>
       </div>
@@ -219,5 +226,7 @@ const Salary = (props) => {
   );
 }
 
-export default Salary;
+export default connect(
+  mapStateToProps
+)(Salary);
 

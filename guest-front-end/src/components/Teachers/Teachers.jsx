@@ -195,13 +195,13 @@ class Teachers extends Component {
   renderFilterOption = () => {
     return (
       <>
-        <div className="w-100 pl-3 pr-3 mb-2 d-flex align-items-center justify-content-between">
+        <div className="filter-option-box w-100 pl-3 pr-3 mb-2 d-flex align-items-center justify-content-between">
           <div>
             <span>Lọc theo</span>
             <SelectOption setOption={this.setAddressOption} onInputChange={this.onArrSortOptionChange} selectedOption={this.selectedAddressOption} arrOption={arrAddressOption} />
             <SelectOption setOption={this.setPriceOption} selectedOption={this.selectedPriceOption} arrOption={arrPriceOption} />
           </div>
-          <div>
+          <div className="mt-mb">
             <span>Sắp xếp theo</span>
             <SelectOption setOption={this.setSortOption} selectedOption={this.selectedSortOption}  arrOption={arrSortOption} />
           </div>

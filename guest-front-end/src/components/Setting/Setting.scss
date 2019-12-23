@@ -366,3 +366,28 @@
 .no-border{
   border-bottom: none;
 }
+
+
+@media (max-width: 989px){
+  .setting{
+    padding: 0 4%;
+    .MuiButtonBase-root .MuiTab-wrapper{
+      font-size: 14px;
+    }
+  }
+  
+}
+
+@media (max-width: 650px){
+  .setting{
+    >div:first-child{
+      flex-direction: column;
+      >div{
+        width: 100%!important;
+      }
+      div:first-child{
+        margin-bottom: 12px;
+      }
+    }
+  }
+}
