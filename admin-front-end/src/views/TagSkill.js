@@ -75,10 +75,10 @@ return(
       <Col>
         <Card small className="mb-4">
           <CardHeader className="border-bottom">
-          <div className="tag-skill">
+          <strong className="d-block">
             
-            <h5 className="pt-2">Danh sách tag kĩ năng</h5>    
-            <Button type="button" className="mr-3" onClick={() => {setOpenModalAdd(!openModalAdd); setContent('')}}>Thêm Tag mới</Button>
+            <span className="pt-2 fs-header-table">Danh sách tag kĩ năng </span>
+            <Button type="button" className="ml-3 " onClick={() => {setOpenModalAdd(!openModalAdd); setContent('')}}>Thêm Kĩ năng mới</Button>
             <Modal size="sm" open={openModalAdd} toggle={() => setOpenModalAdd(!openModalAdd)} centered>
               <ModalHeader><center>Thêm tag kĩ năng mới</center></ModalHeader>
               <ModalBody className="p-3">
@@ -99,7 +99,7 @@ return(
               
               </ModalBody>
             </Modal>
-            </div>       
+            </strong>       
           </CardHeader>
           <CardBody className="p-0 pb-3">
             <table className="table mb-0">

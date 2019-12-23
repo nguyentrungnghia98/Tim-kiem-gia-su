@@ -23,7 +23,7 @@ const UserDetails = props => {
               className="rounded-circle"
               src={userInfo.avatar}
               alt={userInfo.fullName}
-              width="200"
+              width="180"
             />
           </div>
           <h4 className="mb-2">

@@ -3,7 +3,7 @@ const router = express.Router();
 
 const User = require('../models/user');
 
-/* GET  TAG SKILLS. */
+/* GET  LIST USER SKILLS. */
 router.get('/',function(req, res, next) {
 
     User.findAll().then(succ => {

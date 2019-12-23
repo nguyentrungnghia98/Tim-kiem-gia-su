@@ -16,9 +16,14 @@ import Login from "./containers/LoginContainer";
 import CreateNewAccount from "./containers/CreateUserContainer";
 import UserProfile from "./views/UserProfile";
 import TagSkill from "./views/TagSkill";
-import ManagerUsers from "./views/ManagerUsers";
+import ManagerUsers from "./views/ManagerTeachers";
 import ManagerStudents from "./views/ManagerStudents";
 import UserDetail from "./views/UserDetail";
+import Contract from "./views/Contract";
+import Complaint from "./views/Complaint";
+import IncomeOverview from "./views/IncomeOverview";
+import TopTeacherIncome from "./views/TopTeacherIncome";
+import TopSkillIncome from "./views/TopSkillIncome";
 
 export default [
   {
@@ -48,7 +53,7 @@ export default [
     component: TagSkill
   },
   {
-    path: "/manager-user",
+    path: "/manager-teacher",
     layout: DefaultLayout,
     component: ManagerUsers
   },
@@ -61,6 +66,31 @@ export default [
     path: "/user-detail/:id",
     layout: DefaultLayout,
     component: UserDetail
+  },
+  {
+    path: "/manager-contract",
+    layout: DefaultLayout,
+    component: Contract
+  },
+  {
+    path: "/manager-complaint",
+    layout: DefaultLayout,
+    component: Complaint
+  },
+  {
+    path: "/income-overview",
+    layout: DefaultLayout,
+    component: IncomeOverview
+  },
+  {
+    path: "/top-teacher-income",
+    layout: DefaultLayout,
+    component: TopTeacherIncome
+  },
+  {
+    path: "/top-skill-income",
+    layout: DefaultLayout,
+    component: TopSkillIncome
   },
   {
     path: "/blog-overview",

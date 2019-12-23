@@ -63,7 +63,7 @@ const ManagerUsers = props => {
             <center>{user.email}</center>
           </td>
           <td>
-            <center>{user.salaryPerHour}</center>
+            <center>{user.salaryPerHour.toLocaleString('it-IT', {style : 'currency', currency : 'VND'})}</center>
           </td>
           <td>
             <center>

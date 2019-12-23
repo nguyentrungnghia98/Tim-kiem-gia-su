@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Container, Row, Nav, NavItem, NavLink } from "shards-react";
+import { Container, Row, Nav, NavItem} from "shards-react";
 import { Link } from "react-router-dom";
 
 const MainFooter = ({ contained, menuItems, copyright }) => (
@@ -10,9 +10,9 @@ const MainFooter = ({ contained, menuItems, copyright }) => (
         <Nav>
           {menuItems.map((item, idx) => (
             <NavItem key={idx}>
-              <NavLink tag={Link} to={item.to}>
-                {item.title}
-              </NavLink>
+              <div className="nav-link">
+                <Link to={item.to}>{item.title}</Link>
+              </div>
             </NavItem>
           ))}
         </Nav>

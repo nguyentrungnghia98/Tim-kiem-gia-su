@@ -15,6 +15,7 @@ const userAdmin = require('./routes/user-admin');
 const profile = require('./routes/profile');
 const tagskill = require('./routes/tagskills');
 const user = require('./routes/user');
+const contract = require('./routes/contract');
 
 require('./middleware/passport');
 
@@ -38,6 +39,7 @@ app.use('/user', userAdmin);
 app.use('/profile', passport.authenticate('jwt',{session:false}), profile);
 app.use('/tag-skill', passport.authenticate('jwt',{session:false}), tagskill);
 app.use('/list-users', passport.authenticate('jwt',{session:false}), user);
+app.use('/contracts', passport.authenticate('jwt',{session:false}), contract);
 
 // Tạo kết nối tới database
 require('./utils/db.connection');
