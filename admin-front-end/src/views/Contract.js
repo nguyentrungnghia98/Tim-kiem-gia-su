@@ -20,6 +20,7 @@ import {
 
 import PageTitle from "../components/common/PageTitle";
 import Loading from "../components/loading/Loading";
+// import AlertMessage from "../components/alert/AlertMessage";
 
 import {fetchContract, fetchUpdateContract} from "../actions/actionContract";
 import { Link } from "react-router-dom";
@@ -32,6 +33,7 @@ const ManagerContract = props => {
   const [contractID, setContractID] = useState("");
   const [status, setStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const [visibleMess, setVisibleMess] = useState(true);
 
   const {message, listContracts, totalContracts, fetchContract, fetchUpdateContract} = props;
 
@@ -151,7 +153,7 @@ const ManagerContract = props => {
       </Row>
       {message ? (
         <Container fluid className="px-0 mb-3">
-          <Alert className="mb-0">
+          <Alert className="mb-0" dismissible={() => setVisibleMess(false)} open={visibleMess}>
             <i className="fa fa-info mx-2"></i>
             {message}
           </Alert>

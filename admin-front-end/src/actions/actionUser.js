@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import {USER_REQUEST, USER_FAILURE, USER_SUCCESS, LOG_OUT, GET_USER_REQUEST, GET_USER_FAILURE, GET_USER_SUCCESS, UPDATE_USER, GET_LIST_USER_SUCCESS, GET_LIST_STUDENT_SUCCESS, SET_STATUS_SUCCESS, GET_USER_DETAIL_SUCCESS} from '../constants/actionTypes'
+import {USER_REQUEST, USER_FAILURE, USER_SUCCESS, LOG_OUT, GET_USER_REQUEST, GET_USER_FAILURE, GET_USER_SUCCESS, UPDATE_USER, GET_LIST_USER_SUCCESS, GET_LIST_STUDENT_SUCCESS, SET_STATUS_STUDENT_SUCCESS,SET_STATUS_TEACHER_SUCCESS, GET_USER_DETAIL_SUCCESS} from '../constants/actionTypes'
 
 export const userRequest = (message) => {
     return {
@@ -258,16 +258,25 @@ export const fetchUser = (token) => {
     }
   }
 
-  export const setStatusSuccess = (message, id, status) => {
+  export const setStatusStudentSuccess = (message, id, status) => {
     return {
-        type: SET_STATUS_SUCCESS,
+        type: SET_STATUS_STUDENT_SUCCESS,
         message,
         id,
         status
     };
 }
 
-  export const fetchBlocklUser = (token, id, status) => {
+export const setStatusTeacherSuccess = (message, id, status) => {
+    return {
+        type: SET_STATUS_TEACHER_SUCCESS,
+        message,
+        id,
+        status
+    };
+}
+
+  export const fetchBlocklUser = (token, id, status, role) => {
 
     return dispatch => {
   
@@ -288,7 +297,13 @@ export const fetchUser = (token) => {
             }
         )
         .then(json => {
-            dispatch(setStatusSuccess(json.message, id, status));
+            if(role === 1){
+                dispatch(setStatusTeacherSuccess(json.message, id, status));
+            }
+            else{
+                dispatch(setStatusStudentSuccess(json.message, id, status));
+            }
+            
         })
         .catch(err => {
             //console.log(err);

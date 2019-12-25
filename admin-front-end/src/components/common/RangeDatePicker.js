@@ -35,9 +35,10 @@ class RangeDatePicker extends React.Component {
       ...{ endDate: new Date(value) }
     });
   }
-
+  
   render() {
     const { className } = this.props;
+    console.log(className);
     const classes = classNames(className, "d-flex", "my-auto", "date-range");
 
     return (
@@ -46,7 +47,7 @@ class RangeDatePicker extends React.Component {
           size="sm"
           selected={this.state.startDate}
           onChange={this.handleStartDateChange}
-          placeholderText="Start Date"
+          placeholderText="Từ ngày"
           dropdownMode="select"
           className="text-center"
         />
@@ -54,7 +55,7 @@ class RangeDatePicker extends React.Component {
           size="sm"
           selected={this.state.endDate}
           onChange={this.handleEndDateChange}
-          placeholderText="End Date"
+          placeholderText="Đến ngày"
           dropdownMode="select"
           className="text-center"
         />

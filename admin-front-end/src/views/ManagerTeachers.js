@@ -10,7 +10,13 @@ import {
   Alert,
   Modal,
   ModalBody,
-  ModalHeader
+  ModalHeader,
+  CardHeader,
+  ButtonToolbar,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
+  FormInput
 } from "shards-react";
 
 import PageTitle from "../components/common/PageTitle";
@@ -25,8 +31,9 @@ const ManagerUsers = props => {
   const [openModal, setOpenModal] = useState(false);
   const [userID, setUserID] = useState("");
   const [status, setStatus] = useState("");
+  const [visibleMess, setVisibleMess] = useState(true);
 
-  const { message, listUsers, fetchListUser, fetchBlocklUser } = props;
+  const { messageTeacher, listUsers, fetchListUser, fetchBlocklUser } = props;
 
   const token = localStorage.getItem("token");
 
@@ -126,11 +133,11 @@ const ManagerUsers = props => {
           className="text-sm-left"
         />
       </Row>
-      {message ? (
+      {messageTeacher ? (
         <Container fluid className="px-0 mb-3">
-          <Alert className="mb-0">
+          <Alert className="mb-0" dismissible={() => setVisibleMess(false)} open={visibleMess}>
             <i className="fa fa-info mx-2"></i>
-            {message}
+            {messageTeacher}
           </Alert>
         </Container>
       ) : null}
@@ -138,27 +145,22 @@ const ManagerUsers = props => {
       <Row>
         <Col>
           <Card small className="mb-4">
-            {/*<Button type="button" className="mr-3" onClick={() => setOpen(!open)}>Thêm Tag mới</Button>
-            <Modal size="sm" open={open} toggle={() => setOpen(!open)} centered>
-              <ModalHeader><center>Thêm tag kĩ năng mới</center></ModalHeader>
-              <ModalBody className="p-3">
-              
-              <Form onSubmit={(e) => {e.preventDefault(); fetchAddTagSkill(content, token); setOpen(!open)}}>             
-              <FormGroup>
-                  <label htmlFor="feTagSkill">Tag kĩ năng</label>    
-                      <FormInput
-                      id="feTagSkill"
-                      type="text"
-                      value={content} onChange={(e) => setContent(e.target.value)} required
-                      />
+          <CardHeader className="border-bottom">
+          <ButtonToolbar>
+            <span className="ml-3 pt-1 fs-header-table">
+              Danh sách Người dạy{" "}
+            </span>
 
-              </FormGroup><center>
-              <Button theme="secondary" className="mr-3" type="button"  onClick={() => setOpen(!open)}>Đóng</Button>
-              <Button type="submit">Tạo</Button></center>
-              </Form>
-              
-              </ModalBody>
-                </Modal>*/}
+            <InputGroup seamless size="lg" className="ml-auto mr-3">
+              <FormInput placeholder="Tìm kiếm..." />
+              <InputGroupAddon type="append">
+                <InputGroupText>
+                  <i className="material-icons">search</i>
+                </InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </ButtonToolbar>
+        </CardHeader>
             <CardBody className="p-0 pb-3">
               <table className="table mb-0">
                 <thead className="bg-light">
@@ -219,7 +221,7 @@ const ManagerUsers = props => {
               type="submit"
               onClick={() => {
                 setOpenModal(!openModal);
-                fetchBlocklUser(token, userID, status);
+                fetchBlocklUser(token, userID, status, 1);
               }}
             >
               Đồng ý
@@ -233,7 +235,7 @@ const ManagerUsers = props => {
 
 const mapStateToProps = state => {
   return {
-    message: state.authReducer.message,
+    messageTeacher: state.authReducer.messageTeacher,
     listUsers: state.authReducer.listUsers
   };
 };

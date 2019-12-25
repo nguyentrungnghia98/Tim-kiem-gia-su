@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Container, Row, Col, Card, CardBody, Button, ModalHeader, ModalBody, Modal, Alert} from "shards-react";
+import {Container, Row, Col, Card, CardBody, Button, ButtonToolbar, ModalHeader, ModalBody, Modal, Alert, CardHeader, InputGroup, InputGroupText, InputGroupAddon, FormInput} from "shards-react";
 
 import PageTitle from "../components/common/PageTitle";
 import Loading from "../components/loading/Loading";
@@ -15,8 +15,9 @@ const ManagerStudents = (props) => {
   const [openModal, setOpenModal] = useState(false);
   const [userID, setUserID] = useState('');
   const [status, setStatus] = useState('');
+  const [visibleMess, setVisibleMess] = useState(true);
 
-const {message,listStudents, fetchListStudents,fetchBlocklUser} = props;
+const {messageStudent,listStudents, fetchListStudents,fetchBlocklUser} = props;
 
 const token = localStorage.getItem('token');
 
@@ -65,15 +66,31 @@ return(
     <Row noGutters className="page-header py-4">
       <PageTitle sm="4" title="Người học" subtitle="Quản lý" className="text-sm-left" />
     </Row>
-    {message ? <Container fluid className="px-0 mb-3">
-                <Alert className="mb-0">
-                <i className="fa fa-info mx-2"></i>{message}
+    {messageStudent ? <Container fluid className="px-0 mb-3">
+                <Alert className="mb-0" dismissible={() => setVisibleMess(false)} open={visibleMess}>
+                <i className="fa fa-info mx-2"></i>{messageStudent}
                 </Alert>
         </Container> : null}
     {/* Default Light Table */}
     <Row>
       <Col>
         <Card small className="mb-4">
+        <CardHeader className="border-bottom">
+        <ButtonToolbar>
+          <span className="ml-3 pt-1 fs-header-table">
+            Danh sách Người học{" "}
+          </span>
+
+          <InputGroup seamless size="lg" className="ml-auto mr-3">
+            <FormInput placeholder="Tìm kiếm..." />
+            <InputGroupAddon type="append">
+              <InputGroupText>
+                <i className="material-icons">search</i>
+              </InputGroupText>
+            </InputGroupAddon>
+          </InputGroup>
+        </ButtonToolbar>
+      </CardHeader>
           <CardBody className="p-0 pb-3">
             <table className="table mb-0">
               <thead className="bg-light">
@@ -110,7 +127,7 @@ return(
         <label className="mb-3">Bạn có chắc chắn muốn <b className="text-danger">{status === 'block' ? 'khóa' : 'mở khóa'}</b> người dùng này không ?</label>    
       <center>
         <Button theme="secondary" className="mr-3" type="button"  onClick={() => setOpenModal(!openModal)}>Hủy</Button>
-        <Button type="submit"  onClick={() => {setOpenModal(!openModal); fetchBlocklUser(token, userID , status)}}>Đồng ý</Button>
+        <Button type="submit"  onClick={() => {setOpenModal(!openModal); fetchBlocklUser(token, userID , status,0)}}>Đồng ý</Button>
       </center>
 
       
@@ -122,7 +139,7 @@ return(
 
 const mapStateToProps = (state) => {
   return {
-      message: state.authReducer.message,
+      messageStudent: state.authReducer.messageStudent,
       listStudents: state.authReducer.listStudents,
   };
 };

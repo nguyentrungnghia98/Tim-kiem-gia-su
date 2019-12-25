@@ -7,7 +7,6 @@ import {
   Badge,
   ListGroup,
   ListGroupItem,
-  Button
 } from "shards-react";
 
 //const BrowserHistory = ReactRouter.browserHistory;
@@ -60,14 +59,13 @@ const UserDetails = props => {
               <i className="material-icons mr-1">local_offer</i>Tag kĩ năng:
               <span className="ml-2">
                 {userInfo.major.map((major, i) => (
-                  <Button
-                    outline
-                    size="sm"
+                  <Badge
+                    outline                 
                     theme="secondary"
                     className="mb-2 mr-1"
                   >
                     {major.content}
-                  </Button>
+                  </Badge>
                 ))}
               </span>
             </strong>

@@ -28,20 +28,6 @@ const contractReducer = (state = initalState, action) => {
                 totalContracts: action.totalContracts
             }
 
-        // case ADD_TAG_SKILL_SUCCESS:
-        //     return {
-        //         ...state,
-        //         isFetching: false,
-        //         message: action.message,
-        //         tagskills : state.tagskills.concat(action.tagskill)
-        //     }
-        // case DELETE_TAG_SKILL_SUCCESS:
-        //     return {
-        //         ...state,
-        //         isFetching: false,
-        //         message: action.message,
-        //         tagskills: state.tagskills.filter(tagskill => tagskill._id !== action.id)
-        //     }
         case UPDATE_CONTRACT_SUCCESS:
             return {
                 ...state,
