@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const jwt = require('../../utils/jwt');
+const ChecksumToken = require('../../utils/checksumToken');
 const User = require('../../models/user');
 const Conversation = require('../../models/conversation');
 const CheckUser = require('../../middlewares/checkUser');
@@ -51,6 +51,32 @@ router.post('/getListMessages', CheckUser.passIfHaveValidToken, async (req, res)
         console.log('err',err)
         res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
     }
+});
+
+// Xử lí req lấy danh sách tin nhắn của 1 cuộc thoại theo name của hội thoại
+// POST /conversation/getListMessagesByName
+router.post('/getListMessagesByTwoUser', (req, res) => {
+    const { checksumToken, timestamp, userOne, userTwo, page, limit } = req.body;
+    const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
+
+    if (!isValid) {
+        return res.status(400).json({message: 'checksumToken không hợp lệ'});
+    }
+
+    Conversation.getListMessagesByTwoUser(userOne, userTwo, page, limit)
+        .then((rs) => {
+            res.status(200).json({
+                results: {
+                    object: {
+                        ...rs._doc,
+                        nextPage: page + 1,
+                        limit,
+                        messages: rs._doc.messages.reverse()
+                    }
+                }
+            });
+        })
+        .catch((err) => res.status(500).json({message: err.message}))
 });
 
 module.exports = router;
