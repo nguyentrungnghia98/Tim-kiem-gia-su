@@ -237,13 +237,13 @@ const Contracts = (props) => {
                     <h5 className="mb-2 mt-2">{name || 'Không rõ'}</h5>
                     <div className="row">
                       <div className="col-4">
-                        Giá tiền: <b> {converCurrency(feePerHour)} / hr</b>
+                        Giá tiền: <b> {converCurrency(feePerHour)} / h</b>
                       </div>
                       <div className="col-4">
-                        Thời gian: <b> {converCurrency(numberOfHour)} / hr</b>
+                        Thời gian: <b> {converCurrency(numberOfHour)}</b>
                       </div>
                       <div className="col-4">
-                        Tổng tiền: <b> {converCurrency(numberOfHour*feePerHour)} / hr</b>
+                        Tổng tiền: <b> {converCurrency(numberOfHour*feePerHour)}</b>
                       </div>
                     </div>
 

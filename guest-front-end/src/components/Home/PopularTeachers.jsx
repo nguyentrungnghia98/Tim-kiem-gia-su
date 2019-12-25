@@ -50,7 +50,11 @@ class PopularTeachers extends Component {
 
       const {docs, total} = await User.getListTeacher({
         page:1,
-        limit: 12
+        limit: 12,
+        sort: {
+          field: "numberOfStudent",
+          type: -1
+        }
       });
       this.setState({teachers:docs, total});
 

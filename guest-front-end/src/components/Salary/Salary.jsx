@@ -40,7 +40,7 @@ function _TabPanel(props) {
       
       const data = {
         condition:{
-          teacher: user.id,
+          teacher: user._id,
         },
         ...getDate()
       }
@@ -206,9 +206,9 @@ const Salary = (props) => {
 
           >
             <Tab label={<div className="statistic-title"><span>Số tiền nhận được</span></div>} {...a11yProps(0)} />
-  <Tab label={<div className="statistic-title"><span>Số học sinh</span><h5>{user.numberOfStudent}</h5></div>} {...a11yProps(1)} />
-            <Tab label={<div className="statistic-title"><span>Số hợp đồng</span><h5>21</h5></div>} {...a11yProps(2)} />
-  <Tab label={<div className="statistic-title"><span>Số giờ dạy</span><h5>{user.teachedHour}</h5></div>} {...a11yProps(3)} />
+            <Tab label={<div className="statistic-title"><span>Số học sinh</span><h5>{user.numberOfStudent || 0}</h5></div>} {...a11yProps(1)} />
+            <Tab label={<div className="statistic-title"><span>Số giờ dạy</span><h5>{user.teachedHour || 0}</h5></div>} {...a11yProps(2)} />
+            <Tab label={<div className="statistic-title"><span></span><h5></h5></div>} {...a11yProps(3)} />
           </Tabs>
         </AppBar>
         <MuiPickersUtilsProvider utils={MomentUtils}>

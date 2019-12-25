@@ -46,7 +46,7 @@ const Root = (props) => {
         const user = await User.getInfo();
         fetchUser(user);
         User.updateInfo({isOnline: true})
-        socket.emit('login', user.id)
+        socket.emit('login', user._id)
 
         setLoading(false);
 

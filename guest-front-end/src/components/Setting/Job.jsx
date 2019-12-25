@@ -99,7 +99,7 @@ const Job = (props) => {
           id="job-select"
           value={job}
           onChange={handleChange}
-          displayEmpty
+          displayEmpty 
         >
           <MenuItem value="" disabled>
             Chọn nghề nghiệp của bạn

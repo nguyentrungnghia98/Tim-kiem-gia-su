@@ -230,14 +230,7 @@ const DetailContract = (props) => {
                 required
               />
             </div>
-            <div className="form-field">
-              <label className="text-label">
-                Mô tả công việc
-                  </label>
-              <div className="text-warning">
-                Chúng tôi đang trong giai đoạn thử nghiệm, bạn có thể bỏ thông tin này
-                  </div>
-            </div>
+            
 
           </div>
         </div>
