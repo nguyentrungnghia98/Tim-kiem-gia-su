@@ -25,6 +25,7 @@ const CreateNewAccount = (props) => {
     const [password, setPassword] = useState('');
     const [rePassword, setRePassword] = useState('');
     const [role, setRole] = useState('');
+    const [visibleMess, setVisibleMess] = useState(true);
 
     const {isFetching, message, fetchRegister} = props;
 
@@ -40,7 +41,7 @@ const CreateNewAccount = (props) => {
         <PageTitle title="Tạo tài khoản quản trị mới" subtitle="Cài đặt" md="12" className="ml-sm-auto mr-sm-auto" />
         </Row>
         {messageErr ? <Container fluid className="px-0 mb-3">
-                <Alert className="mb-0">
+                <Alert className="mb-0" dismissible={() => setVisibleMess(false)} open={visibleMess}>
                 <i className="fa fa-info mx-2"></i>{messageErr}
                 </Alert>
             </Container> : null}

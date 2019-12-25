@@ -15,7 +15,7 @@ class SidebarNavItems extends React.Component {
     this.onChange = this.onChange.bind(this);
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     Store.addChangeListener(this.onChange);
   }
 

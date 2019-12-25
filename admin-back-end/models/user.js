@@ -54,7 +54,7 @@ module.exports= {
 
     findTeacher: () => {
         return new Promise((resolve, reject) => {
-            User.find({role:1}, ['status','avatar', 'major', 'email','username', 'address','introduction','job','salaryPerHour'])
+            User.find({role:1}, ['status','avatar', 'major', 'email','username', 'address','introduction','job','salaryPerHour'],)
             .populate('major', 'content')
             .exec((err, succ) => {
                 if (err)
@@ -87,7 +87,7 @@ module.exports= {
     },
 
     findOneById: (id) => {
-        return User.findById(id).populate('major', 'content').exec();
+        return User.findById(id, ['status', 'role','avatar', 'major', 'email','username', 'address','introduction','job', 'salaryPerHour']).populate('major', 'content').exec();
     },
 
     updateOne: (conditionObject, properies) => {

@@ -36,7 +36,7 @@ export const fetchTagSkill = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3000/tag-skill', {
+        return fetch('https://server-gia-su.herokuapp.com/tag-skill', {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -67,7 +67,7 @@ export const fetchTagSkill = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3000/tag-skill/add', {
+        return fetch('https://server-gia-su.herokuapp.com/tag-skill/add', {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
@@ -107,7 +107,7 @@ export const fetchDelTagSkill = (token, id) => {
         dispatch(tagSkillRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`http://localhost:3000/tag-skill/delete/${id}`, {
+        return fetch(`https://server-gia-su.herokuapp.com/tag-skill/delete/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -147,7 +147,7 @@ export const updateTagSkillSuccess = (message, id, content) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3000/tag-skill/update', {
+        return fetch('https://server-gia-su.herokuapp.com/tag-skill/update', {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,

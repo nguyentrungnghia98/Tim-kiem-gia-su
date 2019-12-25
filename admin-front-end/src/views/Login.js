@@ -22,6 +22,7 @@ const FormLogin = (props) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [savePassword, setSavePassword] = useState(true);
 
     const {isLoggedIn, fetchLogin, isFetching, message} = props;
     const token = localStorage.getItem('token');
@@ -80,11 +81,14 @@ const FormLogin = (props) => {
                                 </InputGroup>
                             </FormGroup>  
                                 
-                            <FormGroup>
-                                <FormCheckbox>
-                                {/* eslint-disable-next-line */}Lưu mật khẩu
+                            
+                            <FormCheckbox
+                            checked={savePassword}
+                            onChange={() => setSavePassword(!savePassword)}
+                            >
+                                    Lưu mật khẩu
                                 </FormCheckbox>
-                            </FormGroup>
+                            
 
                             <center><Button type="submit" disabled={isFetching}>Đăng nhập</Button></center>
                         </Form>

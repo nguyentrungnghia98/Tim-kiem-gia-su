@@ -17,19 +17,15 @@ const UserActions = (props) => {
 
   const [visible, setVisible] = useState(false);
   const {logOut, userInfo, fetchUser} = props;
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDataUser = async () => {
       try {
-        setLoading(true);
         const token = localStorage.getItem('token');
         await fetchUser(token);
-        
-        setLoading(false);
+      
       } catch (err) {
         console.log('err', err);
-        setLoading(false);
       }
     };
     fetchDataUser();
@@ -40,14 +36,14 @@ const UserActions = (props) => {
         <DropdownToggle caret tag={NavLink} className="text-nowrap px-3">
           <img
             className="user-avatar rounded-circle mr-2"
-            src={userInfo.avatar}
-            alt="User Avatar"
+            src={userInfo ? `/${userInfo.avatar}` : "/"}
+            alt=""
           />{" "}
-          <span className="d-none d-md-inline-block">{loading ? "" : userInfo.fullName}</span>
+          <span className="d-none d-md-inline-block">{userInfo !== null ? userInfo.fullName : ""}</span>
         </DropdownToggle>
         <Collapse tag={DropdownMenu} right small open={visible}>
-          <DropdownItem tag={Link} to="user-profile">
-            <i className="material-icons">&#xE7FD;</i> Tài khoản của tôi
+          <DropdownItem>
+            <Link to="/user-profile"><i className="material-icons">&#xE7FD;</i> Tài khoản của tôi</Link>
           </DropdownItem>
           {/*<DropdownItem tag={Link} to="edit-user-profile">
             <i className="material-icons">&#xE8B8;</i> Edit Profile
@@ -59,8 +55,8 @@ const UserActions = (props) => {
             <i className="material-icons">&#xE896;</i> Transactions
           </DropdownItem>*/}
           <DropdownItem divider />
-          <DropdownItem tag={Link} to="/login" className="text-danger" onClick={() => {localStorage.removeItem('token'); logOut()}}>
-            <i className="material-icons text-danger">&#xE879;</i> Đăng xuất
+          <DropdownItem className="text-danger" onClick={() => {localStorage.removeItem('token'); logOut()}}>
+            <Link to="/login"> <i className="material-icons text-danger">&#xE879;</i> Đăng xuất</Link>
           </DropdownItem>
         </Collapse>
       </NavItem>

@@ -4622,6 +4622,79 @@ i.icon-green {
   color: green;
 }
 
+tbody tr:hover{
+  background-color: rgb(233, 233, 233);
+}
+
+.btn.btn-icon{
+  font-size: 1rem !important;
+}
+
+.btn-pagination{
+  padding: 8px;
+  line-height: 0;
+  margin-right: 5px;
+}
+.modal-header{
+  display: flex;
+  justify-content: center;
+}
+.modal-body {
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+}
+.fs-header-table{
+  font-size: 20px;
+}
+
+.incoming_msg_img {
+  display: inline-block;
+  width: 6%;
+}
+.received_msg {
+  display: inline-block;
+  padding: 0 0 0 10px;
+  vertical-align: top;
+  width: 92%;
+ }
+ .received_withd_msg p {
+  background: #ebebeb none repeat scroll 0 0;
+  border-radius: 3px;
+  color: #646464;
+  font-size: 14px;
+  margin: 0;
+  padding: 5px 10px 5px 12px;
+  width: 100%;
+}
+.time_date {
+  color: #747474;
+  display: block;
+  font-size: 12px;
+  margin-bottom: 8px;
+  text-align: right;
+}
+.received_withd_msg { width: 57%;}
+
+.mesgs {
+  float: left;
+  padding: 30px 15px 0 25px;
+  width: 60%;
+}
+
+ .sent_msg p {
+  background: #05728f none repeat scroll 0 0;
+  border-radius: 3px;
+  font-size: 14px;
+  margin: 0; color:#fff;
+  padding: 5px 10px 5px 12px;
+  width:100%;
+}
+.outgoing_msg{ overflow:hidden; margin:26px 0 26px;}
+.sent_msg {
+  float: right;
+  width: 46%;
+}
+
 .error {
   height: calc(100vh - 3.75rem);
   display: flex; }
