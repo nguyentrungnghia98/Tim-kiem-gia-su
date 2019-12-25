@@ -283,7 +283,7 @@ export const setStatusTeacherSuccess = (message, id, status) => {
         dispatch(getUserRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`http://localhost:3000/list-users/${status}/${id}`, {
+        return fetch(`https://server-gia-su.herokuapp.com/list-users/${status}/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -326,7 +326,7 @@ export const getUserDetailSuccess = (user) => {
         dispatch(getUserRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`http://localhost:3000/list-users/user-detail/${id}`, {
+        return fetch(`https://server-gia-su.herokuapp.com/list-users/user-detail/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken

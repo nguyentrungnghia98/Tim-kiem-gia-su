@@ -111,7 +111,7 @@ const ManagerComplaint = props => {
                 theme="while"
                 className="p-0 btn-icon"
                 title="Xem tin nhắn"
-                onClick={() => {setOpenModalMessage(!openModalMessage); setUserID(contract.student._id); fetchConversation(token,contract.student._id,contract.teacher._id, contract.createTime); console.log(contract.student._id,contract.teacher._id, contract.createTime)}} 
+                onClick={() => {setOpenModalMessage(!openModalMessage); setUserID(contract.student._id); fetchConversation(token,contract.student._id,contract.teacher._id, contract.createTime);}} 
               >               
                   <i className="material-icons text-info">message</i>
               </Button> 
@@ -154,7 +154,7 @@ const ManagerComplaint = props => {
           </div>)
         }
 })}
-console.log(listMessages);    
+
   return (
     <Container fluid className="main-content-container px-4">
       {/* Page Header */}

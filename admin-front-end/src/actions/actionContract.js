@@ -30,7 +30,7 @@ export const fetchContract = (token, page, sortBy) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`http://localhost:3000/contracts?page=${page !== undefined ? page : ''}&sortBy=${sortBy !== undefined ? sortBy : ''}`, {
+        return fetch(`https://server-gia-su.herokuapp.com/contracts?page=${page !== undefined ? page : ''}&sortBy=${sortBy !== undefined ? sortBy : ''}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -76,7 +76,7 @@ export const updateComplaintSuccess = (message, contractID, status) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3000/contracts/update', {
+        return fetch('https://server-gia-su.herokuapp.com/contracts/update', {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
@@ -122,7 +122,7 @@ export const fetchComplaint = (token, page) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`http://localhost:3000/contracts?page=${page !== undefined ? page : ''}&sortBy=processing_complaint`, {
+        return fetch(`https://server-gia-su.herokuapp.com/contracts?page=${page !== undefined ? page : ''}&sortBy=processing_complaint`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -155,7 +155,7 @@ export const fetchComplaint = (token, page) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3000/conversation/getListMessagesByTwoUser', {
+        return fetch('https://server-gia-su.herokuapp.com/conversation/getListMessagesByTwoUser', {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,

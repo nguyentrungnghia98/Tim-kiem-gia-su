@@ -61,7 +61,7 @@ const TagSkill = props => {
     };
     fetchDataTagSkill();
   }, []);
-  console.log(tagskills);
+  //console.log(tagskills);
 
   let rowsTagSkill;
 

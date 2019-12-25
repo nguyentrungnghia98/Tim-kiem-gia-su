@@ -1,58 +1,85 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Container, Row, Col, Card, CardBody, Button, ButtonToolbar, ModalHeader, ModalBody, Modal, Alert, CardHeader, InputGroup, InputGroupText, InputGroupAddon, FormInput} from "shards-react";
+import {Container, Row, Col, Card, CardBody, Button, FormSelect, Alert, CardHeader, InputGroup, InputGroupAddon} from "shards-react";
+import * as moment from "moment";
 
 import PageTitle from "../components/common/PageTitle";
 import Loading from "../components/loading/Loading";
 
-import {fetchListStudents,fetchBlocklUser} from '../actions/actionUser'
+import {fetchTopIncome} from '../actions/actionTopIncome'
 
 
 
-const ManagerStudents = (props) => {
+const TopTeacherIncome = (props) => {
 
-  const [openModal, setOpenModal] = useState(false);
-  const [userID, setUserID] = useState('');
-  const [status, setStatus] = useState('');
   const [visibleMess, setVisibleMess] = useState(true);
+  const [startDate, setStartDate] = useState(moment()
+  .startOf('date')
+  .format());
 
-const {messageStudent,listStudents, fetchListStudents,fetchBlocklUser} = props;
+const {message,dataTeacher,fetchTopIncome} = props;
 
 const token = localStorage.getItem('token');
 
+const setDate = date => {
+  if (date === "today") {
+    setStartDate(
+      moment()
+        .startOf("date")
+        .format()
+    );
+
+  }
+  if (date === "week") {
+    setStartDate(
+      moment()
+        .subtract(7, 'days')
+        .format()
+    );
+  }
+  if (date === "30days") {
+    setStartDate(
+      moment()
+      .subtract(30, 'days')
+        .format()
+    );
+  }
+  if (date === "90days") {
+    setStartDate(
+      moment()
+        .subtract(90, 'days')
+        .format()
+    );
+  }
+  if (date === "all"){
+    setStartDate("");
+  }
+};
+
   useEffect(() => {
-    const fetchDataUser = async () => {
+    const fetchDataTopIncome = async () => {
       try {
-        await fetchListStudents(token);
+        await fetchTopIncome(token,startDate,'Teacher');
       } catch (err) {
         console.log('err', err);
       }
     };
-    fetchDataUser();
+    fetchDataTopIncome();
   }, []);
 
-function setInfoModal(id, status){
-  setOpenModal(!openModal);
-  setUserID(id); 
-  setStatus(status)
-}
 
-let rowsUser;
+let rowUsers;
 
-if(listStudents !== null){
-  rowsUser = listStudents.map((user, index) => {
+if(dataTeacher !== []){
+  rowUsers = dataTeacher.map((user, index) => {
     return(
                 <tr key={index}>
                   <td><center>{index+1}</center></td>
-                  <td><center>{user.username}</center></td>
-                  <td><center>{user.email}</center></td>
-                  <td><center>{(user.status === 'active') ? <i className="material-icons icon-green">done</i> : <i className="material-icons icon-red">highlight_off</i>}</center></td>
-                  <td><center>
-                  <Button theme="while" className="p-0 btn-icon" title="Xem chi tiết" onClick={() => {}}><Link to={`/user-detail/${user._id}`}><i className="material-icons icon-blue">remove_red_eye</i></Link></Button>
-                  <Button theme="while" className="p-0 btn-icon" title="Khóa tài khoản" onClick={() => {setInfoModal(user._id,'block')}}><i className="material-icons ml-2 icon-red">block</i></Button>
-                  <Button theme="while" className="p-0 btn-icon" title="Mở khóa tài khoản" onClick={() => {setInfoModal(user._id,'active')}}><i className="material-icons ml-2 icon-green">lock_open</i></Button>
-                  </center></td>            
+                  <td><center><Link to={`/user-detail/${user._id}`}>{user.infoUser[0].username}</Link></center></td>
+                  <td><center>{user.infoUser[0].email}</center></td>
+                  <td><center>{user.infoUser[0].salaryPerHour.toLocaleString('it-IT', {style : 'currency', currency : 'VND'})}</center></td>    
+                  <td><center>{user.count.toLocaleString('it-IT', {style : 'currency', currency : 'VND'})}</center></td>        
                </tr>
     )
 });
@@ -60,15 +87,16 @@ if(listStudents !== null){
   return <Loading/>
 }
 
+console.log(startDate)
 return(
 <Container fluid className="main-content-container px-4">
     {/* Page Header */}
     <Row noGutters className="page-header py-4">
-      <PageTitle sm="4" title="Người học" subtitle="Quản lý" className="text-sm-left" />
+      <PageTitle sm="4" title="Người dạy" subtitle="Top doanh thu" className="text-sm-left" />
     </Row>
-    {messageStudent ? <Container fluid className="px-0 mb-3">
+    {message ? <Container fluid className="px-0 mb-3">
                 <Alert className="mb-0" dismissible={() => setVisibleMess(false)} open={visibleMess}>
-                <i className="fa fa-info mx-2"></i>{messageStudent}
+                <i className="fa fa-info mx-2"></i>{message}
                 </Alert>
         </Container> : null}
     {/* Default Light Table */}
@@ -76,21 +104,22 @@ return(
       <Col>
         <Card small className="mb-4">
         <CardHeader className="border-bottom">
-        <ButtonToolbar>
-          <span className="ml-3 pt-1 fs-header-table">
-            Danh sách Người học{" "}
-          </span>
-
-          <InputGroup seamless size="lg" className="ml-auto mr-3">
-            <FormInput placeholder="Tìm kiếm..." />
-            <InputGroupAddon type="append">
-              <InputGroupText>
-                <i className="material-icons">search</i>
-              </InputGroupText>
-            </InputGroupAddon>
-          </InputGroup>
-        </ButtonToolbar>
-      </CardHeader>
+          <Row>
+            <Col><h5 className="mt-1 ml-4">Top doanh thu người dạy</h5>    </Col>
+            <Col lg="3" className="mr-4"><InputGroup>
+      <FormSelect onChange={(e) => setDate(e.target.value)}>
+        <option value="today">Hôm nay</option>
+        <option value="week">Tuần này</option>
+        <option value="30days">30 ngày trước</option>
+        <option value="90days">90 ngày trước</option>
+        <option value="all">Tất cả</option>
+      </FormSelect>
+      <InputGroupAddon type="append">
+        <Button theme="primary" onClick={() => {fetchTopIncome(token, startDate,'Teacher')}}> Lọc</Button>
+      </InputGroupAddon>
+    </InputGroup></Col>
+            </Row>       
+          </CardHeader>
           <CardBody className="p-0 pb-3">
             <table className="table mb-0">
               <thead className="bg-light">
@@ -105,43 +134,30 @@ return(
                     <center>Email</center>
                   </th>
                   <th scope="col" className="border-0">
-                  <center>Trạng thái</center>
+                  <center>Lương theo giờ</center>
                   </th>
                   <th scope="col" className="border-0">
-                  <center>Chức năng</center>
+                  <center>Doanh thu</center>
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {rowsUser}
+                {rowUsers}
               </tbody>
             </table>
           </CardBody>
         </Card>
       </Col>
     </Row>
-    <Modal size="sm" open={openModal} toggle={() => setOpenModal(!openModal)} centered>
-      <ModalHeader>{status === 'block' ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}</ModalHeader>
-      <ModalBody className="p-3">
-
-        <label className="mb-3">Bạn có chắc chắn muốn <b className="text-danger">{status === 'block' ? 'khóa' : 'mở khóa'}</b> người dùng này không ?</label>    
-      <center>
-        <Button theme="secondary" className="mr-3" type="button"  onClick={() => setOpenModal(!openModal)}>Hủy</Button>
-        <Button type="submit"  onClick={() => {setOpenModal(!openModal); fetchBlocklUser(token, userID , status,0)}}>Đồng ý</Button>
-      </center>
-
-      
-      </ModalBody>
-    </Modal>
     </Container>
 )
 };
 
 const mapStateToProps = (state) => {
   return {
-      messageStudent: state.authReducer.messageStudent,
-      listStudents: state.authReducer.listStudents,
+      message: state.topIncomeReducer.message,
+      dataTeacher: state.topIncomeReducer.dataTeacher
   };
 };
 
-export default connect(mapStateToProps,{fetchListStudents,fetchBlocklUser})(ManagerStudents);
+export default connect(mapStateToProps,{fetchTopIncome})(TopTeacherIncome);

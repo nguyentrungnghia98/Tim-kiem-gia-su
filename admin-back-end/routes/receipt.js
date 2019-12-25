@@ -33,4 +33,28 @@ router.post('/getListByTimeScope', (req, res) => {
         .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
 });
 
+router.post('/getTopTeacherIncome', (req, res) => {
+    
+    const {startDate} = req.body;
+    Receipt.getTopTeacherIncome(startDate)
+        .then((rs) => {
+            return res.status(200).json({
+                data:  rs               
+            });
+        })
+        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+});
+
+router.post('/getTopSkillIncome', (req, res) => {
+    
+    const {startDate} = req.body;
+    Receipt.getTopSkillIncome(startDate)
+        .then((rs) => {
+            return res.status(200).json({
+                data:  rs               
+            });
+        })
+        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+});
+
 module.exports = router;

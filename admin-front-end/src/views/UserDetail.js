@@ -32,7 +32,7 @@ const UserDetail = props => {
   if (userDetail === undefined || userDetail._id !== objectID.id) {
     return <Loading />;
   }
-  console.log(userDetail);
+  //console.log(userDetail);
   return (
     <Container fluid className="main-content-container px-4">
       <Row noGutters className="page-header py-4">

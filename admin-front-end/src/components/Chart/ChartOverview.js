@@ -234,11 +234,8 @@ const ChartOverview = props => {
               <option value="custom">Tùy chỉnh</option>
             </FormSelect>
           </Col>
-          <Col
-            sm="4"
-            className="d-flex mb-2 mb-sm-0 ml-auto mr-auto ml-sm-auto mr-sm-0 mt-3 mt-sm-0"
-          >
-            <InputGroup className="d-flex my-auto date-range">
+          <Col sm="4.5">
+            <InputGroup className="d-flex my-auto date-range mr-5">
               <DatePicker
                 size="sm"
                 selected={new Date(fromDate)}

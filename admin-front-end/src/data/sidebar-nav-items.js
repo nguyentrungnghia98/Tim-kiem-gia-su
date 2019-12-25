@@ -32,7 +32,7 @@ export default function() {
       htmlBefore: '<i class="material-icons">gavel</i>',
     },
     {
-      title: "Biểu đồ doanh thu",
+      title: "Thống kê doanh thu",
       to: "/income-overview",
       htmlBefore: '<i class="material-icons">assessment</i>',
     },

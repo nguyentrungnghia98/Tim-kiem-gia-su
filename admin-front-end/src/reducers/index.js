@@ -4,6 +4,7 @@ import authReducer from './authReducer'
 import tagSkillReducer  from './tagSkillReducer'
 import contractReducer from './contractReducer'
 import staticReducer from './staticReducer'
+import topIncomeReducer from './topIncomeReducer'
 
 
 const App = combineReducers({
@@ -11,7 +12,8 @@ const App = combineReducers({
     authReducer,
     tagSkillReducer,
     contractReducer,
-    staticReducer
+    staticReducer,
+    topIncomeReducer
 })
 
 export default App
