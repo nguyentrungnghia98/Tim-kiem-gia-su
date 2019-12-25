@@ -60,7 +60,7 @@ router.post('/login', (req, res) => {
                 results: {
                     object: {
                         token, 
-                        ...user
+                        ...user['_doc']
                     }
                 }
             });
@@ -244,7 +244,7 @@ router.post('/updateMoney', async (req, res) => {
             return res.status(400).json({message: 'user không tồn tại'});
         }
 
-        user.money += money;
+        user.money += Number.parseInt(money);
 
         if (user.money < 0) {
             return res.status(400).json({message: 'Số dư tài khoản không đủ'});

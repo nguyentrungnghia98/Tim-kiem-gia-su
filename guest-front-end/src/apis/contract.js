@@ -58,7 +58,7 @@ class Contract extends Api{
     const response = await this.exec(setting);
 
     return response.data.results.object;
-  }
+  } 
 }
 
 export default Contract;

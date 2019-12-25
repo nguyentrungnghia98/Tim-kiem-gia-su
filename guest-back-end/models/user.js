@@ -75,6 +75,13 @@ module.exports= {
             .exec();
     },
 
+    findOneByEmailWithPassword: (email) => {
+      return User.findOne({email})
+          .populate('major', 'content')
+          .select(' -contacts -__v')
+          .exec();
+  },
+
     findOneAccountActiveByEmail: (email) => {
         return User.findOne({email, status: 'active' })
             .populate('major', '-__v')

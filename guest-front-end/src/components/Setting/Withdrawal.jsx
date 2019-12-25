@@ -7,7 +7,7 @@ import {User} from '../../apis';
 import toast from '../../utils/toast';
 import {connect} from 'react-redux';
 import {converCurrency} from '../../utils/pipe';
-
+import {fetchUser} from '../../actions/user';
 
 const Withdrawal = (props) => {
   const [money, setMoney] = useState('');
@@ -24,14 +24,14 @@ const Withdrawal = (props) => {
     if (isNaN(money) || money < 0) {
       _error.money = 'Vui lòng nhập số tiền hợp lệ!';
       check = false;
-    } else if (!isNaN(money) && money > props.money) {
+    } else if (!props.money || (!isNaN(money) && money > props.money)) {
       _error.money = 'Số dư của bạn không đủ!';
       check = false;
     }
     else {
       _error.money = '';
     }
-
+ 
     const regex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
     if (!regex.test(phone)) {
       _error.phone = 'Vui lòng nhập số điện thoại hợp lệ! Ví dụ: 0969123456';
@@ -51,15 +51,18 @@ const Withdrawal = (props) => {
     try {
       setLoadSaveDone(false);
       const data = {
-        money,
+        idUser: props.id,
+        money: -money,
         phone
       };
-      //const response = await User.changePassword(data);
+      const response = await User.updateMoney(data);
 
+      
       console.log('data', data)
 
       setLoadSaveDone(true);
       toast.success('Cập nhật thành công');
+      props.fetchUser({money: props.money - money})
     } catch (error) {
       console.log({ error });
       setLoadSaveDone(true);
@@ -73,7 +76,7 @@ const Withdrawal = (props) => {
 
       
       <label className="text-label">
-        Số dư: {converCurrency(props.money)}đ
+        Số dư: {converCurrency(props.money || 0)}đ
       </label>
 
       <label className="text-label">
@@ -123,8 +126,11 @@ const Withdrawal = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    money: state.auth.user.money
+    money: state.auth.user.money,
+    id: state.auth.user._id
   };
 };
 
-export default connect(mapStateToProps)(Withdrawal) ;
+export default connect(mapStateToProps, {
+  fetchUser
+})(Withdrawal) ;

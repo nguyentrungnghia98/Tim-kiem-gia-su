@@ -77,10 +77,10 @@ router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
 
     try {
         if (status != null && status === 'finished') {
+          console.log('increase', numberOfHour * feePerHour * 0.8)
             await Promise.all([Contract.updateById(req.body.id, req.body),
                 User.updateOne({
-                    _id: req.userInfo.id,
-                    role: 1
+                    _id: idTeacher
                 }, {
                     $inc: {
                         numberOfStudent: 1,

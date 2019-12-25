@@ -1,5 +1,5 @@
 import { Api } from './api';
-
+import checksum from '../utils/checksumToken';
 class User extends Api {
   constructor() {
     super();
@@ -83,6 +83,20 @@ class User extends Api {
     
   }
 
+  async updateMoney(data){
+    const timestamp = new Date().getTime();
+    data = {...data, timestamp, checksumToken: checksum.genarateToken(timestamp)}
+
+    const setting = {
+      method: 'POST',
+      url: this.getUrl('updateMoney'),
+      headers: this.tokenHeader,
+      data
+    }
+    const response = await this.exec(setting);
+
+    return response.data;
+  }
 }
 
 export default User;
