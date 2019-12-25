@@ -31,6 +31,8 @@ import { openAuthenticationModal } from '../modals/Authentication/Authentication
 import ScrollToTop from './ScrollToTop';
 import StudentInfo from './StudentInfo/StudentInfo';
 import socket from '../utils/socket';
+import ComplainContractModal from '../modals/ComplainContract/ComplainContract';
+
 
 const Root = (props) => {
   const { isSignedIn, fetchUser, openSetRoleModal, openAuthenticationModal } = props;
@@ -198,6 +200,7 @@ const Root = (props) => {
         </ScrollToTop>
         <Authentication />
         <SetRoleModal />
+        <ComplainContractModal />
         <Alert />
       </Router>
     </>

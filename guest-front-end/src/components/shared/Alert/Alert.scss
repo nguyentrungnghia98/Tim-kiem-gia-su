@@ -1,9 +1,9 @@
 @import '../../../assets/scss/variable.scss';
-
-.MuiDialog-paper {
+.alert-dialog{
+.MuiDialog-paper  {
   padding: 25px 0px !important;
   min-height: 300px !important;
-
+  width: 600px;
   .alert--wrapper {
     display: flex;
     align-items: center;
@@ -139,7 +139,7 @@
   //   }
   // }
 }
-
+}
 @media not all and (min-width: 767px) {
   .alert--title {
     margin: 8px 0;

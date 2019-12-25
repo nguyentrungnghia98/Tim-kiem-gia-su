@@ -47,6 +47,9 @@ const ContractSchema = new Schema({
       required: true,
       default: 'pending'
   },
+  complaintContent: {
+    type: String
+  },
   createTime: {
       type: Date,
       required: true

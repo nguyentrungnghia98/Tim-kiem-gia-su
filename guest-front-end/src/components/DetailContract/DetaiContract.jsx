@@ -6,6 +6,9 @@ import { TextField, TextareaAutosize } from '@material-ui/core';
 import { converCurrency } from '../../utils/pipe';
 import StarRatings from 'react-star-ratings';
 import { connect } from 'react-redux';
+import {openAlertWarning} from '../../actions/alert';
+
+import {openComplainContractModal} from '../../modals/ComplainContract/ComplainContractAction';
 
 const DetailContract = (props) => {
   const [loading, setLoading] = useState(false);
@@ -38,8 +41,7 @@ const DetailContract = (props) => {
     }
   }
 
-  async function updateContract(status){
-    
+  async function callApiUpdateContract(status){
     if(processing) return;
     let data = {id: contract._id, status};
     if(status === 'finished'){
@@ -61,6 +63,33 @@ const DetailContract = (props) => {
       //setTeacher(null)
       Contract.alertError(error);
     }
+  }
+
+
+  function onAcceptAlert(result){
+    if (result) {
+      callApiUpdateContract('finished')
+    }
+  }
+
+  function updateContract(status){
+    switch(status){
+      case 'processing_complaint':
+        props.openComplainContractModal(contract._id, reload);
+        break;
+      case 'finished':
+        props.openAlertWarning(
+          'Bạn có chắc chắn',
+          'Sau kết thúc hợp đồng giáo viên sẽ nhận được tiền như thỏa thuận. Bạn sẽ không thể khiếu nại được nữa.',
+          'Ok',
+          onAcceptAlert
+        );
+        break;
+      case 'denied':
+        callApiUpdateContract('denied')
+        break;
+    }
+    
   }
 
   async function updateReview(event){
@@ -313,6 +342,16 @@ const DetailContract = (props) => {
                     Học sinh đã khiếu nại.
                   </span>
                   <span className="text-danger text-center">Đang trong quá trình giải quyết</span>
+
+                  <h5 className="mt-4">Nội dung khiếu nại</h5>
+                  <TextareaAutosize
+                    variant="outlined"
+                    rows="4"
+                    className='textarea-custom mt-2'
+                    value={contract.complaintContent || "Không rõ"}
+                    readOnly                
+                />
+               
                 </div>
               </div>
             </div>
@@ -328,6 +367,14 @@ const DetailContract = (props) => {
                   <span className="text-success text-center mt-3">
                     Học sinh khiếu nại thành công
                   </span>
+                  <h5 className="mt-4">Nội dung khiếu nại</h5>
+                  <TextareaAutosize
+                    variant="outlined"
+                    rows="4"
+                    className='textarea-custom mt-2'
+                    value={contract.complaintContent || "Không rõ"}
+                    readOnly                
+                />
                 </div>
               </div>
             </div>
@@ -370,7 +417,6 @@ const DetailContract = (props) => {
         </div>
 
       </div>
-
     </div>
   )
 }
@@ -384,5 +430,8 @@ const mapStateToProps = (state) => {
 
 const _withRouter = withRouter(DetailContract);
 export default connect(
-  mapStateToProps
+  mapStateToProps, {
+    openAlertWarning,
+    openComplainContractModal
+  }
 )(_withRouter);

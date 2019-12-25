@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-
   CircularProgress
 } from '@material-ui/core';
 import CssTextField from './CssTextField';
@@ -42,7 +41,7 @@ const ChangePassword = () => {
 
   return (
     <form onSubmit={handlePasswordSubmit} className="setting-form">
-      <h4>Thông tin cơ bản</h4>
+      <h4>Đổi mật khẩu</h4>
       <label className="text-label">
         Mật khẩu hiện tại
               </label>

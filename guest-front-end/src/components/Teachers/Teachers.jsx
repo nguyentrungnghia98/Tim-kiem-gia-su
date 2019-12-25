@@ -138,7 +138,10 @@ class Teachers extends Component {
   }
 
   componentDidUpdate(prevProps){
-    if(prevProps.match.url !== this.props.match.url) this.reload();
+    if(prevProps.match.url !== this.props.match.url) {
+      this.page = 1;
+      this.reload();
+    }
   }
 
   onClickBtnInfo = (id) => {

@@ -88,7 +88,7 @@ const Job = (props) => {
 
   return (
     <form onSubmit={handleSubmit} className="setting-form">
-      <h4>Thông tin cơ bản</h4>
+      <h4>Nghề nghiệp</h4>
       <label className="text-label">
         Công việc hiện tại của bạn là gì?
             </label>

@@ -7,6 +7,8 @@ import SelectOption from '../shared/SelectOption/SelectOption';
 import ReactPaginate from 'react-paginate';
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
+import {openAlertWarning} from '../../actions/alert';
+import {openComplainContractModal} from '../../modals/ComplainContract/ComplainContractAction';
 
 const arrSortOption = [
   { text: 'Ngày tạo mới nhất', code: 'createTime_-1' },
@@ -39,8 +41,9 @@ const Contracts = (props) => {
   let processing = false;
 
   useEffect(() => {
-    setSelectedStatusOption(initStatusOption);
+    console.log('change path')
     setPage(1);
+    setSelectedStatusOption(initStatusOption);
     //reload();
   }, [path])
 
@@ -85,10 +88,7 @@ const Contracts = (props) => {
     }
   }
 
-  async function updateContract(e,status, id){
-    e.preventDefault();
-    e.stopPropagation();
-    
+  async function callApiUpdateContract(status, id){
     if(processing) return;
     let data = {id, status};
     if(status === 'finished'){
@@ -111,6 +111,39 @@ const Contracts = (props) => {
       //setTeacher(null)
       Contract.alertError(error);
     }
+  }
+
+  function onAcceptAlert(id, result){
+    console.log(arguments, result, id)
+    if (result) {
+      callApiUpdateContract('finished', id)
+    }
+  }
+
+
+
+  async function updateContract(e,status, id){
+    e.preventDefault();
+    e.stopPropagation();
+
+    switch(status){
+      case 'processing_complaint':
+        props.openComplainContractModal(id, reload);
+        break;
+      case 'finished':
+        props.openAlertWarning(
+          'Bạn có chắc chắn',
+          'Sau kết thúc hợp đồng giáo viên sẽ nhận được tiền như thỏa thuận. Bạn sẽ không thể khiếu nại được nữa.',
+          'Ok',
+          onAcceptAlert.bind(this,id)
+        );
+        break;
+      default:
+        callApiUpdateContract(status,id)
+        break;
+    }
+    
+
   }
 
   function setSortOption(i) {
@@ -305,5 +338,8 @@ const mapStateToProps = (state) => {
 
 const _withRouter = withRouter(Contracts);
 export default connect(
-  mapStateToProps
+  mapStateToProps,{
+    openAlertWarning,
+    openComplainContractModal
+  }
 )(_withRouter);

@@ -47,7 +47,7 @@ const Alert = (props) => {
   }
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} className="alert-dialog">
       <DialogContent className="alert--wrapper">
         <div className="alert--icon">
           <img alt="icon" src={ALERT_ICON[type || 'error']} />
