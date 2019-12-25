@@ -20,7 +20,7 @@ const UserDetails = props => {
           <div className="mb-3 mx-auto">
             <img
               className="rounded-circle"
-              src={userInfo.avatar}
+              src={userInfo.avatar === 'img/user.png' ? '/images/avatar.jpg' : userInfo.avatar}
               alt={userInfo.fullName}
               width="180"
             />

@@ -87,7 +87,6 @@ if(dataTeacher !== []){
   return <Loading/>
 }
 
-console.log(startDate)
 return(
 <Container fluid className="main-content-container px-4">
     {/* Page Header */}

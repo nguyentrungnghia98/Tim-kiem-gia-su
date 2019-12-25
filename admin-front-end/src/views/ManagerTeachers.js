@@ -69,8 +69,8 @@ const ManagerUsers = props => {
           <td>
             <center>{user.email}</center>
           </td>
-          <td>
-            <center>{user.salaryPerHour.toLocaleString('it-IT', {style : 'currency', currency : 'VND'})}</center>
+          <td> 
+            <center>{(user.salaryPerHour !== undefined ?user.salaryPerHour : 0).toLocaleString('it-IT', {style : 'currency', currency : 'VND'})}</center>
           </td>
           <td>
             <center>
