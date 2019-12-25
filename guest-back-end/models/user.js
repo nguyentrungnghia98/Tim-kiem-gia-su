@@ -79,11 +79,22 @@ module.exports= {
             .exec();
     },
 
+    findOneByEmailWithPassword: (email) => {
+      return User.findOne({email})
+          .populate('major', 'content')
+          .select(' -contacts -__v')
+          .exec();
+  },
+
     findOneAccountActiveByEmail: (email) => {
         return User.findOne({email, status: 'active' })
             .populate('major', '-__v')
             .select('-password -contacts -__v')
             .exec();
+    },
+
+    findOneByIdWidthPassword: (id) => {
+      return User.findById(id).select('-contacts -__v').populate('major', '-__v').exec();
     },
 
     findOneById: (id) => {

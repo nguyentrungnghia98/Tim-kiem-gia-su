@@ -7,7 +7,7 @@ import SelectOption from '../shared/SelectOption/SelectOption';
 import StarRatings from 'react-star-ratings';
 import { converCurrency, formatDate } from '../../utils/pipe';
 import ReactPaginate from 'react-paginate';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { openAuthenticationModal } from '../../modals/Authentication/AuthenticationAction';
 import SendMessageModal from '../../modals/SendMessage/SendMessage';
 import { openSendMessageModal } from '../../modals/SendMessage/SendMessageAction';
@@ -22,10 +22,10 @@ const review = {
 }
 
 const arrSortOption = [
-  { text: 'Mới nhất', code: "createTime_-1" },
-  { text: 'Đánh giá cao nhất', code: 'highest' },
-  { text: 'Đánh giá thấp nhất', code: 'lowest' },
-  { text: 'Số học sinh đã dạy', code: 'students' }
+  { text: 'Mới nhất', code: "reviewAt_-1" },
+  { text: 'Đánh giá cao nhất', code: 'reviewRate_-1' },
+  { text: 'Đánh giá thấp nhất', code: 'reviewRate_1' },
+  { text: 'Số tiền cao nhất', code: 'totalPrice_-1' }
 ]
 
 
@@ -75,7 +75,6 @@ const TeacherInfo = (props) => {
       field : property,
       type : Number.parseInt(type)
     }
-
     return data;
   }
 
@@ -89,7 +88,7 @@ const TeacherInfo = (props) => {
         page,
         limit,
         ...getFilterAndSort()
-      });
+      }); 
       setReviews(response.docs);
       setTotal(response.total);
 
@@ -158,19 +157,23 @@ const TeacherInfo = (props) => {
               <div className="row no-gutters">
                 <div className="col-10 review-content">
                   <h5>{review.name}</h5>
-                  <div className="d-flex align-items-center review-info">
+                  {review.reviewContent?
+                  <>
+                    <div className="d-flex align-items-center review-info">
                     <StarRatings
                       starRatedColor="#ffde23"
-                      rating={review.rate}
+                      rating={review.reviewRate}
                       numberOfStars={5}
                       starDimension="16px"
                       name='rating'
                       starSpacing="0"
                     />
-                    <div className="rating mx-3">{review.rate}</div>
-                    <div className="date">{formatDate(review.createTime)}</div>
+                    <div className="date">{formatDate(review.reviewAt)}</div>
                   </div>
-                  <span className="comment"><i>{review.comment}</i></span>
+                  <span className="comment"><i>{review.reviewContent}</i></span>
+                  </>:
+                  <span className="comment"><i>Chưa có đánh giá.</i></span>}
+                  
                 </div>
                 <div className="col-2 price">
                   {converCurrency(review.totalPrice)}đ
@@ -223,7 +226,7 @@ const TeacherInfo = (props) => {
                       <div className="job"><i className="fas fa-map-marker-alt mr-2"></i> {teacher.address}</div>
                     </div>
                   </div>
-                  <div className="review">
+                  {/* <div className="review">
                     <div className="section">
                       <b>100%</b>
                       <div className="divide-primary" />
@@ -234,18 +237,20 @@ const TeacherInfo = (props) => {
                       <div className="divide-primary" />
                       <span>Đánh giá tốt</span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 <h4 className="teacher--title">{teacher.job ? teacher.job : 'Không rõ nghề nghiệp'}</h4>
                 <p className="introduction">{teacher.introduction}</p>
                 <h4 className="teacher--title">Kĩ năng</h4>
                 <div className="skills">
                   {teacher.major && (<>
-                    {teacher.major.map(({ content }, index) => {
+                    {teacher.major.map(({ content, _id }, index) => {
                       return (
-                        <button key={index} type="button" className="btn btn-tag">
+                        <Link to={`/cat/${content}/${_id}`} key={index}>
+                        <button  type="button" className="btn btn-tag">
                           {content}
                         </button>
+                        </Link>
                       )
                     })}
                   </>)}
@@ -257,15 +262,11 @@ const TeacherInfo = (props) => {
                     <span>1 giờ học</span>
                   </div>
                   <div className="col-3">
-                    <p>100tr+</p>
-                    <span>tổng thu nhập</span>
-                  </div>
-                  <div className="col-3">
-                    <p>{converCurrency(1000)}đ</p>
+                    <p>{converCurrency(teacher.numberOfStudent|| 0)}</p>
                     <span>học viên</span>
                   </div>
                   <div className="col-3">
-                    <p>{converCurrency(4320)}đ</p>
+                    <p>{converCurrency(teacher.teachedHour|| 0)}</p>
                     <span>giờ dạy</span>
                   </div>
                 </div>

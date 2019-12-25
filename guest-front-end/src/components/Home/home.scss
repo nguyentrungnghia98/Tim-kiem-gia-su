@@ -40,13 +40,13 @@
   display: flex;
   flex-direction: column;
   margin-left: 64px;
+  
+  width: 80vw;
 }
 
 #home-page--text {
   overflow: visible;
-  width: 601px;
-  white-space: nowrap;
-  text-align: center;
+  text-align: left;
   font-family: Segoe UI;
   font-style: normal;
   font-weight: bold;
@@ -81,8 +81,7 @@
 }
 #home-page--input {
   overflow: visible;
-  width: 360px;
-  white-space: nowrap;
+  width: 100%;
   font-family: Segoe UI;
   font-style: normal;
   font-weight: normal;

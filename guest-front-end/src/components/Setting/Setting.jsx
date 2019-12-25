@@ -12,7 +12,7 @@ import Job from './Job';
 import Salary from './Salary';
 import ChangePassword from './ChangePassword';
 import { connect } from 'react-redux';
-
+import Withdrawal from './Withdrawal';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -88,6 +88,7 @@ const Setting = (props) => {
           <Tab label={role === 1 ? "Nghề nghiệp và kĩ năng" : "Nghề nghiệp"} icon={<i className="fas  fa-graduation-cap" />} {...a11yProps(1)} />
           {role === 1 && <Tab label="Thu thập" icon={<i className="fas fa-dollar-sign" />} {...a11yProps(2)} />}
           <Tab label="Đổi mật khẩu" icon={<i className="fas fa-key" />} {...a11yProps(3)} />
+          <Tab label="Rút tiền" icon={<i className="fas fa-wallet" />} {...a11yProps(3)} />
         </Tabs>
         <TabPanel className={classes.tab} value={value} index={0}>
           <BasicInfo />
@@ -101,6 +102,10 @@ const Setting = (props) => {
 
         <TabPanel className={classes.tab} value={value} index={role === 1 ? 3 : 2}>
           <ChangePassword />
+        </TabPanel>
+
+        <TabPanel className={classes.tab} value={value} index={role === 1 ? 4 : 3}>
+          <Withdrawal />
         </TabPanel>
       </div>
     </div>

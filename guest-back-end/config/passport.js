@@ -49,7 +49,7 @@ passport.use('local.register', new LocalStrategy({
 
             // Kiểm tra mã OTP
             const result = topt.verify(req.body.activeCode, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
-            
+            //const result = true;
             // Nếu mã OTP không chính xác
             if (!result) {
                 return done(null, false, {message: 'Mã OTP không chính xác'});
@@ -89,7 +89,7 @@ passport.use('local.login', new LocalStrategy({
         return done(null, false, {message: 'Email hoặc mật khẩu không hợp lệ.'});
     }
 
-    User.findOneByEmail(email)
+    User.findOneByEmailWithPassword(email)
         .then(user => {
             if (!user){
                 return done(null, false, {message: 'Email không tồn tại.'});

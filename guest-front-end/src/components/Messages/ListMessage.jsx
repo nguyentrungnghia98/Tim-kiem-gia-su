@@ -219,7 +219,7 @@ const ListMessages = (props) => {
             }
             {renderMessagesList(_messages, userOne, userTwo)}
           </div>
-          <form className="send-message" onSubmit={e => sendMessage(e, _user._id, user.id)}>
+          <form className="send-message" onSubmit={e => sendMessage(e, _user._id, user._id)}>
             <div className='seach-box'>
               <div className='search-input'>
                 <input
