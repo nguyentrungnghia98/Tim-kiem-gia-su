@@ -30,7 +30,11 @@ const userSchema = Schema({
     },
     isOnline: Boolean,
     lastOnline: Date,
-    salaryPerHour: {type: Number},
+    salaryPerHour: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     major: [{
         type: Schema.Types.ObjectId,
         ref: 'TagSkill'
