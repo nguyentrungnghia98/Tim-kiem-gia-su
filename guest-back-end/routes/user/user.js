@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const jwt = require('../../utils/jwt');
 const topt = require('../../utils/totp');
+const ChecksumToken = require('../../utils/checksumToken');
 const User = require('../../models/user');
 const TagSkill = require('../../models/TagSkill');
 
@@ -55,13 +56,11 @@ router.post('/login', (req, res) => {
             }
 
             let token = jwt.generateJWT(user, process.env.SECRET_KEY, process.env.EXPIRE_IN);
-            const { id, username, email, role, avatar, status,
-                major, introduction, salaryPerHour, address} = user;
             return res.status(200).json({
                 results: {
                     object: {
-                        token, id, username, email, role, avatar, status,
-                        major, introduction, salaryPerHour, address
+                        token, 
+                        ...user
                     }
                 }
             });
@@ -141,7 +140,7 @@ router.post('/update', passIfHaveValidToken, (req, res) => {
     const entity = {...req.body};
     const { role } = req.body;
 
-    if (entity.password || entity.numberOfStudent || entity.teachedHour) {
+    if (entity.password || entity.numberOfStudent || entity.teachedHour || entity.money || entity._id) {
         return res.status(400).json({message: 'data không hợp lệ'});
     }
 
@@ -226,6 +225,41 @@ router.post('/forgetPassword', (req, res) => {
                 return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
             });
     });
+});
+
+// Xử lí req update tiền của user
+// POST /user/updateMoney
+router.post('/updateMoney', async (req, res) => {
+    const { checksumToken, timestamp, idUser, money } = req.body;
+    // const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
+
+    // if (!isValid) {
+    //     return res.status(400).json({message: 'checksumToken không hợp lệ'});
+    // }
+
+    try {
+        const user = await User.findOneById(idUser);
+
+        if (!user) {
+            return res.status(400).json({message: 'user không tồn tại'});
+        }
+
+        user.money += money;
+
+        if (user.money < 0) {
+            return res.status(400).json({message: 'Số dư tài khoản không đủ'});
+        }
+
+        await user.save();
+        res.status(200).json({
+            result: {
+                object: {
+                    money: user.money
+                }
+        }});
+    } catch (err) {
+        res.status(500).json({message: err.message});
+    }
 });
 
 module.exports = router;

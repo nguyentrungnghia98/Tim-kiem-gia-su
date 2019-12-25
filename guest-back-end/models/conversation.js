@@ -146,6 +146,22 @@ module.exports = {
     .exec();
   },
 
+  getListMessagesByTwoUser: (userOne, userTwo, page, limit) => {
+    return Conversation.findOne({
+      $or: [
+        {
+          name: `${userOne} ${userTwo}`
+        },
+        {
+          name: `${userTwo} ${userOne}`
+        }
+      ]
+    }).slice('messages', [((page - 1) * limit), limit])
+    .populate('userOne', '-password -contacts -contracts -major -__v')
+    .populate('userTwo', '-password -contacts -contracts -major -__v')
+    .exec();
+  },
+
   setNewMessageIsRead: (idConversation, idUser) => {
     Conversation.updateOne({
       _id: idConversation,

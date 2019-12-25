@@ -69,11 +69,17 @@ module.exports= {
     },
 
     findOneByEmail: (email) => {
-        return User.findOne({email}).populate('major', 'content').exec();
+        return User.findOne({email})
+            .populate('major', 'content')
+            .select('-password -contacts -__v')
+            .exec();
     },
 
     findOneAccountActiveByEmail: (email) => {
-        return User.findOne({email, status: 'active' }).populate('major', 'content').populate().exec();
+        return User.findOne({email, status: 'active' })
+            .populate('major', '-__v')
+            .select('-password -contacts -__v')
+            .exec();
     },
 
     findOneByIdWidthPassword: (id) => {
