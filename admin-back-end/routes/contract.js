@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 
     if(sortBy === undefined || sortBy === ""){
         sortBy = ['pending', 'denied', 'processing', 'processing_complaint',
-        'complainted', 'finished'];
+        'complainted', 'finished', 'complaint_fail'];
     }
 
     Contract.getListContracts(sortBy, limit, limit*page)
@@ -39,6 +39,7 @@ router.get('/', function(req, res, next) {
 router.post('/update', (req, res, next) => {
 
     var entity = req.body;
+    console.log(entity);
 
     Contract.findByIdAndUpdate(entity.id, entity.status)
         .then(succ => {

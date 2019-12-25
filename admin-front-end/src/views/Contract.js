@@ -51,7 +51,8 @@ const ManagerContract = props => {
   }, []);
 
   const setPagination = () => {
-    let totalPage = parseInt(totalContracts / 10 + 1);
+    var tempt = totalContracts % 10 === 0 ? 0: 1;
+    let totalPage = parseInt(totalContracts / 10 + tempt);
     var pages = [];
     if(totalPage > 1){
     for (let i = 0; i < totalPage; i++){
@@ -81,6 +82,8 @@ const ManagerContract = props => {
             return(<span className="text-secondary">Hoàn tất khiếu nại</span>)
         case 'finished':
             return(<span className="text-success">Hoàn tất</span>)
+        case 'complaint_fail':
+          return(<span className="text-dark">Khiếu nại thất bại</span>)
         default:
             break;
     }
@@ -175,6 +178,7 @@ const ManagerContract = props => {
         <option value="processing">Đang diễn ra</option>
         <option value="processing_complaint">Đang khiếu nại</option>
         <option value="complainted">Hoàn tất khiếu nại</option>
+        <option value="complaint_fail">Khiếu nại thất bại</option>
         <option value="finished">Hoàn tất</option>
       </FormSelect>
       <InputGroupAddon type="append">
@@ -243,6 +247,7 @@ const ManagerContract = props => {
         <option value="processing">Đang diễn ra</option>
         <option value="processing_complaint">Đang khiếu nại</option>
         <option value="complainted">Hoàn tất khiếu nại</option>
+        <option value="complaint_fail">Khiếu nại thất bại</option>
         <option value="finished">Hoàn tất</option>
       </FormSelect>
       </ModalBody>
