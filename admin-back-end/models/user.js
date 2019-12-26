@@ -70,9 +70,26 @@ module.exports= {
         });
     },
 
-    findTeacher: () => {
+    countUsers: (role) => {
         return new Promise((resolve, reject) => {
-            User.find({role:1}, ['status','avatar', 'major', 'email','username', 'address','introduction','job','salaryPerHour'],)
+            User.countDocuments({
+                role : role,
+            })
+                .exec((err, succ) => {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(succ);
+                })
+        })
+    },
+
+    findTeacher: (limit, offset) => {
+        return new Promise((resolve, reject) => {
+            User.find({role:1}, ['status','avatar', 'major', 'email','username', 'address','introduction','job','salaryPerHour'],{
+                skip: offset,
+                limit: limit,
+            })
             .populate('major', 'content')
             .exec((err, succ) => {
                 if (err)
@@ -83,9 +100,12 @@ module.exports= {
         });
     },
 
-    findStudent: () => {
+    findStudent: (limit, offset) => {
         return new Promise((resolve, reject) => {
-            User.find({role:0}, ['status','avatar', 'major', 'email','username'])
+            User.find({role:0}, ['status','avatar', 'major', 'email','username'],{
+                skip: offset,
+                limit: limit,
+            })
             .populate('major', 'content')
             .exec((err, succ) => {
                 if (err)

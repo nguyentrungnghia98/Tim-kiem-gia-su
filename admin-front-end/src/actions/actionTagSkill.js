@@ -13,10 +13,11 @@ export const tagSkillFailure = () => {
         type: TAG_SKILL_FAILURE
     };
 }
-export const tagSkillSuccess = (tagskills) => {
+export const tagSkillSuccess = (tagskills, numOfTagSkills) => {
     return {
         type: TAG_SKILL_SUCCESS,
-        tagskills
+        tagskills,
+        numOfTagSkills
     };
 }
 
@@ -28,7 +29,7 @@ export const addTagSkillSuccess = (message, tagskill) => {
     };
 }
 
-export const fetchTagSkill = (token) => {
+export const fetchTagSkill = (token, page) => {
 
     return dispatch => {
   
@@ -36,7 +37,7 @@ export const fetchTagSkill = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('https://server-gia-su.herokuapp.com/tag-skill', {
+        return fetch(`http://localhost:3001/tag-skill?page=${page !== undefined ? page : ''}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -50,7 +51,7 @@ export const fetchTagSkill = (token) => {
             }
         )
         .then(json => {
-            dispatch(tagSkillSuccess(json));
+            dispatch(tagSkillSuccess(json.tagskills, json.numOfTagSkills));
         })
         .catch(err => {
             //console.log(err);
@@ -67,7 +68,7 @@ export const fetchTagSkill = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('https://server-gia-su.herokuapp.com/tag-skill/add', {
+        return fetch('http://localhost:3001/tag-skill/add', {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
@@ -107,7 +108,7 @@ export const fetchDelTagSkill = (token, id) => {
         dispatch(tagSkillRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`https://server-gia-su.herokuapp.com/tag-skill/delete/${id}`, {
+        return fetch(`http://localhost:3001/tag-skill/delete/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -147,7 +148,7 @@ export const updateTagSkillSuccess = (message, id, content) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('https://server-gia-su.herokuapp.com/tag-skill/update', {
+        return fetch('http://localhost:3001/tag-skill/update', {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,

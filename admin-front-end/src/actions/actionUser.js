@@ -28,7 +28,7 @@ export const fetchLogin = (email, password) => {
   
         dispatch(userRequest('Đang đăng nhập... Vui lòng đợi trong giây lát ! '));
 
-        return fetch('https://server-gia-su.herokuapp.com/user/login', {
+        return fetch('http://localhost:3001/user/login', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -63,7 +63,7 @@ export const fetchRegister = (email, password, fullName, role) => {
 
         dispatch(userRequest('Đang tạo tài khoản... Vui lòng đợi trong giây lát ! '));
 
-        return fetch('https://server-gia-su.herokuapp.com/user/register', {
+        return fetch('http://localhost:3001/user/register', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -105,7 +105,7 @@ export const fetchUpdate = (password, repassword, token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('https://server-gia-su.herokuapp.com/profile/update-profile', {
+        return fetch('http://localhost:3001/profile/update-profile', {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
@@ -159,7 +159,7 @@ export const fetchUser = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('https://server-gia-su.herokuapp.com/profile', {
+        return fetch('http://localhost:3001/profile', {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -182,14 +182,15 @@ export const fetchUser = (token) => {
     }
   }
 
-  export const getListUserSuccess = (listUsers) => {
+  export const getListUserSuccess = (listUsers,numOfUsers) => {
     return {
         type: GET_LIST_USER_SUCCESS,
-        listUsers
+        listUsers,
+        numOfUsers
     };
 }
 
-  export const fetchListUser = (token) => {
+  export const fetchListUser = (token, page) => {
 
     return dispatch => {
   
@@ -197,7 +198,7 @@ export const fetchUser = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('https://server-gia-su.herokuapp.com/list-users/teacher', {
+        return fetch(`http://localhost:3001/list-users/teacher?page=${page !== undefined ? page : ''}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -211,7 +212,7 @@ export const fetchUser = (token) => {
             }
         )
         .then(json => {
-            dispatch(getListUserSuccess(json));
+            dispatch(getListUserSuccess(json.users, json.numOfUsers));
         })
         .catch(err => {
             console.log(err);
@@ -220,14 +221,15 @@ export const fetchUser = (token) => {
     }
   }
 
-  export const getListStudentSuccess = (listStudents) => {
+  export const getListStudentSuccess = (listStudents,numOfUsers) => {
     return {
         type: GET_LIST_STUDENT_SUCCESS,
-        listStudents
+        listStudents,
+        numOfUsers
     };
 }
 
-  export const fetchListStudents = (token) => {
+  export const fetchListStudents = (token, page) => {
 
     return dispatch => {
   
@@ -235,7 +237,7 @@ export const fetchUser = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('https://server-gia-su.herokuapp.com/list-users/student', {
+        return fetch(`http://localhost:3001/list-users/student?page=${page !== undefined ? page : ''}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -249,7 +251,7 @@ export const fetchUser = (token) => {
             }
         )
         .then(json => {
-            dispatch(getListStudentSuccess(json));
+            dispatch(getListStudentSuccess(json.users, json.numOfUsers));
         })
         .catch(err => {
             console.log(err);
@@ -283,7 +285,7 @@ export const setStatusTeacherSuccess = (message, id, status) => {
         dispatch(getUserRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`https://server-gia-su.herokuapp.com/list-users/${status}/${id}`, {
+        return fetch(`http://localhost:3001/list-users/${status}/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -326,7 +328,7 @@ export const getUserDetailSuccess = (user) => {
         dispatch(getUserRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`https://server-gia-su.herokuapp.com/list-users/user-detail/${id}`, {
+        return fetch(`http://localhost:3001/list-users/user-detail/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken

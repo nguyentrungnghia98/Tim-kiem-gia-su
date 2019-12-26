@@ -38,6 +38,7 @@ const TagSkill = props => {
   const [content, setContent] = useState("");
   const [id, setId] = useState("");
   const [visibleMess, setVisibleMess] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const {
     message,
@@ -45,7 +46,8 @@ const TagSkill = props => {
     fetchTagSkill,
     fetchAddTagSkill,
     fetchDelTagSkill,
-    fetchUpdateTagSkill
+    fetchUpdateTagSkill,
+    totalTagSkills
   } = props;
 
   const token = localStorage.getItem("token");
@@ -63,6 +65,23 @@ const TagSkill = props => {
   }, []);
   //console.log(tagskills);
 
+  const setPagination = () => {
+    var tempt = totalTagSkills % 10 === 0 ? 0: 1;
+    let totalPage = parseInt(totalTagSkills / 10 + tempt);
+    var pages = [];
+    if(totalPage > 1){
+    for (let i = 0; i < totalPage; i++){
+      pages.push(<Button key={i} type="button" theme="primary" outline className="btn-pagination" disabled={currentPage === i ? true : false} onClick={() => {setCurrentPage(i); fetchTagSkill(token,i)}}>{i+1}</Button>)
+    }}
+    return(<div className="mb-3 create-account">
+      <Button type="button" theme="primary" className="btn-pagination" hidden={totalPage === 1 ? true : false} disabled={currentPage === 0 ? true : false} onClick={() => {setCurrentPage(currentPage-1); fetchTagSkill(token,currentPage -1)}}><i className="material-icons">
+      navigate_before
+      </i></Button>
+      {pages}
+    <Button type="button" theme="primary" className="btn-pagination" hidden={totalPage === 1 ? true : false} disabled={currentPage + 1  === totalPage ? true : false} onClick={() => {setCurrentPage(currentPage+1); fetchTagSkill(token,currentPage+1)}}><i className="material-icons">
+    navigate_next
+    </i></Button></div>)
+  };
   let rowsTagSkill;
 
   if (tagskills !== null) {
@@ -227,7 +246,7 @@ const TagSkill = props => {
           </Card>
         </Col>
       </Row>
-
+      {setPagination()}              
       <Modal
         size="sm"
         open={openModalUp}
@@ -319,7 +338,8 @@ const TagSkill = props => {
 const mapStateToProps = state => {
   return {
     tagskills: state.tagSkillReducer.tagskills,
-    message: state.tagSkillReducer.message
+    message: state.tagSkillReducer.message,
+    totalTagSkills: state.tagSkillReducer.totalTagSkills
   };
 };
 

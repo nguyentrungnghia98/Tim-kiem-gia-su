@@ -6,8 +6,21 @@ const TagSkills = require('../models/tagskills');
 /* GET  TAG SKILLS. */
 router.get('/',function(req, res, next) {
 
-    TagSkills.findAll().then(succ => {
-        res.status(200).json(succ);
+    const limit = 10;
+    var page = req.query.page;
+    
+    if(page === undefined || page === ""){
+        page = 0;
+    }
+
+    TagSkills.findAll(limit, limit*page).then(succ => {
+        TagSkills.countSumTagskills()
+        .then(numOfTagSkills => {
+            res.status(200).json({numOfTagSkills, tagskills : succ});
+        })
+        .catch(err => {
+            res.status(400).json({message: err})
+        })
 
     })
     .catch(err => {

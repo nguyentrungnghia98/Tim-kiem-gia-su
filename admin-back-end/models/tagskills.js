@@ -23,9 +23,27 @@ const TagSkill = mongoose.model('TagSkill', tagSkillSchema);
 
 module.exports = {
 
-    findAll: () => {
+    countSumTagskills: () => {
         return new Promise((resolve, reject) => {
-            TagSkill.find().exec((err, succ) => {
+            TagSkill.countDocuments()
+                .exec((err, succ) => {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(succ);
+                })
+        })
+    },
+
+    findAll: (limit, offset) => {
+        return new Promise((resolve, reject) => {
+            TagSkill.find({},
+                ['_id','content','numOfTeacher'],
+                {
+                    skip: offset,
+                    limit: limit,
+                }
+            ).exec((err, succ) => {
                 if (err)
                     reject(err);
                 else

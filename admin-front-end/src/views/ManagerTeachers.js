@@ -32,8 +32,9 @@ const ManagerUsers = props => {
   const [userID, setUserID] = useState("");
   const [status, setStatus] = useState("");
   const [visibleMess, setVisibleMess] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const { messageTeacher, listUsers, fetchListUser, fetchBlocklUser } = props;
+  const { messageTeacher, listUsers,totalTeachers, fetchListUser, fetchBlocklUser } = props;
 
   const token = localStorage.getItem("token");
 
@@ -53,6 +54,24 @@ const ManagerUsers = props => {
     setUserID(id);
     setStatus(status);
   }
+
+  const setPagination = () => {
+    var tempt = totalTeachers % 10 === 0 ? 0: 1;
+    let totalPage = parseInt(totalTeachers / 10 + tempt);
+    var pages = [];
+    if(totalPage > 1){
+    for (let i = 0; i < totalPage; i++){
+      pages.push(<Button key={i} type="button" theme="primary" outline className="btn-pagination" disabled={currentPage === i ? true : false} onClick={() => {setCurrentPage(i); fetchListUser(token,i)}}>{i+1}</Button>)
+    }}
+    return(<div className="mb-3 create-account">
+      <Button type="button" theme="primary" className="btn-pagination" hidden={totalPage === 1 ? true : false} disabled={currentPage === 0 ? true : false} onClick={() => {setCurrentPage(currentPage-1); fetchListUser(token,currentPage -1)}}><i className="material-icons">
+      navigate_before
+      </i></Button>
+      {pages}
+    <Button type="button" theme="primary" className="btn-pagination" hidden={totalPage === 1 ? true : false} disabled={currentPage + 1  === totalPage ? true : false} onClick={() => {setCurrentPage(currentPage+1); fetchListUser(token,currentPage+1)}}><i className="material-icons">
+    navigate_next
+    </i></Button></div>)
+  };
 
   let rowsUser;
 
@@ -191,6 +210,7 @@ const ManagerUsers = props => {
           </Card>
         </Col>
       </Row>
+      {setPagination()}
       <Modal
         size="sm"
         open={openModal}
@@ -236,7 +256,8 @@ const ManagerUsers = props => {
 const mapStateToProps = state => {
   return {
     messageTeacher: state.authReducer.messageTeacher,
-    listUsers: state.authReducer.listUsers
+    listUsers: state.authReducer.listUsers,
+    totalTeachers: state.authReducer.totalTeachers
   };
 };
 

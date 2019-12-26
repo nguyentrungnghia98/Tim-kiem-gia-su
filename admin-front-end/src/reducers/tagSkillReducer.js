@@ -3,7 +3,8 @@ import {TAG_SKILL_FAILURE,TAG_SKILL_SUCCESS, TAG_SKILL_REQUEST, ADD_TAG_SKILL_SU
 const initalState = {
     isFetching: false,
     message: null,
-    tagskills: null
+    tagskills: null,
+    totalTagSkills: 0
 }
 const tagSkillReducer = (state = initalState, action) => {
     switch (action.type) {
@@ -22,7 +23,8 @@ const tagSkillReducer = (state = initalState, action) => {
             return {
                 ...state,
                 isFetching: false,
-                tagskills: action.tagskills
+                tagskills: action.tagskills,
+                totalTagSkills : action.numOfTagSkills
             }
 
         case ADD_TAG_SKILL_SUCCESS:

@@ -40,7 +40,10 @@ const ContractSchema = new Schema({
     createTime: {
         type: Date,
         required: true
-    }
+    },
+    complaintContent: {
+        type: String
+      },
 });
 
 const Contract = mongoose.model('Contracts', ContractSchema);
@@ -67,7 +70,7 @@ module.exports = {
             Contract.find({
                 status: status
             },
-            ['_id','status','name','teacher','student','feePerHour','numberOfHour','describe','createTime','totalPrice'],
+            ['_id','status','name','teacher','student','feePerHour','numberOfHour','describe','createTime','totalPrice', 'complaintContent'],
             {
                 skip: offset,
                 limit: limit,

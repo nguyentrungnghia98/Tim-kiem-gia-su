@@ -28,7 +28,7 @@ export const fetchIncomeRequest = () => {
         dispatch(fetchIncomeRequest());
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('https://server-gia-su.herokuapp.com/receipt/getListByTimeScope', {
+        return fetch('http://localhost:3001/receipt/getListByTimeScope', {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
