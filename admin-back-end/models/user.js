@@ -2,40 +2,58 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = Schema({
-    username: {
-        type: String,
-        minlength: 1,
-        maxlength: 70
-    },
-    email: {
-        type: String,
-        required: true,
-        maxlength: 60
-    },
-    password: { 
-        type: String
-    },
-    avatar: { 
-        type: String,
-        default: 'img/user.png'
-    },
-    role: { 
-        type: Number,
-        default: 0
-    },
-    status: { 
-        type: String,
-        default: 'active'
-    },
-    salaryPerHour: {type: Number},
-    major: [{
-        type: Schema.Types.ObjectId,
-        ref: 'TagSkill'
-    }],
-    job: { type: String },
-    introduction: { type: String },
-    address: { type: String }
-});
+  username: {
+      type: String,
+      minlength: 1,
+      maxlength: 70
+  },
+  email: {
+      type: String,
+      required: true,
+      maxlength: 60
+  },
+  password: { 
+      type: String
+  },
+  avatar: { 
+      type: String,
+      default: 'img/user.png'
+  },
+  role: { 
+      type: Number,
+      default: 0
+  },
+  status: { 
+      type: String,
+      default: 'active'
+  },
+  isOnline: Boolean,
+  lastOnline: Date,
+  salaryPerHour: {
+      type: Number,
+      required: true,
+      default: 0
+  },
+  major: [{
+      type: Schema.Types.ObjectId,
+      ref: 'TagSkill'
+  }],
+  job: { type: String },
+  introduction: { type: String },
+  address: { type: String },
+  job: {type: String},
+  numberOfStudent: Number,
+  teachedHour: Number,
+  money: {
+      type: Number,
+      required: true,
+      default: 0
+  }
+}, { collation: {
+  locale: 'vi',
+  strength: 2,
+  caseLevel: false
+}});
 
 const User = mongoose.model('User', userSchema);
 
@@ -91,7 +109,8 @@ module.exports= {
     },
 
     updateOne: (conditionObject, properies) => {
-        return User.updateOne(conditionObject, {$set: properies}).exec();
+        console.log(conditionObject, properies)
+        return User.updateOne(conditionObject, properies).exec();
     },
 
     deleteOne: (conditionObject) => {
