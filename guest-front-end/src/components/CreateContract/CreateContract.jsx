@@ -110,6 +110,7 @@ const CreateContract = (props) => {
       return
     }
     //history.push(`/contract`);
+    
     const data = {
       tokenId: token.token.id,
       name,

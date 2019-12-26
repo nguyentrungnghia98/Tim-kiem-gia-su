@@ -22,6 +22,14 @@ const ContractSchema = new Schema({
       type: String,
       maxlength: 500,
   },
+  reviewRate: {type: Number, default:0},
+  reviewContent: {
+      type: String,
+      maxlength: 500,
+  },
+  reviewAt: {
+    type: Date,
+  },
   student: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -38,6 +46,9 @@ const ContractSchema = new Schema({
         'complainted', 'finished'],
       required: true,
       default: 'pending'
+  },
+  complaintContent: {
+    type: String
   },
   createTime: {
       type: Date,
@@ -69,7 +80,7 @@ module.exports = {
     getOneById: (id) => {
         return Contract.findOne({_id: id})
             .populate('student', '-password -contracts -contacts -major -__v')
-            .populate('teacher', '-password -contracts -contacts -major -__v')
+            .populate('teacher', '-password -contracts -contacts -__v')
             .exec();
     },
 
@@ -97,7 +108,7 @@ module.exports = {
                 },
                 {
                     path: 'teacher',
-                    select: '-password -contacts -contracts -major -__v'
+                    select: '-password -contacts -contracts -__v'
                 }
             ]
         }

@@ -6,19 +6,19 @@ import { DefaultLayout } from "./layouts";
 import EmptyLayout from "./layouts/Empty";
 
 // Route Views
-import BlogOverview from "./views/BlogOverview";
-import UserProfileLite from "./views/UserProfileLite";
-import AddNewPost from "./views/AddNewPost";
 import Errors from "./views/Errors";
-import ComponentsOverview from "./views/ComponentsOverview";
-import Tables from "./views/Tables";
-import BlogPosts from "./views/BlogPosts";
 import Login from "./containers/LoginContainer";
 import CreateNewAccount from "./containers/CreateUserContainer";
 import UserProfile from "./views/UserProfile";
 import TagSkill from "./views/TagSkill";
-import ManagerUsers from "./views/ManagerUsers";
+import ManagerUsers from "./views/ManagerTeachers";
 import ManagerStudents from "./views/ManagerStudents";
+import UserDetail from "./views/UserDetail";
+import Contract from "./views/Contract";
+import Complaint from "./views/Complaint";
+import IncomeOverview from "./views/IncomeOverview";
+import TopTeacherIncome from "./views/TopTeacherIncome";
+import TopSkillIncome from "./views/TopSkillIncome";
 
 export default [
   {
@@ -48,7 +48,7 @@ export default [
     component: TagSkill
   },
   {
-    path: "/manager-user",
+    path: "/manager-teacher",
     layout: DefaultLayout,
     component: ManagerUsers
   },
@@ -58,34 +58,34 @@ export default [
     component: ManagerStudents
   },
   {
-    path: "/blog-overview",
+    path: "/user-detail/:id",
     layout: DefaultLayout,
-    component: BlogOverview
+    component: UserDetail
   },
   {
-    path: "/user-profile-lite",
+    path: "/manager-contract",
     layout: DefaultLayout,
-    component: UserProfileLite
+    component: Contract
   },
   {
-    path: "/add-new-post",
+    path: "/manager-complaint",
     layout: DefaultLayout,
-    component: AddNewPost
+    component: Complaint
   },
   {
-    path: "/components-overview",
+    path: "/income-overview",
     layout: DefaultLayout,
-    component: ComponentsOverview
+    component: IncomeOverview
   },
   {
-    path: "/tables",
+    path: "/top-teacher-income",
     layout: DefaultLayout,
-    component: Tables
+    component: TopTeacherIncome
   },
   {
-    path: "/blog-posts",
+    path: "/top-skill-income",
     layout: DefaultLayout,
-    component: BlogPosts
+    component: TopSkillIncome
   },
   {
 

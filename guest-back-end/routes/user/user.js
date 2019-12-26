@@ -60,7 +60,7 @@ router.post('/login', (req, res) => {
                 results: {
                     object: {
                         token, 
-                        ...user
+                        ...user['_doc']
                     }
                 }
             });
@@ -102,10 +102,11 @@ router.post('/loginSocial', (req, res) => {
 // Xử lí thay đổi mật khẩu
 // POST /user/change-password
 router.post('/changePassword', passIfHaveValidToken, (req, res) => {
-    User.findOneById({_id: req.userInfo.id})
+    User.findOneByIdWidthPassword({_id: req.userInfo.id})
         .then(user => {
             bcrypt.compare(req.body.oldPassword, user.password, (err, result) => {
                 if (err) {
+                  console.log(err)
                     return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
                 } 
 
@@ -127,7 +128,8 @@ router.post('/changePassword', passIfHaveValidToken, (req, res) => {
                         });
                     });
             });
-        }).catch(() => {
+        }).catch((err) => {
+            console.log(err)
             return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
         });
 });
@@ -242,7 +244,7 @@ router.post('/updateMoney', async (req, res) => {
             return res.status(400).json({message: 'user không tồn tại'});
         }
 
-        user.money += money;
+        user.money += Number.parseInt(money);
 
         if (user.money < 0) {
             return res.status(400).json({message: 'Số dư tài khoản không đủ'});

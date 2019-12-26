@@ -27,6 +27,12 @@ class NavBar extends Component {
       if (!location.pathname.includes('/search')) {
         this.setState({ search: '' });
       }
+
+      if(location.pathname.includes('/messages')){
+        document.getElementsByTagName("META")[1].content="width=1280";
+      }else{
+        document.getElementsByTagName("META")[1].content="width=device-width, initial-scale=1";
+      }
     });
   }
 

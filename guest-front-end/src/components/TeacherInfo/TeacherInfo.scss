@@ -102,7 +102,9 @@
       border-bottom: 1px solid gray;
       display: flex;
       justify-content: space-between;
+      
       button{
+        min-width: 105px;
         background: white;
         box-shadow: 0 2px 8px #bfbfbf;
         border: none;
@@ -134,5 +136,36 @@
       }
     }
     
+  }
+}
+
+@media (max-width: 650px){
+  .teacher-info-container{
+    padding-left:4%;
+    padding-right:4%;
+  }
+  .teacher-info-container .statistic div{
+    flex: 0 0 30%;
+    max-width: 30%;
+
+    margin-left: 8px;
+    margin-right: 0;
+    p{
+      font-size: 16px;
+    }
+    span{
+      font-size: 13px;
+    }
+  }
+  .history--header  h5{
+    font-size: 16px;
+  }
+  .teacher-info-container .history .history--body .review .review-content{
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .teacher-info-container .history .history--body .price{
+    flex: 0 0 100%;
+    max-width: 100%;
   }
 }

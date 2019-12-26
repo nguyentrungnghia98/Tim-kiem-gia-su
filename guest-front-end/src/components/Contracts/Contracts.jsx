@@ -7,6 +7,8 @@ import SelectOption from '../shared/SelectOption/SelectOption';
 import ReactPaginate from 'react-paginate';
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
+import {openAlertWarning} from '../../actions/alert';
+import {openComplainContractModal} from '../../modals/ComplainContract/ComplainContractAction';
 
 const arrSortOption = [
   { text: 'Ngày tạo mới nhất', code: 'createTime_-1' },
@@ -39,8 +41,9 @@ const Contracts = (props) => {
   let processing = false;
 
   useEffect(() => {
-    setSelectedStatusOption(initStatusOption);
+    console.log('change path')
     setPage(1);
+    setSelectedStatusOption(initStatusOption);
     //reload();
   }, [path])
 
@@ -85,20 +88,22 @@ const Contracts = (props) => {
     }
   }
 
-  async function updateContract(e,status, id){
-    e.preventDefault();
-    e.stopPropagation();
-    
+  async function callApiUpdateContract(status, id){
     if(processing) return;
-    const data = {id, status};
-    
+    let data = {id, status};
+    if(status === 'finished'){
+      const contract = contracts.find(el => el._id === id);
+      if(!contract) return Contract.alertError('id not found');
+      const {student, teacher, feePerHour, numberOfHour} = contract;
+      data = { ...data, idStudent: student._id, idTeacher: teacher._id, skill: teacher.major, feePerHour, numberOfHour }
+    }
     try {
       processing = true;
 
       const response = await Contract.update(data);
       
       reload();
-
+      Contract.alert.success("Cập nhật thành công.");
       processing = false;
     } catch (error) {
       console.log('err', error);
@@ -106,6 +111,39 @@ const Contracts = (props) => {
       //setTeacher(null)
       Contract.alertError(error);
     }
+  }
+
+  function onAcceptAlert(id, result){
+    console.log(arguments, result, id)
+    if (result) {
+      callApiUpdateContract('finished', id)
+    }
+  }
+
+
+
+  async function updateContract(e,status, id){
+    e.preventDefault();
+    e.stopPropagation();
+
+    switch(status){
+      case 'processing_complaint':
+        props.openComplainContractModal(id, reload);
+        break;
+      case 'finished':
+        props.openAlertWarning(
+          'Bạn có chắc chắn',
+          'Sau kết thúc hợp đồng giáo viên sẽ nhận được tiền như thỏa thuận. Bạn sẽ không thể khiếu nại được nữa.',
+          'Ok',
+          onAcceptAlert.bind(this,id)
+        );
+        break;
+      default:
+        callApiUpdateContract(status,id)
+        break;
+    }
+    
+
   }
 
   function setSortOption(i) {
@@ -136,6 +174,7 @@ const Contracts = (props) => {
           return (
             <>
               <button onClick={e => updateContract(e,'processing_complaint',id)} className="btn btn-danger">Khiếu nại</button>
+              {role === 0 && <button onClick={e => updateContract(e,'finished',id)} className="btn btn-success ml-3">Hoàn thành</button>}
             </>
           )
       default:
@@ -185,11 +224,11 @@ const Contracts = (props) => {
                   <div className="contract-info w-100">
                     <Link to={`/${userRole}/${user._id}`} className="no-style-link">
                     <div className="row ">
-                      <div className="col-8 d-flex text-primary align-items-center">
+                      <div className="col-7 d-flex text-primary align-items-center">
                         <h5>{user.username}</h5>
                         <small className="ml-3"> - {user.job || 'Không rõ'}</small>
                       </div>
-                      <div className="col-4 text-right">                      
+                      <div className="col-5 text-right">                      
                       {renderButtonActions(status, _id)}
                       </div>
                     </div>
@@ -198,13 +237,13 @@ const Contracts = (props) => {
                     <h5 className="mb-2 mt-2">{name || 'Không rõ'}</h5>
                     <div className="row">
                       <div className="col-4">
-                        Giá tiền: <b> {converCurrency(feePerHour)} / hr</b>
+                        Giá tiền: <b> {converCurrency(feePerHour)} / h</b>
                       </div>
                       <div className="col-4">
-                        Thời gian: <b> {converCurrency(numberOfHour)} / hr</b>
+                        Thời gian: <b> {converCurrency(numberOfHour)}</b>
                       </div>
                       <div className="col-4">
-                        Tổng tiền: <b> {converCurrency(numberOfHour*feePerHour)} / hr</b>
+                        Tổng tiền: <b> {converCurrency(numberOfHour*feePerHour)}</b>
                       </div>
                     </div>
 
@@ -212,7 +251,7 @@ const Contracts = (props) => {
                       <span className="mr-2">Trạng thái: </span> {renderStatus(status)}
                     </div>
 
-                    <div className="d-flex mb-2">
+                    <div className="d-flex mb-2 contract-description">
                     <span className="mr-2">Mô tả: </span> 
                     <span className="description">
                       {describe}
@@ -299,5 +338,8 @@ const mapStateToProps = (state) => {
 
 const _withRouter = withRouter(Contracts);
 export default connect(
-  mapStateToProps
+  mapStateToProps,{
+    openAlertWarning,
+    openComplainContractModal
+  }
 )(_withRouter);

@@ -6,11 +6,15 @@ import { TextField, TextareaAutosize } from '@material-ui/core';
 import { converCurrency } from '../../utils/pipe';
 import StarRatings from 'react-star-ratings';
 import { connect } from 'react-redux';
+import {openAlertWarning} from '../../actions/alert';
+
+import {openComplainContractModal} from '../../modals/ComplainContract/ComplainContractAction';
 
 const DetailContract = (props) => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [processingReview, setProcessingReview] = useState(false)
   const [reviewContent, setReviewContent] = useState('');
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
   const [contract, setContract] = useState();
   const { teacher, student, feePerHour,  numberOfHour, describe, status } = contract || {};
   let processing = false;
@@ -27,6 +31,8 @@ const DetailContract = (props) => {
       setLoading(true);
       const response = await Contract.getItem(id);
       setContract(response);
+      setRating(response.reviewRate);
+      setReviewContent(response.reviewContent); 
       setLoading(false);
     } catch (error) {
       console.log('err', error);
@@ -35,11 +41,13 @@ const DetailContract = (props) => {
     }
   }
 
-  async function updateContract(status){
-    
+  async function callApiUpdateContract(status){
     if(processing) return;
-    const data = {id: contract._id, status};
-    
+    let data = {id: contract._id, status};
+    if(status === 'finished'){
+      const {student, teacher, feePerHour, numberOfHour} = contract;
+      data = { ...data, idStudent: student._id, idTeacher: teacher._id, skill: teacher.major, feePerHour, numberOfHour }
+    }
     try {
       processing = true;
 
@@ -48,6 +56,7 @@ const DetailContract = (props) => {
       reload();
 
       processing = false;
+      Contract.alert.success("Cập nhật thành công");
     } catch (error) {
       console.log('err', error);
       processing = false;
@@ -56,6 +65,56 @@ const DetailContract = (props) => {
     }
   }
 
+
+  function onAcceptAlert(result){
+    if (result) {
+      callApiUpdateContract('finished')
+    }
+  }
+
+  function updateContract(status){
+    switch(status){
+      case 'processing_complaint':
+        props.openComplainContractModal(contract._id, reload);
+        break;
+      case 'finished':
+        props.openAlertWarning(
+          'Bạn có chắc chắn',
+          'Sau kết thúc hợp đồng giáo viên sẽ nhận được tiền như thỏa thuận. Bạn sẽ không thể khiếu nại được nữa.',
+          'Ok',
+          onAcceptAlert
+        );
+        break;
+      case 'denied':
+        callApiUpdateContract('denied')
+        break;
+    }
+    
+  }
+
+  async function updateReview(event){
+    event.preventDefault();
+    
+    try {
+      setProcessingReview(true);
+
+      const response = await Contract.update({
+        id: contract._id, 
+        reviewRate: rating,
+        reviewContent,
+        reviewAt: new Date()
+      });
+      
+
+      setProcessingReview(false);
+      Contract.alert.success("Cập nhật thành công");
+    } catch (error) {
+      console.log('err', error);
+      setProcessingReview(false);
+      //setTeacher(null)
+      Contract.alertError(error);
+    }
+  }
 
 
 
@@ -171,14 +230,7 @@ const DetailContract = (props) => {
                 required
               />
             </div>
-            <div className="form-field">
-              <label className="text-label">
-                Mô tả công việc
-                  </label>
-              <div className="text-warning">
-                Chúng tôi đang trong giai đoạn thử nghiệm, bạn có thể bỏ thông tin này
-                  </div>
-            </div>
+            
 
           </div>
         </div>
@@ -196,8 +248,8 @@ const DetailContract = (props) => {
           </div>
 
           <div className="custom-card--body">
-            <div className="form-field">
-              <div className="d-flex mb-4 align-items-center">
+            <form onSubmit={updateReview} className="form-field">
+              <div className="d-flex mb-4 align-items-center review-container">
                 <p className="mr-4 my-0">Đánh giá của bạn về chất lượng giảng dạy của gia sư:</p>
                 <StarRatings
                   starRatedColor="#ffde23"
@@ -221,10 +273,10 @@ const DetailContract = (props) => {
                 required
               />
 
-              <button className="btn btn-primary mt-4 w-30 ml-auto">
+              <button disabled={processingReview} type="submit" className="btn btn-primary mt-4 w-30 ml-auto">
                 Đánh giá
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -283,6 +335,16 @@ const DetailContract = (props) => {
                     Học sinh đã khiếu nại.
                   </span>
                   <span className="text-danger text-center">Đang trong quá trình giải quyết</span>
+
+                  <h5 className="mt-4">Nội dung khiếu nại</h5>
+                  <TextareaAutosize
+                    variant="outlined"
+                    rows="4"
+                    className='textarea-custom mt-2'
+                    value={contract.complaintContent || "Không rõ"}
+                    readOnly                
+                />
+               
                 </div>
               </div>
             </div>
@@ -298,6 +360,14 @@ const DetailContract = (props) => {
                   <span className="text-success text-center mt-3">
                     Học sinh khiếu nại thành công
                   </span>
+                  <h5 className="mt-4">Nội dung khiếu nại</h5>
+                  <TextareaAutosize
+                    variant="outlined"
+                    rows="4"
+                    className='textarea-custom mt-2'
+                    value={contract.complaintContent || "Không rõ"}
+                    readOnly                
+                />
                 </div>
               </div>
             </div>
@@ -332,7 +402,7 @@ const DetailContract = (props) => {
             {renderContractReview()}
           </div>
           <div className="col-12 col-lg-3">
-            <div className="mt-3">
+            <div className="mt-3 actions-contract">
               {renderActionContract()}
             </div>
 
@@ -340,7 +410,6 @@ const DetailContract = (props) => {
         </div>
 
       </div>
-
     </div>
   )
 }
@@ -354,5 +423,8 @@ const mapStateToProps = (state) => {
 
 const _withRouter = withRouter(DetailContract);
 export default connect(
-  mapStateToProps
+  mapStateToProps, {
+    openAlertWarning,
+    openComplainContractModal
+  }
 )(_withRouter);

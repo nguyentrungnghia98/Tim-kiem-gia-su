@@ -1,5 +1,5 @@
 import {Api} from './api';
-
+import checksum from '../utils/checksumToken';
 class Contract extends Api{
   constructor(){
     super();
@@ -7,6 +7,8 @@ class Contract extends Api{
   }
 
   async create(data){
+    const timestamp = new Date().getTime();
+    data = {...data, timestamp, checksumToken: checksum.genarateToken(timestamp)}
     const setting = {
       method: 'POST',
       url: this.getUrl('create'),
@@ -17,7 +19,8 @@ class Contract extends Api{
 
     return response.data.results.object;
   }
-
+  
+  
   async  getList(data){
     const setting = {
       method: 'POST',
@@ -31,6 +34,7 @@ class Contract extends Api{
   }
 
   async  getListReview(data){
+    
     const setting = {
       method: 'POST',
       url: this.getUrl('getListReview'),
@@ -43,6 +47,8 @@ class Contract extends Api{
   }
 
   async  update(data){
+    const timestamp = new Date().getTime();
+    data = {...data, timestamp, checksumToken: checksum.genarateToken(timestamp)}
     const setting = {
       method: 'POST',
       url: this.getUrl('update'),
@@ -52,7 +58,7 @@ class Contract extends Api{
     const response = await this.exec(setting);
 
     return response.data.results.object;
-  }
+  } 
 }
 
 export default Contract;

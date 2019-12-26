@@ -5,6 +5,7 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class LineChart extends Component {
 	render() {
+    const {data} = this.props;
 		const options = {
 			animationEnabled: true,
 			exportEnabled: true,
@@ -22,27 +23,8 @@ class LineChart extends Component {
       },
 			data: [{
 				type: "line",
-        toolTipContent: "Ngày: {x}: {y}đ",  
-        dataPoints: [
-          { x: new Date(2019,12, 0), y: 100000 },
-          { x: new Date(2019,12, 1), y: 0 },
-          { x: new Date(2019,12, 2), y: 0 },
-          { x: new Date(2019,12, 3), y: 0 },
-          { x: new Date(2019,12, 4), y: 1000000 },
-          { x: new Date(2019,12, 5), y: 50000 },
-          { x: new Date(2019,12, 6), y: 0 },
-          { x: new Date(2019,12, 7), y: 0 },
-          { x: new Date(2019,12, 8), y: 0 },
-          { x: new Date(2019,12, 9), y: 500000 },
-          { x: new Date(2019,12, 10), y: 0 },
-          { x: new Date(2019,12, 11), y: 100000 },
-          { x: new Date(2019,12, 12), y: 50000 },
-          { x: new Date(2019,12, 13), y: 0 },
-          { x: new Date(2019,12, 14), y: 0 },
-          { x: new Date(2019,12, 15), y:0 },
-          { x: new Date(2019,12, 16), y:0 },
-          { x: new Date(2019,12, 17), y:90000 }
-        ]
+        toolTipContent: "Ngày {x}: {y}đ",  
+        dataPoints: data
 			}]
 		}
 		return (
