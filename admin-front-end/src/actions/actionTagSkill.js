@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import {TAG_SKILL_FAILURE, TAG_SKILL_SUCCESS, TAG_SKILL_REQUEST, ADD_TAG_SKILL_SUCCESS, DELETE_TAG_SKILL_SUCCESS, UPDATE_TAG_SKILL_SUCCESS} from '../constants/actionTypes';
-
+import Config from '../config';
 
 export const tagSkillRequest = () => {
     return {
@@ -37,7 +37,7 @@ export const fetchTagSkill = (token, page) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`http://localhost:3001/tag-skill?page=${page !== undefined ? page : ''}`, {
+        return fetch(`${Config.url}/tag-skill?page=${page !== undefined ? page : ''}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -68,7 +68,7 @@ export const fetchTagSkill = (token, page) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3001/tag-skill/add', {
+        return fetch(`${Config.url}/tag-skill/add`, {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
@@ -108,7 +108,7 @@ export const fetchDelTagSkill = (token, id) => {
         dispatch(tagSkillRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`http://localhost:3001/tag-skill/delete/${id}`, {
+        return fetch(`${Config.url}/tag-skill/delete/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -148,7 +148,7 @@ export const updateTagSkillSuccess = (message, id, content) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3001/tag-skill/update', {
+        return fetch(`${Config.url}/tag-skill/update`, {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,

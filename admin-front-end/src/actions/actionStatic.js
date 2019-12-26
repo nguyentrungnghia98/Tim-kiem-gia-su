@@ -1,6 +1,7 @@
 
 import fetch from 'cross-fetch';
 import {FETCH_INCOME_REQUEST,FETCH_INCOME_FAILURE,FETCH_INCOME_SUCCESS} from '../constants/actionTypes';
+import Config from '../config';
 
 export const fetchIncomeFailure = (message) => {
     return {
@@ -28,7 +29,7 @@ export const fetchIncomeRequest = () => {
         dispatch(fetchIncomeRequest());
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3001/receipt/getListByTimeScope', {
+        return fetch(`${Config.url}/receipt/getListByTimeScope`, {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,

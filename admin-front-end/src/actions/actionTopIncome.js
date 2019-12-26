@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import {FETCH_TOPINCOME_REQUEST,FETCH_TOPINCOME_FAILURE,FETCH_TOP_TEACHER_INCOME_SUCCESS,FETCH_TOP_SKILL_INCOME_SUCCESS} from '../constants/actionTypes';
-
+import Config from '../config';
 export const fetchTopIncomeFailure = (message) => {
     return {
         type: FETCH_TOPINCOME_FAILURE,
@@ -34,7 +34,7 @@ export const fetchTopIncomeRequest = () => {
         dispatch(fetchTopIncomeRequest());
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`http://localhost:3001/receipt/getTop${typeGet}Income`, {
+        return fetch(`${Config.url}/receipt/getTop${typeGet}Income`, {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,

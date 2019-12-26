@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import {USER_REQUEST, USER_FAILURE, USER_SUCCESS, LOG_OUT, GET_USER_REQUEST, GET_USER_FAILURE, GET_USER_SUCCESS, UPDATE_USER, GET_LIST_USER_SUCCESS, GET_LIST_STUDENT_SUCCESS, SET_STATUS_STUDENT_SUCCESS,SET_STATUS_TEACHER_SUCCESS, GET_USER_DETAIL_SUCCESS} from '../constants/actionTypes'
-
+import Config from '../config';
 export const userRequest = (message) => {
     return {
         type: USER_REQUEST,
@@ -28,7 +28,7 @@ export const fetchLogin = (email, password) => {
   
         dispatch(userRequest('Đang đăng nhập... Vui lòng đợi trong giây lát ! '));
 
-        return fetch('http://localhost:3001/user/login', {
+        return fetch(`${Config.url}/user/login`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -63,7 +63,7 @@ export const fetchRegister = (email, password, fullName, role) => {
 
         dispatch(userRequest('Đang tạo tài khoản... Vui lòng đợi trong giây lát ! '));
 
-        return fetch('http://localhost:3001/user/register', {
+        return fetch(`${Config.url}/user/register`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -105,7 +105,7 @@ export const fetchUpdate = (password, repassword, token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3001/profile/update-profile', {
+        return fetch(`${Config.url}/profile/update-profile`, {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
@@ -159,7 +159,7 @@ export const fetchUser = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3001/profile', {
+        return fetch(`${Config.url}/profile`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -198,7 +198,7 @@ export const fetchUser = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`http://localhost:3001/list-users/teacher?page=${page !== undefined ? page : ''}`, {
+        return fetch(`${Config.url}/list-users/teacher?page=${page !== undefined ? page : ''}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -237,7 +237,7 @@ export const fetchUser = (token) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`http://localhost:3001/list-users/student?page=${page !== undefined ? page : ''}`, {
+        return fetch(`${Config.url}/list-users/student?page=${page !== undefined ? page : ''}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -285,7 +285,7 @@ export const setStatusTeacherSuccess = (message, id, status) => {
         dispatch(getUserRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`http://localhost:3001/list-users/${status}/${id}`, {
+        return fetch(`${Config.url}/list-users/${status}/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -328,7 +328,7 @@ export const getUserDetailSuccess = (user) => {
         dispatch(getUserRequest());
 
         const bearerToken = `Bearer ${  token}`;
-        return fetch(`http://localhost:3001/list-users/user-detail/${id}`, {
+        return fetch(`${Config.url}/list-users/user-detail/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken

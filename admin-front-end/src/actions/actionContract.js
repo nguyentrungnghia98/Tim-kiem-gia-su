@@ -1,6 +1,7 @@
 import fetch from 'cross-fetch';
 import {FETCH_MESSAGE_SUCCESS,FETCH_CONTRACT_REQUEST,FETCH_CONTRACT_SUCCESS, FETCH_CONTRACT_FAILURE, UPDATE_CONTRACT_SUCCESS,FETCH_COMPLAINT_SUCCESS, UPDATE_COMPLAINT_SUCCESS} from '../constants/actionTypes';
 
+import Config from '../config';
 
 export const fetchContractRequest = () => {
     return {
@@ -30,7 +31,7 @@ export const fetchContract = (token, page, sortBy) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`http://localhost:3001/contracts?page=${page !== undefined ? page : ''}&sortBy=${sortBy !== undefined ? sortBy : ''}`, {
+        return fetch(`${Config.url}/contracts?page=${page !== undefined ? page : ''}&sortBy=${sortBy !== undefined ? sortBy : ''}`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -76,7 +77,7 @@ export const updateComplaintSuccess = (message, contractID, status) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3001/contracts/update', {
+        return fetch(`${Config.url}/contracts/update`, {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
@@ -122,7 +123,7 @@ export const fetchComplaint = (token, page) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`http://localhost:3001/contracts?page=${page !== undefined ? page : ''}&sortBy=processing_complaint`, {
+        return fetch(`${Config.url}/contracts?page=${page !== undefined ? page : ''}&sortBy=processing_complaint`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
@@ -155,7 +156,7 @@ export const fetchComplaint = (token, page) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch('http://localhost:3001/conversation/getListMessagesByTwoUser', {
+        return fetch(`${Config.url}/conversation/getListMessagesByTwoUser`, {
             method: 'POST',
             headers: {
                 'Authorization': bearerToken,
