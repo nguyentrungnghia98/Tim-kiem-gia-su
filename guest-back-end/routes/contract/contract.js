@@ -94,7 +94,17 @@ router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
                     skill: skill,
                     amount: feePerHour * numberOfHour
                 })]);
-        } 
+        } else if (status != null && status === 'denied') {
+            await Promise.all([Contract.updateById(req.body.id, req.body),
+                User.updateOne({
+                    _id: idStudent,
+                    role: 0
+                }, {
+                    $inc: {
+                        money: (numberOfHour * feePerHour)
+                    }
+                })]);
+        }
         else {
             await Contract.updateById(id, req.body);
         }
