@@ -8,6 +8,8 @@ const initalState = {
     messageStudent: null,
     messageTeacher: null,
     userDetail: undefined,
+    totalTeachers: 0,
+    totalStudents: 0
 }
 const authReducer = (state = initalState, action) => {
     switch (action.type) {
@@ -33,13 +35,15 @@ const authReducer = (state = initalState, action) => {
             return {
                 ...state,
                 isFetching: false,
-                listUsers: action.listUsers
+                listUsers: action.listUsers,
+                totalTeachers: action.numOfUsers
             }
         case GET_LIST_STUDENT_SUCCESS:
             return {
                 ...state,
                 isFetching: false,
-                listStudents: action.listStudents
+                listStudents: action.listStudents,
+                totalStudents: action.numOfUsers
             }
             
         case UPDATE_USER:

@@ -114,8 +114,8 @@ const CreateNewAccount = (props) => {
                                 <label htmlFor="feInputState">Vai trò</label>
                                 <FormSelect required id="feInputState" onChange={(e) => setRole(e.target.value)}>
                                     <option hidden>Chọn...</option>
-                                    <option>Admin</option>
-                                    <option>Quản trị viên</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="moderater">Quản trị viên</option>
                                 </FormSelect>
                             </FormGroup>    
                                

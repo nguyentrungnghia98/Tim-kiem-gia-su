@@ -28,8 +28,8 @@ const ChartOverview = props => {
       .format()
   );
   const [toDate, setToDate] = useState(moment().format());
-  const [dates, setDates] = useState([0]);
-  const [counts, setCounts] = useState([0]);
+  const [dates, setDates] = useState([]);
+  const [counts, setCounts] = useState([]);
   const [total, setTotal] = useState(0);
   const [valueSelect, setValueSelect] = useState("week");
   const [numOfValue, setNumOfValue] = useState(0);
@@ -198,10 +198,10 @@ const ChartOverview = props => {
       options: chartOptions
     });
 
-    // They can still be triggered on hover.
-    const buoMeta = window.bar.getDatasetMeta(0);
-    buoMeta.data[0]._model.radius = 0;
-    buoMeta.data[chartDataTest.datasets[0].data.length - 1]._model.radius = 0;
+    // // They can still be triggered on hover.
+    // const buoMeta = window.bar.getDatasetMeta(0);
+    // buoMeta.data[0]._model.radius = 0;
+    // buoMeta.data[chartDataTest.datasets[0].data.length - 1]._model.radius = 0;
 
     // Render the chart.
     window.bar.update();

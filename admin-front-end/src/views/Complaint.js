@@ -77,7 +77,7 @@ const ManagerComplaint = props => {
   const asia = tz(require('timezone/Asia'))
 
   let rowComplaints;
-
+  console.log(listComplaints)
   if (listComplaints !== null) {
     rowComplaints = listComplaints.map((contract, index) => {
       return (
@@ -104,7 +104,7 @@ const ManagerComplaint = props => {
           <td>
             <center>{asia(contract.createTime, '%d/%m/%Y %H:%M', 'Asia/Ho_Chi_Minh')}</center>
           </td>
-          <td>text</td>
+          <td>{contract.complaintContent}</td>
           <td>
             <center>
                 <Button

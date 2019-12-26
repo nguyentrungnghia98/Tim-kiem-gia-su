@@ -18,8 +18,22 @@ router.get('/',function(req, res, next) {
 
 router.get('/teacher',function(req, res, next) {
 
-    User.findTeacher().then(succ => {
-        res.status(200).json(succ);
+    const limit = 10;
+    var page = req.query.page;
+    
+    if(page === undefined || page === ""){
+        page = 0;
+    }
+
+
+    User.findTeacher(limit, limit*page).then(succ => {
+        User.countUsers(1)
+        .then(numOfUsers => {
+            res.status(200).json({numOfUsers, users : succ});
+        })
+        .catch(err => {
+            res.status(400).json({message: err})
+        })
 
     })
     .catch(err => {
@@ -30,9 +44,21 @@ router.get('/teacher',function(req, res, next) {
 
 router.get('/student',function(req, res, next) {
 
-    User.findStudent().then(succ => {
-        res.status(200).json(succ);
+    const limit = 10;
+    var page = req.query.page;
+    
+    if(page === undefined || page === ""){
+        page = 0;
+    }
 
+    User.findStudent(limit, limit*page).then(succ => {
+        User.countUsers(0)
+        .then(numOfUsers => {
+            res.status(200).json({numOfUsers, users : succ});
+        })
+        .catch(err => {
+            res.status(400).json({message: err})
+        })
     })
     .catch(err => {
         res.status(400).json({message: 'Đã xảy ra lỗi !' + err})

@@ -16,8 +16,9 @@ const ManagerStudents = (props) => {
   const [userID, setUserID] = useState('');
   const [status, setStatus] = useState('');
   const [visibleMess, setVisibleMess] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
 
-const {messageStudent,listStudents, fetchListStudents,fetchBlocklUser} = props;
+const {messageStudent,listStudents,totalStudents, fetchListStudents,fetchBlocklUser} = props;
 
 const token = localStorage.getItem('token');
 
@@ -37,6 +38,24 @@ function setInfoModal(id, status){
   setUserID(id); 
   setStatus(status)
 }
+
+const setPagination = () => {
+  var tempt = totalStudents % 10 === 0 ? 0: 1;
+  let totalPage = parseInt(totalStudents / 10 + tempt);
+  var pages = [];
+  if(totalPage > 1){
+  for (let i = 0; i < totalPage; i++){
+    pages.push(<Button key={i} type="button" theme="primary" outline className="btn-pagination" disabled={currentPage === i ? true : false} onClick={() => {setCurrentPage(i); fetchListStudents(token,i)}}>{i+1}</Button>)
+  }}
+  return(<div className="mb-3 create-account">
+    <Button type="button" theme="primary" className="btn-pagination" hidden={totalPage === 1 ? true : false} disabled={currentPage === 0 ? true : false} onClick={() => {setCurrentPage(currentPage-1); fetchListStudents(token,currentPage -1)}}><i className="material-icons">
+    navigate_before
+    </i></Button>
+    {pages}
+  <Button type="button" theme="primary" className="btn-pagination" hidden={totalPage === 1 ? true : false} disabled={currentPage + 1  === totalPage ? true : false} onClick={() => {setCurrentPage(currentPage+1); fetchListStudents(token,currentPage+1)}}><i className="material-icons">
+  navigate_next
+  </i></Button></div>)
+};
 
 let rowsUser;
 
@@ -120,6 +139,7 @@ return(
         </Card>
       </Col>
     </Row>
+    {setPagination()}
     <Modal size="sm" open={openModal} toggle={() => setOpenModal(!openModal)} centered>
       <ModalHeader>{status === 'block' ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}</ModalHeader>
       <ModalBody className="p-3">
@@ -141,6 +161,7 @@ const mapStateToProps = (state) => {
   return {
       messageStudent: state.authReducer.messageStudent,
       listStudents: state.authReducer.listStudents,
+      totalStudents: state.authReducer.totalStudents
   };
 };
 
