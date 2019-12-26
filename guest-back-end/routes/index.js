@@ -5,23 +5,15 @@ const User = require('../models/user');
 // Xử lí lấy thông tin user
 // GET /me
 router.get('/me', passIfHaveValidToken, function(req, res) {
-    User.findOneById(req.userInfo.id)
-      .then(user => {
-        return res.status(200).json({
-          results: {
-            object: {
-              username: user.username,
-              email: user.email,
-              id: user.id,
-              avatar: user.avatar,
-              role: user.role,
-              major: user.major,
-              salaryPerHour: user.salaryPerHour,
-              status: user.status
-            }
+  User.findOneById(req.userInfo.id)
+  .then((user) => res.status(200).json({
+      results: {
+          object: {
+              ...user['_doc']
           }
-        });
-      }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+      }
+  }))
+  .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
 });
 
 module.exports = router;

@@ -1,11 +1,12 @@
-var express = require('express');
+﻿var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const multer = require('../../config/multer-disk-storage');
 const jwt = require('../../utils/jwt');
-const topt= require('../../utils/totp');
+const topt = require('../../utils/totp');
+const ChecksumToken = require('../../utils/checksumToken');
 const User = require('../../models/user');
+const TagSkill = require('../../models/TagSkill');
 
 // Xử lí đăng ký tài khoản
 // POST /user/register
@@ -24,50 +25,19 @@ router.post('/register', (req, res) => {
             }
 
             let token = jwt.generateJWT(user, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+            const { id, username, email, role, avatar, status,
+                major, introduction, salaryPerHour, address} = user;
             return res.status(200).json({
                 results: {
                     object: {
-                        token,
-                        id: user.id,
-                        username: user.username,
-                        email: user.email,
-                        role: user.role,
-                        avatar: user.avatar,
-                        status: user.status
+                        token, id, username, email, role, avatar, status,
+                        major, introduction, salaryPerHour, address
                     }
                 }
             });
         });
     })(req, res)
 });
-
-// Xử lí kích hoạt tài khoản
-// POST /user/active
-// router.post('/active', (req, res) => {
-//     User.findOneById(req.body.userId)
-//         .then((user) => {
-//             // Kiểm tra tài khoản đã kích hoạt chưa
-//             if (user.status !== 'pendingActive') {
-//                 return res.status(400).json({message: 'Tài khoản đã được kích hoạt'});
-//             }
-
-//             // Kiểm tra mã OTP
-//             const result = topt.verify(req.body.activeCode, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
-
-//             // Nếu mã OTP không chính xác
-//             if (!result) {
-//                 return res.status(400).json({message: 'Mã OTP không chính xác'});
-//             }
-
-//             User.updateOne({_id: req.body.userId}, {status: 'active'})
-//                 .then(() => {
-//                     return res.status(200).json({message: 'Kích hoạt tài khoản thành công'});
-//                 }).catch(() => {
-//                     return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
-//                 });
-//         });
-
-// });
 
 // Xử lí đăng nhập
 // POST /user/login
@@ -89,13 +59,8 @@ router.post('/login', (req, res) => {
             return res.status(200).json({
                 results: {
                     object: {
-                        token,
-                        id: user.id,
-                        username: user.username,
-                        email: user.email,
-                        role: user.role,
-                        avatar: user.avatar,
-                        status: user.status
+                        token, 
+                        ...user['_doc']
                     }
                 }
             });
@@ -120,16 +85,13 @@ router.post('/loginSocial', (req, res) => {
             }
 
             let token = jwt.generateJWT(user, process.env.SECRET_KEY, process.env.EXPIRE_IN);
+            const { id, username, email, role, avatar, status,
+                major, introduction, salaryPerHour, address} = user;
             return res.status(200).json({
                 results: {
                     object: {
-                        token,
-                        id: user.id,
-                        username: user.username,
-                        email: user.email,
-                        role: user.role,
-                        avatar: user.avatar,
-                        status: user.status
+                        token, id, username, email, role, avatar, status,
+                        major, introduction, salaryPerHour, address
                     }
                 }
             });
@@ -137,108 +99,52 @@ router.post('/loginSocial', (req, res) => {
     })(req, res)
 });
 
-// Xử lí thay đổi thông tin cá nhân
-// POST /user/updatProfile
-router.post('/updateProfile', passIfHaveValidToken, (req, res) => {
-
-    // Kiểm tra các field có hợp lệ hay không
-    req.checkBody('username', 'Invalid username').notEmpty().isLength({min:1, max: 50});
-
-    let errors = req.validationErrors();
-
-    if (errors.length > 0){
-        let messages = [];
-
-        errors.forEach(error => {
-            messages.push(error.msg);
-        });
-
-        return res.status(400).json({messages: messages});
-    }
-
-    const propertiesUpdate = {
-        username: req.body.username,
-        email: req.body.email
-    };
-
-    User.update({_id: req.user.id}, propertiesUpdate)
-        .then((result) => {
-            res.status(200).json({messages: ['update profile successfully']});
-        }).catch(err => {
-            res.status(500).json({messages: [err.message]});
-        });
-});
-
-// Xử lí update avatar
-// POST /user/update-avatar
-router.post('/update-avatar', passIfHaveValidToken, multer.single('avatar'),(req, res) => {
-    var propertiesUpdate = {
-        avatar: `images/${req.user.id}${req.file.originalname}`
-    }
-
-    User.update({_id: req.user.id}, propertiesUpdate)
-        .then((result) => {
-            res.status(200).json({ 
-                messages: ['update avatar successfully'],
-                data: {
-                    urlImg: `images/${req.user.id}${req.file.originalname}`
-                }
-            });
-        }).catch(err => {
-            res.status(500).json({messages: [err.message]});
-        });
-});
-
 // Xử lí thay đổi mật khẩu
 // POST /user/change-password
-router.post('/change-password', passIfHaveValidToken, (req, res) => {
-    User.findOneById({_id: req.user.id})
+router.post('/changePassword', passIfHaveValidToken, (req, res) => {
+    User.findOneByIdWidthPassword({_id: req.userInfo.id})
         .then(user => {
             bcrypt.compare(req.body.oldPassword, user.password, (err, result) => {
                 if (err) {
-                    return res.status(400).json({messages: [err.message]});
+                  console.log(err)
+                    return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
                 } 
 
                 if (!result) {
-                    return res.status(400).json({messages: ['Incorrect current password.']});
+                    return res.status(400).json({message: 'Mật khẩu không chính xác'});
                 }
 
                 bcrypt.hash(req.body.newPassword, 5, (err, hash) => {
                     if (err) {
-                        return res.status(400).json({messages: [err.message]});
+                        return res.status(500).json({message: err.message});
                     }
 
-                    User.update({_id: user.id}, {password: hash})
-                        .then(result => {
-                            return res.status(200).json({messages: ['Change password successfully.']});
+                    User.updateOne({_id: user.id}, {password: hash})
+                        .then(() => {
+                            return res.status(200).json({message: 'Đổi mật khẩu thành công'});
                         })
-                        .catch(err => {
-                            return res.status(400).json({messages: [err.message]});
+                        .catch(() => {
+                            return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
                         });
                     });
             });
-        }).catch(err => {
-            return res.status(400).json({messages: [err.message]});
+        }).catch((err) => {
+            console.log(err)
+            return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
         });
 });
 
-// Xử lí update role
-// POST /user/updateRole
-router.post('/updateRole', passIfHaveValidToken, (req, res) => {
-    const role = req.body.role;
-    
-
-    User.updateOne({_id: req.userInfo.id}, {role})
-        .then(() => {
-            const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
-            res.status(200).json({token});
-        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
-});
-
+// Xử lí update các thông tin chung với data gửi lên dạng json
+// POST /user/update
 router.post('/update', passIfHaveValidToken, (req, res) => {
-    const { username, role, salaryPerHour, major} = req.body;
+    const entity = {...req.body};
+    const { role } = req.body;
 
-    if (role) {
+    if (entity.password || entity.numberOfStudent || entity.teachedHour || entity.money || entity._id) {
+        return res.status(400).json({message: 'data không hợp lệ'});
+    }
+
+    if (req.body.role) {
         req.checkBody('role', 'Role không hợp lệ').isIn(['0', '1']);
         const errors = req.validationErrors();
 
@@ -247,17 +153,113 @@ router.post('/update', passIfHaveValidToken, (req, res) => {
         }
     }
 
-    User.updateOne({_id: req.userInfo.id}, { username, role, salaryPerHour, major})
+    // Update info user với các thông tin gửi lên
+    User.updateOne({_id: req.userInfo.id}, entity)
         .then(() => {
             const token = jwt.generateJWT({...req.userInfo, role}, process.env.SECRET_KEY, process.env.EXPIRE_IN);
             res.status(200).json({
                 results: {
                     object: {
-                        token, username, role, salaryPerHour, major
+                        token, 
+                        ...entity
                     }
                 }
             });
-        }).catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+        }).catch((err) => {res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}); console.log(err)});
+});
+
+// Xử lí lấy danh sách giáo viên theo tiêu chí xác định 
+// kèm phân trang
+// POST /user/getListTeacher
+router.post("/getListTeacher", (req, res) => {
+    const { page, limit, arrTagSkill, place, fee, sort, searchText } = req.body;
+    User.getListTeacherWithPagination(page, limit, arrTagSkill, place, fee, sort, searchText)
+        .then((rs) => res.status(200).json({
+            results: {
+                object: {
+                    ...rs
+                }
+            }
+        }))
+        .catch((err) => res.status(500).json({message: err.message}));
+});
+
+// Xử lí req lấy info của 1 user theo id
+// GET /user/:id
+router.get('/:id', (req, res) => {
+    User.findOneById(req.params.id)
+        .then((user) => res.status(200).json({
+            results: {
+                object: {
+                    ...user['_doc']
+                }
+            }
+        }))
+        .catch(() => res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'}));
+    
+});
+
+// Xử lí req đổi mật khẩu khi quên mật khẩu
+// POST /user/forgetPassword
+router.post('/forgetPassword', (req, res) => {
+    const { email, otp, newPassword } = req.body;
+
+    // Kiểm tra mã OTP
+    const result = topt.verify(otp, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
+
+    //Nếu mã OTP không chính xác
+    if (!result) {
+        return res.status(400).json({message: 'OTP không hợp lệ'});
+    }
+
+    bcrypt.hash(newPassword, 5, (err, hash) => {
+        if (err) {
+            return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
+        }
+
+        User.updateOne({email}, {password: hash})
+            .then(() => {
+                return res.status(200).json({message: 'Đổi mật khẩu thành công'});
+            })
+            .catch(() => {
+                return res.status(500).json({message: 'Lỗi không xác định được. Thử lại sau'});
+            });
+    });
+});
+
+// Xử lí req update tiền của user
+// POST /user/updateMoney
+router.post('/updateMoney', async (req, res) => {
+    const { checksumToken, timestamp, idUser, money } = req.body;
+    // const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
+
+    // if (!isValid) {
+    //     return res.status(400).json({message: 'checksumToken không hợp lệ'});
+    // }
+
+    try {
+        const user = await User.findOneById(idUser);
+
+        if (!user) {
+            return res.status(400).json({message: 'user không tồn tại'});
+        }
+
+        user.money += Number.parseInt(money);
+
+        if (user.money < 0) {
+            return res.status(400).json({message: 'Số dư tài khoản không đủ'});
+        }
+
+        await user.save();
+        res.status(200).json({
+            result: {
+                object: {
+                    money: user.money
+                }
+        }});
+    } catch (err) {
+        res.status(500).json({message: err.message});
+    }
 });
 
 module.exports = router;

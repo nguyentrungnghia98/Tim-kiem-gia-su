@@ -48,7 +48,7 @@ const ManagerComplaint = props => {
   useEffect(() => {
     const fetchDataComplaint = async () => {
       try {
-        await fetchComplaint(token,0);
+        await fetchComplaint(token,0); 
       } catch (err) {
         console.log("err", err);
       }
@@ -246,7 +246,7 @@ const ManagerComplaint = props => {
         <ModalBody className="p-3">
         <FormSelect className="col-10 ml-5" onChange={(e) => setStatus(e.target.value)}>
         <option hidden>Lựa chọn</option>
-        <option value="complaint_fail">Khiếu nại thất bại & Hoàn tất hợp đồng</option>
+        <option value="finished">Khiếu nại thất bại & Hoàn tất hợp đồng</option>
         <option value="complainted">Khiếu nại thành công & Hoàn tiền người học</option>
       </FormSelect>
       </ModalBody>

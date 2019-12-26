@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import User from '../../apis/user';
-import { toast } from "react-toastify";
+import {User} from '../../apis';
 import { connect } from 'react-redux';
 import { fetchUser } from '../../actions/user';
 import { closeModal } from './SetRoleAction';
 import './SetRole.scss';
+import toast from '../../utils/toast';
 
 import {
   Dialog
@@ -35,7 +35,7 @@ const SetRoleModal = props => {
       setLoading(true);
 
       const userToken = localStorage.getItem('userToken');
-        const response = await User.post(url,data, {
+        const response = await User.axios.post(url,data, {
           headers: { authorization : userToken }
         });
 
@@ -50,27 +50,13 @@ const SetRoleModal = props => {
       }
 
 
-      toast.success(message, {
-        position: "bottom-right",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.success(message);
     } catch (error) {
       console.log({ error });
       setLoading(false);
       let message = 'Some thing wrong!';
       if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
-      toast.error(message, {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      });
+      toast.error(message);
     }
   }
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 
 const userSchema = Schema({
@@ -9,12 +10,11 @@ const userSchema = Schema({
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         maxlength: 60
     },
     password: { 
-        type: String,
-        require: true
+        type: String
     },
     avatar: { 
         type: String,
@@ -28,12 +28,36 @@ const userSchema = Schema({
         type: String,
         default: 'active'
     },
-    salaryPerHour: {type: Number},
+    isOnline: Boolean,
+    lastOnline: Date,
+    salaryPerHour: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     major: [{
-        id: Schema.Types.ObjectId
-    }]
-});
+        type: Schema.Types.ObjectId,
+        ref: 'TagSkill'
+    }],
+    job: { type: String },
+    introduction: { type: String },
+    address: { type: String },
+    job: {type: String},
+    numberOfStudent: Number,
+    teachedHour: Number,
+    money: {
+        type: Number,
+        required: true,
+        default: 0
+    }
+}, { collation: {
+    locale: 'vi',
+    strength: 2,
+    caseLevel: false
+}});
 
+userSchema.index({address: 'text', job: 1});
+userSchema.plugin(mongoosePaginate);
 const User = mongoose.model('User', userSchema);
 
 module.exports= {
@@ -49,19 +73,36 @@ module.exports= {
     },
 
     findOneByEmail: (email) => {
-        return User.findOne({email}).exec();
+        return User.findOne({email})
+            .populate('major', 'content')
+            .select('-password -contacts -__v')
+            .exec();
     },
 
+    findOneByEmailWithPassword: (email) => {
+      return User.findOne({email})
+          .populate('major', 'content')
+          .select(' -contacts -__v')
+          .exec();
+  },
+
     findOneAccountActiveByEmail: (email) => {
-        return User.findOne({email, status: 'active' }).exec();
+        return User.findOne({email, status: 'active' })
+            .populate('major', '-__v')
+            .select('-password -contacts -__v')
+            .exec();
+    },
+
+    findOneByIdWidthPassword: (id) => {
+      return User.findById(id).select('-contacts -__v').populate('major', '-__v').exec();
     },
 
     findOneById: (id) => {
-        return User.findById(id).exec();
+        return User.findById(id).select('-password -contacts -__v').populate('major', '-__v').exec();
     },
 
     updateOne: (conditionObject, properies) => {
-        return User.updateOne(conditionObject, {$set: properies}).exec();
+        return User.updateOne(conditionObject, properies).exec();
     },
 
     deleteOne: (conditionObject) => {
@@ -77,5 +118,74 @@ module.exports= {
         });
 
         return user.save();
+    },
+
+    getListTeacherWithPagination: (page, limit, arrTagSkill, place, fee, sort, searchText) => {
+        const query = {};
+        query.role = 1;
+
+        if (arrTagSkill && arrTagSkill.length > 0) {
+            query.major = { $in: arrTagSkill };
+        }
+
+        if (place) {
+            query['$text'] = {$search: `\"${place}\"`};
+        }
+
+        if (fee) {
+            switch (fee.type) {
+                case 'LESS': 
+                    query.salaryPerHour = {$lt: fee.value };
+                    break;
+                case 'GREATER': 
+                    query.salaryPerHour = {$gt: fee.value };
+                    break;
+                case 'FROM_TO': 
+                    query.salaryPerHour = {$lte: fee.value2, $gte: fee.value1 };
+                    break;
+            }
+        }
+
+        const option = { 
+            page, limit,
+            select: '-password -contacts -__v',
+            populate: {
+                path: 'major',
+                select: '-__v'
+            }
+        };
+
+        if(searchText) {
+            query['$or'] = [
+                {
+                    job: {
+                        $regex: `${searchText}`,
+                        $options: 'i'
+                    }
+                }, {
+                    username: {
+                        $regex: `${searchText}`,
+                        $options: 'i'
+                    }
+                }
+            ]
+        }
+
+        if (sort) {
+            const temp = {};
+            temp[sort.field] = sort.type;
+            option.sort = temp;
+        }
+
+        return User.paginate(query, option);
+    },
+
+    incHourAndNumberOfStudent: (id, hours, student) => {
+        return User.updateOne({_id: id}, {
+            $inc: {
+                numberOfStudent: student,
+                teachedHour: hours
+            }
+        }).exec();
     }
 }

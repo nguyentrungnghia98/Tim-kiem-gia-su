@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin from "react-google-login";
-import User from '../../apis/user';
+import {User} from '../../apis';
 import { toast } from "react-toastify";
 import { connect } from 'react-redux';
 import { signIn } from '../../actions/user';
@@ -10,11 +10,10 @@ import { closeAuthenticationModal } from './AuthenticationAction';
 import './Authentication.scss';
 import CssTextField from './CssTextField';
 import {
-  Dialog,
-  DialogContent
+  Dialog
 } from '@material-ui/core';
 import jwt from '../../utils/jwt';
-import config from '../../config/config';
+import config from '../../config';
 import {openSetRoleModal} from '../SetRole/SetRoleAction';
 
 const Authentication = props => {
@@ -25,7 +24,6 @@ const Authentication = props => {
     openSetRoleModal,
     signIn
   } = props;
-  console.log('mode', modeModal)
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -35,22 +33,36 @@ const Authentication = props => {
   const [verifyCode, setVerifyCode] = useState('');
   const [role, setRole] = useState('student');
   const [mode, setMode] = useState(modeModal);
-  const [error, setError] = useState({ email: '', password: '', emailRegister: '', passwordRegister: '', verifyCode: '', name: '' });
+  const [error, setError] = useState({ email: '', password: '', emailRegister: '', passwordRegister: '', verifyCode: '', name: '',emailPassword:'' });
+  const [emailPassword, setEmailPassword] = useState('');
+  
+  // useEffect(() => {
+  //   setMode(props.modeModal)
+  //   setLoading(false);
+  //   console.log('change mode', mode)
+  // }, [props.modeModal])
 
   useEffect(() => {
     setMode(props.modeModal)
+    clearFillFormInfo();
     setLoading(false);
-  }, [props.modeModal])
-
-  useEffect(() => {
-    setLoading(false);
-  }, [props.toggle])
+  }, [props.toggle, props.modeModal])
 
   function handleClose() {
     console.log('close')
+    clearFillFormInfo();
     closeAuthenticationModal();
   }
 
+  function clearFillFormInfo(){
+    setPasswordRegister('');
+    setVerifyCode('');
+    setName('');
+    setEmail('');
+    setPassword('');
+    setEmailRegister('');
+    setEmailPassword('');
+  }
 
   function handleChange(event) {
     const { value, name } = event.target;
@@ -72,6 +84,10 @@ const Authentication = props => {
         break;
       case 'verifyCode':
         setVerifyCode(value);
+        break;
+      case 'emailPassword':
+        setEmailPassword(value);
+        break;
       default:
         return
     }
@@ -85,6 +101,7 @@ const Authentication = props => {
       email: response.email,
       username: response.name
     };
+    if(!data.email) return
     handleLoginSocial(data);
   }
 
@@ -95,18 +112,20 @@ const Authentication = props => {
       username: response.profileObj.name
     };
     console.log(response);
+    if(!data.email) return
     handleLoginSocial(data);
   }
 
   function handleLoginSocial(_data) {
     console.log('data jwt', _data)
-    const token = jwt.generateJWT(_data, config.SECRET_KEY, config.EXPIRE_IN);
+    console.log('env', process.env)
+    const token = jwt.generateJWT(_data, process.env.SECRET_KEY || process.env.REACT_APP_SECRET_KEY, process.env.EXPIRE_IN || process.env.REACT_APP_EXPIRE_IN);
     const url = `/user/loginSocial`;
     const data = { token };
     const message = "Đăng nhập thành công"
 
     const callback = (user) => {
-      signIn(user);
+      signIn(user); 
       closeAuthenticationModal();
       if(user.role === -1){
         openSetRoleModal();
@@ -143,15 +162,24 @@ const Authentication = props => {
       }
     }
 
+    if (mode === "forgot_password") {
+      if (re.test(String(emailPassword).toLowerCase())) {
+        if (error.emailPassword !== '') setError({ ...error, emailPassword: '' });
+      } else {
+        setError({ ...error, emailPassword: 'Vui lòng nhập đúng định dạng email!' });
+        check = false;
+      }
+    }
+    
     if (mode === 'finish_signup') {
-      if (name.length < 4 || name.length > 20) {
+      if (name.length < 1 || name.length > 50) {
         setError({ ...error, name: 'Vui lòng nhập tên có độ dài từ 1 đến 50 kí tự!' });
         check = false;
       } else {
         setError({ ...error, name: '' });
       }
 
-      if (passwordRegister.length < 1 || passwordRegister.length > 50) {
+      if (passwordRegister.length < 4 || passwordRegister.length > 20) {
         setError({ ...error, passwordRegister: 'Vui lòng nhập tên có độ dài từ 4 đến 20 kí tự!' });
         check = false;
       } else {
@@ -166,7 +194,7 @@ const Authentication = props => {
   async function callApiPost(url, data, message, callback) {
     try {
       setLoading(true);
-      const response = await User.post(url, data);
+      const response = await User.axios.post(url, data);
       console.log('data', data, response)
       setLoading(false);
 
@@ -175,29 +203,13 @@ const Authentication = props => {
       } else {
         callback();
       }
-
-
-      toast.success(message, {
-        position: "bottom-right",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.success(message);
     } catch (error) {
       console.log({ error });
       setLoading(false);
       let message = 'Some thing wrong!';
       if (error.response && error.response.data && error.response.data.message) message = error.response.data.message;
-      toast.error(message, {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      });
+      toast.error(message);
     }
   }
 
@@ -222,8 +234,19 @@ const Authentication = props => {
         url = `/secure/sendOTPViaMail`;
         data = { email: emailRegister };
         message = "Gửi email xác nhận thành công"
-        callback = () => setMode('finish_signup');
+        callback = () => {
+          setMode('finish_signup');
+        } 
         break;
+      case 'verify_email_password':
+          url = `/secure/sendOTPViaMail`;
+          data = { email: emailPassword };
+          message = "Gửi email xác nhận thành công"
+          callback = () => {
+            setMode('set_new_password');
+          } 
+          break;
+        
       case 'register':
         url = `/user/register`;
         data = { activeCode: verifyCode, username: name, email: emailRegister, password: passwordRegister, role: role === 'student' ? 0 : 1 };
@@ -233,13 +256,94 @@ const Authentication = props => {
           closeAuthenticationModal()
         };
         break;
+      case 'forgetPassword':
+        url = `/user/forgetPassword`;
+        data = { otp: verifyCode, email: emailPassword, newPassword: passwordRegister};
+        message = "Đổi mật khẩu thành công"
+        callback = (user) => {
+          clearFillFormInfo();
+          setMode('login');
+        };
+        break;
       default:
         return;
     }
 
     callApiPost(url, data, message, callback);
   }
+  function renderPasswordForm(){
+    return (
+      <div className='popup-form'>
+        <form autoComplete="off" onSubmit={(e) => handleSubmit(e, 'forgetPassword')}>
+          <div className='form-row cf'>
+            <div className='input-wrap'>
+              <CssTextField
+                variant="outlined"
+                required
+                fullWidth
+                error={error.verifyCode === '' ? false : true}
+                helperText={error.verifyCode}
 
+                name='verifyCode'
+                label='Nhập mã xác nhận'
+
+                type='text'
+                onChange={handleChange}
+                value={verifyCode}
+              />
+
+            </div>
+          </div>
+          <div className='form-row cf'>
+            <div className='input-wrap'>
+              <CssTextField
+                variant="outlined"
+                required
+                fullWidth
+                error={error.passwordRegister === '' ? false : true}
+                helperText={error.passwordRegister}
+                name='passwordRegister'
+                label='Nhập mật khẩu mới'
+                type='password'
+                autoComplete="new-password"
+                onChange={handleChange}
+                value={passwordRegister}
+              />
+
+            </div>
+          </div>
+
+          <div className='form-row-buttons cf'>
+            <button
+              className='btn-lrg-standard fullwidth mb-4'
+              id='login-btn'
+              name='commit'
+              tabIndex='4'
+              type='submit'
+              disabled={loading}
+            >
+              {!loading ? 'Đổi mật khẩu' : (
+                <div className="spinner-border text-light" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
+              )}
+            </button>
+          </div>
+        </form>
+        <footer>
+          <div className='message'>
+            Trở về đăng nhập
+             <div
+              onClick={() => {setMode("login"); clearFillFormInfo()}}
+              className='js-open-popup-join ml-2'
+            >
+              Quay lại
+                          </div>
+          </div>
+        </footer>
+      </div>
+    )
+  }
   function renderFillInfoForm() {
     return (
       <div className='popup-form'>
@@ -333,7 +437,7 @@ const Authentication = props => {
           <div className='message'>
             Nhập email khác
              <div
-              onClick={() => setMode("signup")}
+              onClick={() => {setMode("signup"); clearFillFormInfo()}}
               className='js-open-popup-join ml-2'
             >
               Quay lại
@@ -438,17 +542,18 @@ const Authentication = props => {
                             </label>
 
                 <span className='toggle-forgot-pwd rf'>
-                  <a
+                  <div
                     className='js-btn-forgotpw'
-                    href='/reset_password'
+                    onClick={() => setMode("forgot_password")}
                     rel='nofollow'
                   >
                     Quên mật khẩu
-                              </a>
+                              </div>
                 </span>
               </div>
             </form>
           )}
+
           {mode === "signup" && (
             <form onSubmit={(e) => handleSubmit(e, 'verify_email')}>
               <div className='form-row cf'>
@@ -487,7 +592,45 @@ const Authentication = props => {
               </div>
             </form>
           )}
+          {mode === "forgot_password" && (
+            <form onSubmit={(e) => handleSubmit(e, 'verify_email_password')}>
+              <div className='form-row cf'>
+                <div className='input-wrap'>
+                  <CssTextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    error={error.emailPassword === '' ? false : true}
+                    helperText={error.emailPassword}
+                    name='emailPassword'
+                    label='Nhập email của bạn'
+                    type='text'
+                    onChange={handleChange}
+                    value={emailPassword}
+                  />
 
+
+                </div>
+              </div>
+              <div className='form-row-buttons cf'>
+                <button
+                  className='btn-lrg-standard fullwidth'
+                  id='login-btn'
+                  name='commit'
+                  tabIndex='4'
+                  type='submit'
+                  disabled={loading}
+                >
+                  {!loading ? 'Tiếp tục' : (
+                    <div className="spinner-border text-light" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+          
           <footer>
             <div className='message'>
 
@@ -523,7 +666,7 @@ const Authentication = props => {
         <div className='card card-login'>
           <div className='popup-content-login'>
             <div className='main-message'>
-              {mode !== "finish_signup" ? (<h5>{mode === "login" ? "Đăng nhập" : "Đăng kí"} vào Tutor</h5>)
+              {mode !== "finish_signup" ? (<h5>{mode === "login" ? "Đăng nhập" : (mode.includes('password')?'Quên mật khẩu':"Đăng kí")} vào Tutor</h5>)
                 : (
                   <>
                     <h5>Điền đầy đủ thông tin để hoàn tất việc đăng kí</h5>
@@ -532,7 +675,11 @@ const Authentication = props => {
                 )}
 
             </div>
-            {mode !== "finish_signup" && renderLoginForm()
+            {
+              (mode !== "finish_signup" && mode !== "set_new_password") && renderLoginForm()
+            }
+            {
+              mode === "set_new_password" && renderPasswordForm()
             }
             {mode === 'finish_signup' &&
               renderFillInfoForm()

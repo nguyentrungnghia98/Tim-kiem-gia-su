@@ -49,7 +49,7 @@ passport.use('local.register', new LocalStrategy({
 
             // Kiểm tra mã OTP
             const result = topt.verify(req.body.activeCode, process.env.OTP_SECRET, process.env.OTP_EXPIRE_IN);
-            
+            //const result = true;
             // Nếu mã OTP không chính xác
             if (!result) {
                 return done(null, false, {message: 'Mã OTP không chính xác'});
@@ -89,10 +89,14 @@ passport.use('local.login', new LocalStrategy({
         return done(null, false, {message: 'Email hoặc mật khẩu không hợp lệ.'});
     }
 
-    User.findOneAccountActiveByEmail(email)
+    User.findOneByEmailWithPassword(email)
         .then(user => {
             if (!user){
                 return done(null, false, {message: 'Email không tồn tại.'});
+            }
+
+            if (user.status != 'active') {
+                return done(null, false, {message: 'Tài khoản đã bị khóa'});
             }
 
             bcrypt.compare(password, user.password, (err, result) => {
@@ -131,6 +135,9 @@ passport.use('social.login', new LocalStrategy({
                     .then((rs) => done(null, rs))
                     .catch((err) => done(err));
             } else {
+                if (user.status != 'active') {
+                    return done(null, false, {message: 'Tài khoản đã bị khóa'});
+                }
                 return done(null, user);
             }
         }).catch((err) => done(err));
