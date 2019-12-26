@@ -44,10 +44,9 @@ const DetailContract = (props) => {
   async function callApiUpdateContract(status){
     if(processing) return;
     let data = {id: contract._id, status};
-    if(status === 'finished'){
-      const {student, teacher, feePerHour, numberOfHour} = contract;
-      data = { ...data, idStudent: student._id, idTeacher: teacher._id, skill: teacher.major, feePerHour, numberOfHour }
-    }
+    const {student, teacher, feePerHour, numberOfHour} = contract;
+    data = { ...data, idStudent: student._id, idTeacher: teacher._id, skill: teacher.major, feePerHour, numberOfHour }
+    
     try {
       processing = true;
 

@@ -68,7 +68,7 @@ router.post('/create', CheckUser.passIfIsStudent, async (req, res) => {
 // POST /contract/update
 router.post('/update', CheckUser.passIfHaveValidToken, async (req, res) => {
     const { numberOfHour, checksumToken, timestamp, status, 
-        id, idStudent, idTeacher, skill, feePerHour } = req.body;
+        id, idStudent, idTeacher, skill, feePerHour } = req.body; 
     const isValid = ChecksumToken.verifyToken(checksumToken, timestamp);
 
     if (!isValid) {

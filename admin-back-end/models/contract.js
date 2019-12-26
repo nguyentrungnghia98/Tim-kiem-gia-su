@@ -85,13 +85,20 @@ module.exports = {
             })
         })
     },
-    findByIdAndUpdate: (id, status) => {
+    getOneById: (id) => {
+      return Contract.findOne({_id: id})
+          .populate('student', '-password -contracts -contacts -major -__v')
+          .populate('teacher', '-password -contracts -contacts -__v')
+          .exec();
+    },
+
+    findByIdAndUpdate: (id, properties) => {
+
         return new Promise((resolve, reject) => {
-            Contract.findByIdAndUpdate(id, {
-                $set: {
-                    status: status
-                }
-            }).exec((err, succ) => {
+            return Contract.updateOne({
+              _id: id,
+            }, {$set: properties})
+            .exec((err, succ) => {
                 if (err)
                     reject(err);
                 else

@@ -82,7 +82,7 @@ module.exports = {
             .populate('student', '-password -contracts -contacts -major -__v')
             .populate('teacher', '-password -contracts -contacts -__v')
             .exec();
-    },
+    }, 
 
     updateById: (idContract, properties) => {
         return Contract.updateOne({
