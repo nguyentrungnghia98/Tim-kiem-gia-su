@@ -3,7 +3,7 @@ import {FETCH_INCOME_FAILURE, FETCH_INCOME_SUCCESS,FETCH_INCOME_REQUEST} from '.
 const initalState = {
     isFetching: false,
     message: null,
-    data: [{0:0}],
+    data: [],
 }
 const staticReducer = (state = initalState, action) => {
     switch (action.type) {

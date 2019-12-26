@@ -122,7 +122,7 @@ export const fetchComplaint = (token, page) => {
 
         const bearerToken = `Bearer ${  token}`;
 
-        return fetch(`https://server-gia-su.herokuapp.com/contracts?page=${page !== undefined ? page : ''}&sortBy=processing_complaint`, {
+        return fetch(`http://localhost:3000/contracts?page=${page !== undefined ? page : ''}&sortBy=processing_complaint`, {
             method: 'GET',
             headers: {
                 'Authorization': bearerToken
