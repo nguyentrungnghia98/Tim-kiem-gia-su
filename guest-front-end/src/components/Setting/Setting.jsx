@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Typography,
   Box,
@@ -13,6 +13,8 @@ import Salary from './Salary';
 import ChangePassword from './ChangePassword';
 import { connect } from 'react-redux';
 import Withdrawal from './Withdrawal';
+import {User} from '../../apis';
+import {fetchUser} from '../../actions/user';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -73,6 +75,18 @@ const Setting = (props) => {
     setValue(newValue);
   };
 
+  useEffect(()=>{
+    async function reload(){
+      try {
+        const user = await User.getInfo();
+        props.fetchUser(user);
+      } catch (err) {
+        console.log('err', err);
+      }
+    }
+    reload();
+  }, [])
+
   return (
     <div className="setting page-wrapper">
       <div className={classes.root}>
@@ -120,5 +134,5 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(
-  mapStateToProps
+  mapStateToProps,{fetchUser}
 )(Setting);
