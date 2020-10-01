@@ -1,3 +1,5 @@
+Deploy: https://uberfortutor-react.herokuapp.com/
+
 Environment: React, Redux, Material UI, Nodejs, MongoDB
 
 Đồ án môn lập trình web nâng cao, danh sách chức năng:
